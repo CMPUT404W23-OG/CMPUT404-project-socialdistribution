@@ -1,0 +1,6 @@
+venv
+socialdistribution/socialdistribution/__pycache__
+socialdistribution/api/migrations
+socialdistribution/api/__pycache__
+
+
