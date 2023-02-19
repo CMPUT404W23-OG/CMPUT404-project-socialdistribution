@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useCallback } from "react";
 import BasePath from "../config/BasePath";
 import jwt_decode from "jwt-decode";
 import { useNavigate } from "react-router-dom";
@@ -82,14 +82,15 @@ export const AuthProvider = ({ children }) => {
 
   let contextData = {
     user: user,
+    authTokens: authTokens,
     loginUser: loginUser,
     logoutUser: logoutUser,
   };
 
   useEffect(() => {
-    if (loading) {
-      updateAuthTokens();
-    }
+    // if (loading) {
+    //   updateAuthTokens();
+    // }
 
     // update refresh token every 4 minutes
     let fourMinutes = 1000 * 60 * 4;
@@ -98,14 +99,10 @@ export const AuthProvider = ({ children }) => {
         updateAuthTokens();
       }
     }, fourMinutes);
-    return () => {
-      clearInterval(interval);
-    };
+    return () => clearInterval(interval);
   }, [authTokens, loading]);
 
   return (
-    <AuthContext.Provider value={contextData}>
-      {loading ? null : children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextData}>{children}</AuthContext.Provider>
   );
 };
