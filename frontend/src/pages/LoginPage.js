@@ -1,13 +1,16 @@
 import React, { useContext } from "react";
 import AuthContext from "../context/AuthContext";
 import { Navigate } from "react-router-dom";
+import '../themes/login.css';
 
 const LoginPage = () => {
   let { loginUser } = useContext(AuthContext);
   let { user } = useContext(AuthContext);
   if (!user) {
     return (
-      <div>
+      <div className='loginForm'>
+        <h1>Welcome to Social Distribution!</h1>
+        <h2>Create an account or login.</h2>
         <form onSubmit={loginUser}>
           <input
             type="text"
