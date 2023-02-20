@@ -1,0 +1,36 @@
+div.header {
+    display: block;
+    border-bottom: 2pt solid #023e8a;
+    width:100%;
+}
+nav.navbar ul {
+    background-color: #023e8a;
+    width:100%;
+    text-align: center;
+    padding: 0;
+
+}
+nav.navbar ul li {
+    display: inline-block;
+    padding:10pt;
+}
+nav.navbar ul li button {
+    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-size: 20pt;
+    padding: 5pt 10pt 5pt;
+    background-color: transparent;
+    color:white;
+    border:none;
+    margin:auto;
+}
+
+nav.navbar ul li button:hover {
+    border-radius:4pt;
+    background-color: #044eae;
+    cursor: pointer;
+}
+
+nav.navbar ul li button:active {
+    outline: 1pt solid white;
+
+}
