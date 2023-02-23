@@ -1,6 +1,17 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.urls import reverse
+
+
+class AuthorManager(BaseUserManager):
+
+    use_in_migration = True
+    
+    def createAuthor(self, username, password=None, **extra_fields):
+        author = self.model(username=username, **extra_fields)
+        author.set_password(password)
+        author.save(using=self._db)
+        return author
 
 
 # AbstractUser is a built-in Django model that has all the fields we need for a user
@@ -9,8 +20,12 @@ class Author(AbstractUser):
 
     profile_image_url = models.URLField(max_length=200, blank=True)
     githubId = models.CharField(max_length=200, blank=True)
-    
     api_user = models.BooleanField(default=False)
+    date_joined = models.DateTimeField(auto_now_add=True)
+    
+    objects = AuthorManager()
+    USERNAME_FIELD = 'username'
+    
 
     # if a user does not have a picture, use this default image
     def get_profile_image_url(self):

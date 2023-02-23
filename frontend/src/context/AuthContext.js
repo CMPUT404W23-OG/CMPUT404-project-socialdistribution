@@ -49,6 +49,30 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  let signUpUser = async (e) => {
+    e.preventDefault();
+    console.log("signUpUser");
+
+    let response = await fetch(BasePath + "/author/signup/", {
+      
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: e.target.username.value,
+        password: e.target.password.value,
+        }),
+    });
+    if (response.status === 200) {
+      history("/");
+    } else if (response.status === 400){
+      alert("That username is already taken!");
+    }
+    
+  };
+  
+
   let logoutUser = () => {
     setAuthTokens(null);
     setUser(null);
@@ -84,6 +108,7 @@ export const AuthProvider = ({ children }) => {
     user: user,
     authTokens: authTokens,
     loginUser: loginUser,
+    signUpUser: signUpUser,
     logoutUser: logoutUser,
   };
 
