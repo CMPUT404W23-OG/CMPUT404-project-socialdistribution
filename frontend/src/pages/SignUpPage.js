@@ -25,6 +25,18 @@ const SignUpPage = () => {
                 placeholder="Enter Password"
                 required
                 />
+                <input
+                type="text"
+                name="first_name"
+                placeholder="Enter First Name"
+                required
+                />
+                <input
+                type="text"
+                name="last_name"
+                placeholder="Enter Last Name"
+                required
+                />
                 <button type="submit"> Sign Up </button>
             </form>
 

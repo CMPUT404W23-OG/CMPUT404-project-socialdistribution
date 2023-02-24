@@ -62,6 +62,8 @@ export const AuthProvider = ({ children }) => {
       body: JSON.stringify({
         username: e.target.username.value,
         password: e.target.password.value,
+        first_name: e.target.first_name.value,
+        last_name: e.target.last_name.value,
         }),
     });
     if (response.status === 200) {
