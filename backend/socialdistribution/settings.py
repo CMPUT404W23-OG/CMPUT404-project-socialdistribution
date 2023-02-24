@@ -46,12 +46,16 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
+    'rest_framework_swagger',
+    "drf_spectacular",
 ]
 
 REST_FRAMEWORK = { 
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 SIMPLE_JWT = {
@@ -183,3 +187,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Social Distribution API",
+    "DESCRIPTION": "API for Social Distribution",
+    "VERSION": "1.0.0",
+}
