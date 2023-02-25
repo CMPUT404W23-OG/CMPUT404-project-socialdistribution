@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import AuthContext from "../context/AuthContext";
-import { Navigate } from "react-router-dom";
+import { Navigate, Link } from "react-router-dom";
 import '../themes/login.css';
 
 const LoginPage = () => {
@@ -26,7 +26,8 @@ const LoginPage = () => {
           />
           <button type="submit"> Login </button>
         </form>
-
+        <h3> OR </h3>
+        <Link to="/signup"><button className="signupbtn">Sign up</button></Link>
         <p>Don't have an account, Please wait for signup page </p>
       </div>
     );
