@@ -2,13 +2,21 @@ import React, { useContext } from "react";
 import AuthContext from "../context/AuthContext";
 import { Navigate } from "react-router-dom";
 import '../themes/login.css';
-
+import { Box, Container } from "@mui/material";
 
 const SignUpPage = () => {
     let { signUpUser } = useContext(AuthContext);
 
     return (
-        
+        <Box
+        sx={{
+          display: 'flex',
+          flex: '1 1 auto',
+          flexDirection: 'column',
+          width: '100%',
+        }}
+      >
+        <Container maxWidth="md">
         
         <div className='signupForm'>
             <h1>Sign Up for Social Distribution</h1>
@@ -54,6 +62,8 @@ const SignUpPage = () => {
             </form>
 
           </div>
+            </Container>
+            </Box>
       );
   };
   
