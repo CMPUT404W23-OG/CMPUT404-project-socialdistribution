@@ -8,15 +8,12 @@
     align-items: center;
 } */
 div.loginForm, div.signupForm {
-    margin-top: 100pt;
-    display: inline-block;
-    width:clamp(100px, 50%, 600px);
-    text-align: center;
+     margin-top: 100pt;
+    text-align: center; 
     
 }
 
 form input[type="text"], form input[type="password"] {
-    font-family: 'open sans';
     font-size:clamp(10pt, 1.5vw, 15pt);
     width: 65%;
     padding: 12px;
