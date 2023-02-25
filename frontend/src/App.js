@@ -9,6 +9,7 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import ProfilePage from "./pages/ProfilePage";
+import Inbox from "./pages/inbox";
 import Header from "./components/Header";
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
             <Route path="login" element={<LoginPage />} />
             <Route path="signup" element={<SignUpPage />} />
             <Route path="profile" element={<ProfilePage />}/>
+            <Route path="inbox" element={<Inbox />}/>
           </Routes>
         </AuthProvider>
       </Router>

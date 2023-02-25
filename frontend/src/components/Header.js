@@ -130,13 +130,21 @@ export default function Header() {
       onClose={handleMobileMenuClose}
     >
       <MenuItem>
+        <IconButton size="large" color="inherit">
+          <Badge badgeContent={4} color="error">
+            <Home />
+          </Badge>
+        </IconButton>
+        <Link href="/">Home</Link>
+      </MenuItem>
+      {/* <MenuItem>
         <IconButton size="large" aria-label="show 4 new mails" color="inherit">
           <Badge badgeContent={4} color="error">
             <MailIcon />
           </Badge>
         </IconButton>
         <p>Messages</p>
-      </MenuItem>
+      </MenuItem> */}
       <MenuItem>
         <IconButton
           size="large"
@@ -147,7 +155,7 @@ export default function Header() {
             <NotificationsIcon />
           </Badge>
         </IconButton>
-        <p>Notifications</p>
+        <Link href="/inbox" color="inherit">Notifications</Link>  
       </MenuItem>
       <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
@@ -201,18 +209,18 @@ export default function Header() {
           <IconButton size="large" aria-label="show 4 new mails" color="inherit">
             <Link href="/"color="inherit"> <Home /></Link>
             </IconButton>
-            <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+            {/* <IconButton size="large" aria-label="show 4 new mails" color="inherit">
               <Badge badgeContent={4} color="error">
                 <MailIcon />
               </Badge>
-            </IconButton>
+            </IconButton> */}
             <IconButton
               size="large"
               aria-label="show 17 new notifications"
               color="inherit"
             >
               <Badge badgeContent={17} color="error">
-                <NotificationsIcon />
+              <Link href="/inbox" color="inherit"><NotificationsIcon /></Link>  
               </Badge>
             </IconButton>
             <IconButton
