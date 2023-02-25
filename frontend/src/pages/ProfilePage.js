@@ -1,18 +1,20 @@
 import React, { useContext } from "react";
-import { Card, Box, Container, CardContainer, CardContent, Typography, Divider, CardActions, Button, Avatar } from '@mui/material';
+import { Card, Box, Container, CardContainer, CardContent, Typography, Divider, CardActions, Button, Avatar, Grid } from '@mui/material';
 import { useEffect, useState } from "react";
 import AuthContext from "../context/AuthContext";
 
 const ProfilePage = () => {
     let { user, logoutUser } = useContext(AuthContext);
   return (
-    <div>
+    <div
+    >
       <Box
           sx={{
             display: 'flex',
             flex: '1 1 auto',
             flexDirection: 'column',
             width: '100%',
+            paddingTop: '30px'
           }}
         >
           <Container maxWidth="md">
@@ -54,6 +56,27 @@ const ProfilePage = () => {
         </Typography>
       </Box>
     </CardContent>
+    <Box
+      component="main"
+      sx={{
+        flexGrow: 1,
+        py: 8,
+      }}
+    >
+      <Container maxWidth="md">
+    <Grid container spacing={4}>
+          <Grid item lg={4} md={6} xs={12}>
+           Followers
+          </Grid>
+          <Grid item lg={4} md={6} xs={12}>
+            Following
+          </Grid>
+          <Grid item lg={4} md={6} xs={12}>
+           Friends
+          </Grid>
+        </Grid>
+        </Container>
+        </Box>
     <Divider />
     <CardActions>
       <Button
