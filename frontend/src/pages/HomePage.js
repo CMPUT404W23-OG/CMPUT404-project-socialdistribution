@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Box } from '@mui/material';
+import { Card, Box, Container } from '@mui/material';
 import { useEffect, useState } from "react";
 
 
@@ -33,8 +33,17 @@ function CreateArray() {
     (element) => {
       return (
 
-        <Box>
+        <Box
+          sx={{
+            display: 'flex',
+            flex: '1 1 auto',
+            flexDirection: 'column',
+            width: '100%',
+          }}
+        >
+          <Container maxWidth="md">
           <Card className={element.author}>{element.content}</Card>
+          </Container>
         </Box>
         
         // <ul type='disc'>
