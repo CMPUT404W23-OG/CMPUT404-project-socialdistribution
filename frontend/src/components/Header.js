@@ -13,6 +13,7 @@ const Header = () => {
       <nav className='navbar'>
         <ul>
           <li><Link to="/"><button>Home</button></Link></li>
+          <li><Link to="/profile"><button>Profile</button></Link></li>
           {/* <span> | </span> */}
           <li>
               {user ? (
