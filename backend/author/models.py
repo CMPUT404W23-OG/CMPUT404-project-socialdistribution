@@ -22,6 +22,11 @@ class Author(AbstractUser):
     githubId = models.CharField(max_length=200, blank=True)
     api_user = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
+    first_name = models.CharField(max_length=200, blank=False)
+    last_name = models.CharField(max_length=200, blank=False)
+    email = models.EmailField(max_length=200, blank=True)
+    
+    
     
     objects = AuthorManager()
     USERNAME_FIELD = 'username'
