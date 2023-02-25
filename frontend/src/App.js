@@ -11,6 +11,7 @@ import SignUpPage from "./pages/SignUpPage";
 import ProfilePage from "./pages/ProfilePage";
 import Inbox from "./pages/inbox";
 import Header from "./components/Header";
+import PostPage from "./pages/PostPage";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
             <Route path="signup" element={<SignUpPage />} />
             <Route path="profile" element={<ProfilePage />}/>
             <Route path="inbox" element={<Inbox />}/>
+            <Route path="post" element={<PostPage />}/>
           </Routes>
         </AuthProvider>
       </Router>
