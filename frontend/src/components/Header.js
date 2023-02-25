@@ -18,6 +18,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MailIcon from '@mui/icons-material/Mail';
+import Add from '@mui/icons-material/AddToPhotos';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 
@@ -132,6 +133,14 @@ export default function Header() {
       <MenuItem>
         <IconButton size="large" color="inherit">
           <Badge badgeContent={4} color="error">
+            <Add />
+          </Badge>
+        </IconButton>
+        <Link href="/">Add Post</Link>
+      </MenuItem>
+      <MenuItem>
+        <IconButton size="large" color="inherit">
+          <Badge badgeContent={4} color="error">
             <Home />
           </Badge>
         </IconButton>
@@ -206,7 +215,10 @@ export default function Header() {
           </Search>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-          <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+          <IconButton size="large" color="inherit">
+            <Link color="inherit"> <Add /></Link>
+            </IconButton>
+          <IconButton size="large" color="inherit">
             <Link href="/"color="inherit"> <Home /></Link>
             </IconButton>
             {/* <IconButton size="large" aria-label="show 4 new mails" color="inherit">
