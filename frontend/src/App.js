@@ -2,16 +2,20 @@ import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import PrivateRoute from "./utils/PrivateRoute";
 import { AuthProvider } from "./context/AuthContext";
-
+import { ThemeProvider } from "@mui/material";
+import { theme } from "./themes/theme";
+import { CssBaseline } from "@mui/material";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
-
 import Header from "./components/Header";
 
 function App() {
   return (
-    <div className="App">
+    // <div className="App">
+    <>
+  <ThemeProvider theme={theme}>
+    <CssBaseline />
       <Router>
         <AuthProvider>
           <Header />
@@ -26,7 +30,9 @@ function App() {
           </Routes>
         </AuthProvider>
       </Router>
-    </div>
+      </ThemeProvider>
+      </>
+    // </div>
   );
 }
 
