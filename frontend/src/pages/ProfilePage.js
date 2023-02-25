@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Card, Box, Container, CardContainer, CardContent, Typography, Divider, CardActions, Button } from '@mui/material';
+import { Card, Box, Container, CardContainer, CardContent, Typography, Divider, CardActions, Button, Avatar } from '@mui/material';
 import { useEffect, useState } from "react";
 import AuthContext from "../context/AuthContext";
 
@@ -25,14 +25,14 @@ const ProfilePage = () => {
           flexDirection: 'column'
         }}
       >
-        {/* <Avatar
-          src={user.avatar}
+        <Avatar
+        //   src={}
           sx={{
             height: 64,
             mb: 2,
             width: 64
           }}
-        /> */}
+        />
         <Typography
           color="textPrimary"
           gutterBottom
