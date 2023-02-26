@@ -157,20 +157,28 @@ class RequestDetail(APIView):
     def post(self, request,pk, format=None):
         """
         Accept or reject a request instance. {"Approve": true} accepts the request and {"Approve": false} rejects the request.
+        {"Cancel": true} cancels the request. 
         """
 
         # Approve is a boolean value
         Approve = request.data.get('Approve')
+        Cancel = request.data.get('Cancel')
 
-        if Approve:
+        if Approve and Cancel:
+            return Response({'detail': 'Approve and Cancel parameters cannot be true at the same time.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if Approve and (not Cancel):
             request = self.get_object(pk)
             request.accept()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
-        else:
+        elif (not Approve) and Cancel:
             request = self.get_object(pk)
             request.reject()
             return Response(status=status.HTTP_204_NO_CONTENT)
+        
+        else:
+            return Response({'detail': 'Approve or Cancel parameter is required.'}, status=status.HTTP_400_BAD_REQUEST)
         
 
 class FriendList(APIView):

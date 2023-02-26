@@ -401,8 +401,9 @@ paths:
           description: ''
     post:
       operationId: request_create
-      description: 'Accept or reject a request instance. {"Approve": true} accepts
-        the request and {"Approve": false} rejects the request.'
+      description: |-
+        Accept or reject a request instance. {"Approve": true} accepts the request and {"Approve": false} rejects the request.
+        {"Cancel": true} cancels the request.
       parameters:
       - in: path
         name: id
@@ -632,8 +633,11 @@ components:
       properties:
         Approve:
           type: boolean
+        Cancel:
+          type: boolean
       required:
       - Approve
+      - Cancel
     TokenRefresh:
       type: object
       properties:

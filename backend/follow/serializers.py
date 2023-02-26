@@ -51,6 +51,7 @@ class FollowPostSerializer(serializers.ModelSerializer):
 class RequestPostSerializer(serializers.ModelSerializer):
 
     Approve = serializers.BooleanField()
+    Cancel = serializers.BooleanField()
     class Meta:
         model = Request
-        fields = [ "Approve"]
+        fields = [ "Approve", "Cancel"]
