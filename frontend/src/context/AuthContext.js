@@ -53,15 +53,13 @@ export const AuthProvider = ({ children }) => {
     e.preventDefault();
     console.log("signUpUser");
     let gitId = e.target.githubId.value;
-    let gitresponse = await fetch("https://api.github.com/users/" + gitId,  {
+    let gitresponse = await fetch("https://api.github.com/users/" + gitId, {
       method: "GET",
-      
     });
     if (gitId == null && gitresponse.status !== 200) {
       alert("Github username does not exist!");
     } else {
       let response = await fetch(BasePath + "/author/signup/", {
-      
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -73,18 +71,15 @@ export const AuthProvider = ({ children }) => {
           last_name: e.target.last_name.value,
           githubId: e.target.githubId.value,
           email: e.target.email.value,
-          }),
+        }),
       });
       if (response.status === 200) {
         history("/");
-      } else if (response.status === 400){
+      } else if (response.status === 400) {
         alert("That username is already taken!");
       }
-
     }
-    
   };
-  
 
   let logoutUser = () => {
     setAuthTokens(null);
