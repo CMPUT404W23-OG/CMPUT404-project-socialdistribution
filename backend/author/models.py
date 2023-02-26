@@ -12,6 +12,14 @@ class AuthorManager(BaseUserManager):
         author.set_password(password)
         author.save(using=self._db)
         return author
+    
+    def create_superuser(self, username, password, **extra_fields):
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_active', True)
+        
+        return self.createAuthor(username, password, **extra_fields)
+
 
 
 # AbstractUser is a built-in Django model that has all the fields we need for a user
