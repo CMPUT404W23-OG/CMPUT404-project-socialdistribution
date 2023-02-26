@@ -216,7 +216,7 @@ export default function Header() {
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
           <IconButton size="large" color="inherit">
-            <Link color="inherit"> <Add /></Link>
+            <Link href="/post" color="inherit"> <Add /></Link>
             </IconButton>
           <IconButton size="large" color="inherit">
             <Link href="/"color="inherit"> <Home /></Link>
