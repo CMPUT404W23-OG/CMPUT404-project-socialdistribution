@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views import generic
 
 from .models import Post
+from .forms import PostModel
 
 # Create your views here.
 # TODO NEED TO CONNECT TO FRONT END
