@@ -12,12 +12,12 @@ import IconButton from "@mui/material/IconButton";
 import BasePath from "../config/BasePath";
 import { fontStyle, style } from "@mui/system";
 
-const Followers = () => {
+const Following = () => {
   const { user } = useContext(AuthContext);
-  const [followers, setFollowers] = useState([]);
+  const [following, setFollowing] = useState([]);
 
   useEffect(() => {
-    fetch(BasePath + "/followers/" + user.email + "/", {
+    fetch(BasePath + "/following/" + user.email + "/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -27,17 +27,19 @@ const Followers = () => {
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
-        setFollowers(data);
+        setFollowing(data);
       })
       .catch((err) => console.log(err));
   }, [user.email]);
 
   const handleDelete = async (id) => {
     // Filter out the deleted follower
-    const updatedFollowers = followers.filter((follower) => follower.id !== id);
+    const updatedFollowing = following.filter(
+      (following) => following.id !== id
+    );
 
     // Update the state
-    setFollowers(updatedFollowers);
+    setFollowing(updatedFollowing);
     try {
       const response = fetch(BasePath + "/follow/" + id + "/", {
         method: "DELETE",
@@ -65,7 +67,7 @@ const Followers = () => {
           fontFamily: "serif",
         }}
       >
-        Followers
+        Following
       </h3>
       <List
         sx={{
@@ -76,9 +78,9 @@ const Followers = () => {
           margin: "auto",
         }}
       >
-        {followers.map((follower) => (
+        {following.map((following) => (
           <ListItem
-            key={follower.id}
+            key={following.id}
             disableGutters
             sx={{
               // marginBottom: "10px",
@@ -94,7 +96,7 @@ const Followers = () => {
               <IconButton
                 sx={{ "&:hover": { color: "red" } }}
                 aria-label="comment"
-                onClick={() => handleDelete(follower.id)}
+                onClick={() => handleDelete(following.id)}
               >
                 <DeleteIcon />
               </IconButton>
@@ -106,11 +108,11 @@ const Followers = () => {
                 marginLeft: "0.5em",
                 marginRight: "0.5em",
               }}
-              alt={follower.follower.username}
+              alt={following.following.username}
             >
-              {follower.follower.username.charAt(0).toUpperCase()}
+              {following.following.username.charAt(0).toUpperCase()}
             </Avatar>
-            <ListItemText primary={follower.follower.username} />
+            <ListItemText primary={following.following.username} />
           </ListItem>
         ))}
       </List>
@@ -118,4 +120,4 @@ const Followers = () => {
   );
 };
 
-export default Followers;
+export default Following;

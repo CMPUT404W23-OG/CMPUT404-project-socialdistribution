@@ -67,13 +67,13 @@ const ProfilePage = () => {
               <Container maxWidth="md">
                 <Grid container spacing={4}>
                   <Grid item lg={4} md={6} xs={12}>
-                    <a href="/followers">Followers</a>
+                    <a href="/Followers">Followers</a>
                   </Grid>
                   <Grid item lg={4} md={6} xs={12}>
-                    <a href="/following">Following</a>
+                    <a href="/Following">Following</a>
                   </Grid>
                   <Grid item lg={4} md={6} xs={12}>
-                    <a href="/truefriends">True Friends</a>
+                    <a href="/TrueFriends">True Friends</a>
                   </Grid>
                 </Grid>
               </Container>

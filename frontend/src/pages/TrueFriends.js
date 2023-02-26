@@ -12,12 +12,12 @@ import IconButton from "@mui/material/IconButton";
 import BasePath from "../config/BasePath";
 import { fontStyle, style } from "@mui/system";
 
-const Followers = () => {
+const TrueFriends = () => {
   const { user } = useContext(AuthContext);
-  const [followers, setFollowers] = useState([]);
+  const [trueFriends, setTrueFriends] = useState([]);
 
   useEffect(() => {
-    fetch(BasePath + "/followers/" + user.email + "/", {
+    fetch(BasePath + "/friends/" + user.email + "/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -27,34 +27,10 @@ const Followers = () => {
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
-        setFollowers(data);
+        setTrueFriends(data);
       })
       .catch((err) => console.log(err));
   }, [user.email]);
-
-  const handleDelete = async (id) => {
-    // Filter out the deleted follower
-    const updatedFollowers = followers.filter((follower) => follower.id !== id);
-
-    // Update the state
-    setFollowers(updatedFollowers);
-    try {
-      const response = fetch(BasePath + "/follow/" + id + "/", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      });
-      if ((await response).status === 204) {
-        console.log("Deleted!");
-      } else {
-        console.log("Failed to delete!");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   return (
     <div>
@@ -65,7 +41,7 @@ const Followers = () => {
           fontFamily: "serif",
         }}
       >
-        Followers
+        True Friends
       </h3>
       <List
         sx={{
@@ -76,9 +52,9 @@ const Followers = () => {
           margin: "auto",
         }}
       >
-        {followers.map((follower) => (
+        {trueFriends.map((trueFriends) => (
           <ListItem
-            key={follower.id}
+            key={trueFriends.id}
             disableGutters
             sx={{
               // marginBottom: "10px",
@@ -90,15 +66,6 @@ const Followers = () => {
               marginBottom: "0.2em",
               bgcolor: "background.paper",
             }}
-            secondaryAction={
-              <IconButton
-                sx={{ "&:hover": { color: "red" } }}
-                aria-label="comment"
-                onClick={() => handleDelete(follower.id)}
-              >
-                <DeleteIcon />
-              </IconButton>
-            }
           >
             <Avatar
               sx={{
@@ -106,11 +73,11 @@ const Followers = () => {
                 marginLeft: "0.5em",
                 marginRight: "0.5em",
               }}
-              alt={follower.follower.username}
+              alt={trueFriends.follower.username}
             >
-              {follower.follower.username.charAt(0).toUpperCase()}
+              {trueFriends.follower.username.charAt(0).toUpperCase()}
             </Avatar>
-            <ListItemText primary={follower.follower.username} />
+            <ListItemText primary={trueFriends.follower.username} />
           </ListItem>
         ))}
       </List>
@@ -118,4 +85,4 @@ const Followers = () => {
   );
 };
 
-export default Followers;
+export default TrueFriends;
