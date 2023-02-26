@@ -15,7 +15,6 @@ nav.navbar ul li {
     padding:10pt;
 }
 nav.navbar ul li button {
-    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     font-size: 20pt;
     padding: 5pt 10pt 5pt;
     background-color: transparent;
@@ -28,9 +27,9 @@ nav.navbar ul li button:hover {
     border-radius:4pt;
     background-color: #044eae;
     cursor: pointer;
-}
+} */
 
-nav.navbar ul li button:active {
+ nav.navbar ul li button:active {
     outline: 1pt solid white;
 
 }
