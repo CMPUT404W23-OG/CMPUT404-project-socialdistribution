@@ -17,11 +17,11 @@ class FollowingList(APIView):
     Get a list of users that this user is following.
     """
     @extend_schema(responses=FollowSerializer)
-    def get(self, request,Email, format=None):
-        email = Email
-        if email:
+    def get(self, request,pk, format=None):
+    
+        if pk:
             try:
-                user = User.objects.get(email=email)
+                user = User.objects.get(pk=pk)
             except User.DoesNotExist:
                 return Response({'detail': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
             follows = Follow.objects.get_following(user)
@@ -35,11 +35,11 @@ class FollowersList(APIView):
     Get a list of users that are following this user.
     """
     @extend_schema(responses=FollowSerializer)
-    def get(self, request, Email,format=None):
-        email = Email
-        if email:
+    def get(self, request, pk,format=None):
+    
+        if pk:
             try:
-                user = User.objects.get(email =email)
+                user = User.objects.get(pk=pk)
             except User.DoesNotExist:
                 return Response({'detail': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
             follows = Follow.objects.get_followers(user)
@@ -85,12 +85,12 @@ class RequestListReceived(APIView):
     Get All follow requests sent to a user
     """
     @extend_schema(responses=RequestSerializer)
-    def get(self, request,Email, format=None):
+    def get(self, request,pk, format=None):
 
-        email = Email
-        if email:
+        
+        if pk:
             try:
-                user = User.objects.get(email=email)
+                user = User.objects.get(pk=pk)
             except User.DoesNotExist:
                 return Response({'detail': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
             requests = Request.objects.filter(following=user)
@@ -107,12 +107,12 @@ class RequestListSent(APIView):
     Get All follow requests sent by a user
     """
     @extend_schema(responses=RequestSerializer)
-    def get(self,request, Email ,format=None):
+    def get(self,request, pk ,format=None):
 
-        email = Email
-        if email:
+        
+        if pk:
             try:
-                user = User.objects.get(email=email)
+                user = User.objects.get(pk=pk)
             except User.DoesNotExist:
                 return Response({'detail': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
             requests = Request.objects.filter(follower=user)
@@ -187,12 +187,12 @@ class FriendList(APIView):
     """
 
     @extend_schema(request=FriendSerializer ,responses=FriendSerializer)
-    def get(self, request,Email, format=None):
-        email = Email
+    def get(self, request,pk, format=None):
+    
         
-        if email:
+        if pk:
             try:
-                user = User.objects.get(email=email)
+                user = User.objects.get(pk=pk)
             except User.DoesNotExist:
                 return Response({'detail': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
             
@@ -205,6 +205,7 @@ class FriendList(APIView):
 class FollowPost(APIView):
     """
     Post a new follow request.
+    input takes the ids of follower and following.
     """
     @extend_schema(request=FollowPostSerializer,responses=FollowPostSerializer)
     def post(self, request,  format=None):
@@ -213,15 +214,16 @@ class FollowPost(APIView):
 
         if follower and following:
             try:
-                follower = User.objects.get(email=follower)
+                follower = User.objects.get(pk=follower)
             except User.DoesNotExist:
                 return Response({'detail': 'Follower not found.'}, status=status.HTTP_404_NOT_FOUND)
             try:
-                following = User.objects.get(email=following)
+                following = User.objects.get(pk=following)
             except User.DoesNotExist:
                 return Response({'detail': 'Following not found.'}, status=status.HTTP_404_NOT_FOUND)
         
             try:
+                # change follow.object
                 follow_post = Follow.objects.send_follow_request(follower=follower, following=following)
                 serializer = FollowPostSerializer(follow_post)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)

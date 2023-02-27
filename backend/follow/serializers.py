@@ -7,7 +7,7 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "username", "email"]
+        fields = ["id", "username"]
 
 
 class FollowSerializer(serializers.ModelSerializer):
@@ -39,8 +39,11 @@ class FriendSerializer(serializers.ModelSerializer):
 
 class FollowPostSerializer(serializers.ModelSerializer):
 
-    follower = serializers.EmailField()
-    following = serializers.EmailField()
+    # input is primary key
+    follower = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    following = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    # follower = serializers.pr
+    # following = serializers.EmailField()
   
     class Meta:
         model = Follow
