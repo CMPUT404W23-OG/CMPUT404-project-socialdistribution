@@ -36,22 +36,9 @@ const SignUpPage = () => {
                 />
                 <input
                 type="text"
-                name="first_name"
-                placeholder="Enter First Name"
-                required
-                />
-                <input
-                type="text"
-                name="last_name"
-                placeholder="Enter Last Name"
-                required
-                />
-                <input
-                type="text"
                 name="email"
                 placeholder="Enter Email Address"
                 />
-                <h4>Additional Information (optional)</h4>
                 <input
                 type="text"
                 name="githubId"

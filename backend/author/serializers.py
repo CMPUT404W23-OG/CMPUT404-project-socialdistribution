@@ -4,13 +4,11 @@ from .models import Author
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
-        fields = ["username", "password", "first_name", "last_name", "email","githubId"]
+        fields = ["username", "password", "email","githubId", "profile_image_url", "host", "url"]
         
         
     def create(self, validated_data):
-        author = Author.objects.create(username=validated_data['username'], 
-                                       first_name=validated_data['first_name'], 
-                                       last_name=validated_data['last_name'], 
+        author = Author.objects.create(username=validated_data['username'],  
                                        githubId=validated_data['githubId'], 
                                        email=validated_data['email'])
 
