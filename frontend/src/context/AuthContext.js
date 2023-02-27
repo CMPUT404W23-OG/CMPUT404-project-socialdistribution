@@ -75,8 +75,8 @@ export const AuthProvider = ({ children }) => {
       });
       if (response.status === 200) {
         history("/");
-      } else if (response.status === 400) {
-        alert("That username is already taken!");
+      } else if (response.status === 400){
+        alert("That username or email is already taken!");
       }
     }
   };
