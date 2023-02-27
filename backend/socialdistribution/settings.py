@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import os
+from dotenv import load_dotenv
+from dotenv import dotenv_values
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -140,6 +144,8 @@ DATABASES = {
         'NAME': 'socialdistribution',
         'USER': 'admin',
         'PASSWORD': 'admin',
+        'HOST': dotenv_values(".env")["DB_HOST"],
+        'PORT': '5432',
     }
 }
 
