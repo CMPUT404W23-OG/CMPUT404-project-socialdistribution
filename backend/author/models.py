@@ -41,7 +41,7 @@ class Author(AbstractUser):
     date_joined = models.DateTimeField(auto_now_add=True)
     first_name = models.CharField(max_length=200, blank=False)
     last_name = models.CharField(max_length=200, blank=False)
-    email = models.EmailField(max_length=200, null=True, unique=True, blank=True)
+    email = models.EmailField(max_length=200, unique=True, blank=True)
     
     objects = AuthorManager()
     USERNAME_FIELD = 'username'
