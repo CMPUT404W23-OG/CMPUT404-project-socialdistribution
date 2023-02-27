@@ -17,7 +17,7 @@ const Following = () => {
   const [following, setFollowing] = useState([]);
 
   useEffect(() => {
-    fetch(BasePath + "/following/" + user.email + "/", {
+    fetch(BasePath + "/following/" + user.user_id + "/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
