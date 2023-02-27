@@ -1,0 +1,675 @@
+openapi: 3.0.3
+info:
+  title: Social Distribution API
+  version: 1.0.0
+  description: API for Social Distribution
+paths:
+  /api/:
+    get:
+      operationId: api_retrieve
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyTokenObtainPair'
+          description: ''
+  /api/schema:
+    get:
+      operationId: api_schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/token/:
+    post:
+      operationId: api_token_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MyTokenObtainPair'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MyTokenObtainPair'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MyTokenObtainPair'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyTokenObtainPair'
+          description: ''
+  /api/token/refresh/:
+    post:
+      operationId: api_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /author/signup/:
+    post:
+      operationId: author_signup_create
+      description: Creates the user.
+      tags:
+      - author
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Author'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Author'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Author'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+          description: ''
+  /follow/:
+    post:
+      operationId: follow_create
+      description: Post a new follow request.
+      tags:
+      - follow
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FollowPost'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FollowPost'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FollowPost'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FollowPost'
+          description: ''
+  /follow/{id}/:
+    get:
+      operationId: follow_retrieve
+      description: Retrieve a follow instance.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - follow
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Follow'
+          description: ''
+    delete:
+      operationId: follow_destroy
+      description: Delete a follow instance.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - follow
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /followers/{Email}/:
+    get:
+      operationId: followers_retrieve
+      description: Get a list of users that are following this user.
+      parameters:
+      - in: path
+        name: Email
+        schema:
+          type: string
+        required: true
+      tags:
+      - followers
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Follow'
+          description: ''
+  /following/{Email}/:
+    get:
+      operationId: following_retrieve
+      description: Get a list of users that this user is following.
+      parameters:
+      - in: path
+        name: Email
+        schema:
+          type: string
+        required: true
+      tags:
+      - following
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Follow'
+          description: ''
+  /friends/{Email}/:
+    get:
+      operationId: friends_retrieve
+      description: List all true friends for a given user.
+      parameters:
+      - in: path
+        name: Email
+        schema:
+          type: string
+        required: true
+      tags:
+      - friends
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Friend'
+          description: ''
+  /request/{id}/:
+    get:
+      operationId: request_retrieve
+      description: Retrieve a request instance.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - request
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+          description: ''
+    post:
+      operationId: request_create
+      description: |-
+        Accept or reject a request instance. {"Approve": true} accepts the request and {"Approve": false} rejects the request.
+        {"Cancel": true} cancels the request.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestPost'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RequestPost'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RequestPost'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+          description: ''
+    delete:
+      operationId: request_destroy
+      description: Delete a request instance.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - request
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /requests_received/{Email}/:
+    get:
+      operationId: requests_received_retrieve
+      description: Get All follow requests sent to a user
+      parameters:
+      - in: path
+        name: Email
+        schema:
+          type: string
+        required: true
+      tags:
+      - requests_received
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+          description: ''
+  /requests_sent/{Email}/:
+    get:
+      operationId: requests_sent_retrieve
+      description: Get All follow requests sent by a user
+      parameters:
+      - in: path
+        name: Email
+        schema:
+          type: string
+        required: true
+      tags:
+      - requests_sent
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+          description: ''
+components:
+  schemas:
+    Author:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        password:
+          type: string
+          maxLength: 128
+        first_name:
+          type: string
+          maxLength: 200
+        last_name:
+          type: string
+          maxLength: 200
+        email:
+          type: string
+          format: email
+          maxLength: 200
+        githubId:
+          type: string
+          maxLength: 200
+      required:
+      - first_name
+      - last_name
+      - password
+      - username
+    Follow:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        follower:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+        following:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created
+      - follower
+      - following
+      - id
+    FollowPost:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        follower:
+          type: string
+          format: email
+        following:
+          type: string
+          format: email
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created
+      - follower
+      - following
+      - id
+    Friend:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        follower:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+        following:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created
+      - follower
+      - following
+      - id
+    MyTokenObtainPair:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - password
+      - username
+    Request:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        follower:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+        following:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created
+      - follower
+      - following
+      - id
+    RequestPost:
+      type: object
+      properties:
+        Approve:
+          type: boolean
+        Cancel:
+          type: boolean
+      required:
+      - Approve
+      - Cancel
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          maxLength: 200
+      required:
+      - id
+      - username
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
