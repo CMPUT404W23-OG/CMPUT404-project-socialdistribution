@@ -2,6 +2,7 @@ from django.urls import path
 from .views import PostView
 
 urlpatterns = [
-    path('posts/', PostView.newPost, name='newposts'),
+    path('posts', PostView.as_view, name='posts'),
+    path('posts/post', PostView.newPost, name='newposts'),
     path('posts/<int:pk>', PostView.editPost, name='editposts')
 ]

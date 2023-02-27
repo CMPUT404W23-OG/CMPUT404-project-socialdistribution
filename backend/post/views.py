@@ -1,5 +1,9 @@
 from django.shortcuts import render
 from django.views import generic
+from django.http import Http404
+from rest_framework.response import Response
+from rest_framework import status
+from drf_spectacular.utls import extend_schema
 
 from .models import Post
 from .forms import PostModel
@@ -8,38 +12,55 @@ from .forms import PostModel
 # TODO NEED TO CONNECT TO FRONT END
 
 class PostView(generic.ListView):
-    def get_queryset(self):
-        return Post.objects.order_by('-datePublished')
-
-#https://stackoverflow.com/questions/59516835/how-to-edit-an-object-using-model-form-in-django
-def newPost(request):
-    if request.method == 'GET':
-        form = PostModel()
-    else:
-        form = PostModel(request.POST)
-
-        if form.is_valid():
-            form.save()
-
-            #TODO connect to path
-            #return redirect()
+    def get_object(self, pk):
+        try:
+            Post.objects.get(id=pk)
+        except Post.DoesNotExist:
+            raise Http404
     
-    #TODO connect to path   
-    #return render(request,)
+    @extend_schema(request=PostModel, responses=PostModel)
+    def get(self, request, pk, format=None):
+        post = self.get_object(pk)
+        model = PostModel(post)
 
-def editPost(request, pk):
-    object = Post.objects.get(id=pk)
-
-    if request.method == 'GET':
-        form = PostModel(instance=object)
-    else:
-        form = PostModel(request.POST, instance=object)
-
-        if form.is_valid():
-            form.save()
-
-            #TODO connect to path
-            #return redirect()
+        return Response(model.data)
     
-    #TODO connect to path   
-    #return render(request,)
+    @extend_schema(request=PostModel, responses=PostModel)
+    def delete(self, request, pk, format=None):
+        post = self.get_object(pk)
+        post.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    #https://stackoverflow.com/questions/59516835/how-to-edit-an-object-using-model-form-in-django
+    def newPost(request):
+        if request.method == 'GET':
+            form = PostModel()
+        else:
+            form = PostModel(request.POST)
+
+            if form.is_valid():
+                form.save()
+
+                #TODO connect to path
+                #return redirect()
+        
+        #TODO connect to path   
+        #return render(request,)
+
+    def editPost(request, pk):
+        object = Post.objects.get(id=pk)
+
+        if request.method == 'GET':
+            form = PostModel(instance=object)
+        else:
+            form = PostModel(request.POST, instance=object)
+
+            if form.is_valid():
+                form.save()
+
+                #TODO connect to path
+                #return redirect()
+        
+        #TODO connect to path   
+        #return render(request,)
