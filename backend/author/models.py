@@ -3,6 +3,8 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.urls import reverse
 
 
+# https://medium.com/@poorva59/implementing-simple-jwt-authentication-in-django-rest-framework-3e54212f14da
+# functions for creating authors and admins
 class AuthorManager(BaseUserManager):
 
     use_in_migration = True

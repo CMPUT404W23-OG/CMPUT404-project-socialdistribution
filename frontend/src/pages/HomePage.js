@@ -1,6 +1,7 @@
 import React from "react";
 import { Card, Box, Container } from '@mui/material';
 import { useEffect, useState } from "react";
+import BasePath from "../config/BasePath";
 
 
 function CreateArray() {
@@ -28,6 +29,13 @@ function CreateArray() {
       "content": "skinny what?"
     }
   ]
+  
+  // let response = fetch(BasePath + "/posts", {
+  //   method: "GET",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  // });
     
   const listItems = data.map(
     (element) => {
