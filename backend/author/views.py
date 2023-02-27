@@ -20,13 +20,14 @@ class SignUpView(APIView):
             try:
                 user = User.objects.get(pk=authorId)
             except User.DoesNotExist:
-                return Response({'detail': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+                return Response({'detail': 'Author not found.'}, status=status.HTTP_404_NOT_FOUND)
             author = Author.objects.get(pk=authorId)
+
 
             serializer = AuthorSerializer(author)
             return Response(serializer.data)
         else:
-            return Response({'detail': 'Email parameter is required.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'ID parameter is required.'}, status=status.HTTP_400_BAD_REQUEST)
         
         
     @extend_schema(request=AuthorSerializer, responses=AuthorSerializer)

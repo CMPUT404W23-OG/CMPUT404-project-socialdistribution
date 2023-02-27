@@ -23,6 +23,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("author/", include("author.urls")),
+    path("posts/", include("post.urls")),
     path("api/", include("api.urls")),
     path("", include("follow.urls")),
     # re_path(r'^$', schema_view)
