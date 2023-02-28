@@ -216,10 +216,37 @@ paths:
               schema:
                 $ref: '#/components/schemas/TokenRefresh'
           description: ''
-  /author/signup/:
+  /author/{id}/:
+    get:
+      operationId: author_retrieve
+      description: Returns information for the author.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - author
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+          description: ''
     post:
-      operationId: author_signup_create
-      description: Creates the user.
+      operationId: author_create
+      description: Creates the author.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
       tags:
       - author
       requestBody:
@@ -244,10 +271,155 @@ paths:
               schema:
                 $ref: '#/components/schemas/Author'
           description: ''
+    delete:
+      operationId: author_destroy
+      description: Deletes the author.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - author
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /author/delete/{id}:
+    get:
+      operationId: author_delete_retrieve
+      description: Returns information for the author.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - author
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+          description: ''
+    post:
+      operationId: author_delete_create
+      description: Creates the author.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - author
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Author'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Author'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Author'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+          description: ''
+    delete:
+      operationId: author_delete_destroy
+      description: Deletes the author.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - author
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /author/signup/:
+    get:
+      operationId: author_signup_retrieve
+      description: Returns information for the author.
+      tags:
+      - author
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+          description: ''
+    post:
+      operationId: author_signup_create
+      description: Creates the author.
+      tags:
+      - author
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Author'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Author'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Author'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+          description: ''
+    delete:
+      operationId: author_signup_destroy
+      description: Deletes the author.
+      tags:
+      - author
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
   /follow/:
     post:
       operationId: follow_create
-      description: Post a new follow request.
+      description: |-
+        Post a new follow request.
+        input takes the ids of follower and following.
       tags:
       - follow
       requestBody:
@@ -311,15 +483,15 @@ paths:
       responses:
         '204':
           description: No response body
-  /followers/{Email}/:
+  /followers/{id}/:
     get:
       operationId: followers_retrieve
       description: Get a list of users that are following this user.
       parameters:
       - in: path
-        name: Email
+        name: id
         schema:
-          type: string
+          type: integer
         required: true
       tags:
       - followers
@@ -333,15 +505,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/Follow'
           description: ''
-  /following/{Email}/:
+  /following/{id}/:
     get:
       operationId: following_retrieve
       description: Get a list of users that this user is following.
       parameters:
       - in: path
-        name: Email
+        name: id
         schema:
-          type: string
+          type: integer
         required: true
       tags:
       - following
@@ -355,15 +527,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/Follow'
           description: ''
-  /friends/{Email}/:
+  /friends/{id}/:
     get:
       operationId: friends_retrieve
       description: List all true friends for a given user.
       parameters:
       - in: path
-        name: Email
+        name: id
         schema:
-          type: string
+          type: integer
         required: true
       tags:
       - friends
@@ -451,15 +623,15 @@ paths:
       responses:
         '204':
           description: No response body
-  /requests_received/{Email}/:
+  /requests_received/{id}/:
     get:
       operationId: requests_received_retrieve
       description: Get All follow requests sent to a user
       parameters:
       - in: path
-        name: Email
+        name: id
         schema:
-          type: string
+          type: integer
         required: true
       tags:
       - requests_received
@@ -473,15 +645,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/Request'
           description: ''
-  /requests_sent/{Email}/:
+  /requests_sent/{id}/:
     get:
       operationId: requests_sent_retrieve
       description: Get All follow requests sent by a user
       parameters:
       - in: path
-        name: Email
+        name: id
         schema:
-          type: string
+          type: integer
         required: true
       tags:
       - requests_sent
@@ -557,11 +729,9 @@ components:
           type: integer
           readOnly: true
         follower:
-          type: string
-          format: email
+          type: integer
         following:
-          type: string
-          format: email
+          type: integer
         created:
           type: string
           format: date-time
@@ -661,10 +831,6 @@ components:
             only.
           pattern: ^[\w.@+-]+$
           maxLength: 150
-        email:
-          type: string
-          format: email
-          maxLength: 200
       required:
       - id
       - username
