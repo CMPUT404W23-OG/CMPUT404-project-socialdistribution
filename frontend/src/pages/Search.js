@@ -66,17 +66,18 @@ const Search = styled("div")(({ theme }) => ({
 
   function CreateArray() {
 
-    const [posts, setPosts] = useState([])
+    const [authors, setAuthors] = useState([])
     const [page, setPage] = useState(0)
   
     const [expanded, setExpanded] = useState(false);
+    let { user, logoutUser } = useContext(AuthContext);
   
     const handleExpandClick = () => {
       setExpanded(!expanded);
     };
     
     function getData() {
-      fetch(BasePath+'/posts/all/', {
+      fetch(BasePath+'/author/all/', {
         method: 'GET',
         headers: {
           Accept: "application/json",
@@ -85,35 +86,41 @@ const Search = styled("div")(({ theme }) => ({
       })
       .then((res) => res.json())
       .then((result) => {
-        setPosts((result))
+        setAuthors((result))
         setPage(page+1)
       })
     }
   
     if (page < 1) {
       getData()
-      console.log(posts)
+      console.log(authors)
     }
     
-    const listItems = posts.map((post) =>
-        <Box className={post.id}
-        sx={{
-          display: 'flex',
-          flex: '1 1 auto',
-          flexDirection: 'column',
-          width: '100%',
-          margin:'15px',
-          border: '2px solid black'
-        }}>
+    const listItems = authors.map((author) => {
+    if(author.username !== user.username) 
+        return (<Box sx={{ mt: 3 }}>
+      <Card>
+        <CardContent>
+          <Box sx={{ maxWidth: 500 }}>
           <Container maxWidth="md">
-          <Card className={post.author}>
-            <h1>{post.title}</h1>
-            <h2>Author: {post.author}</h2>
-            <p>{post.body}</p>
-            
-          </Card>
+          
+          <Avatar
+                  src={author.profile_image_url} alt="profile-image"
+                  sx={{
+                    height: 64,
+                    mb: 2,
+                    width: 64,
+                  }}
+                />
+            <h2>{author.username}</h2>
         </Container>
-      </Box>
+            </Box>
+        </CardContent>
+        </Card>
+        </Box>)
+    return null;
+    }
+    
     );
 
     return (
@@ -133,6 +140,7 @@ const Search = styled("div")(({ theme }) => ({
           flexDirection: "column",
           width: "100%",
           paddingTop: "30px",
+          paddingBottom: "30px",
         }}
       >
         <Container maxWidth="md">
