@@ -12,18 +12,14 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
-<<<<<<< HEAD
-import environ
 
-env = environ.Env()
-environ.Env.read_env()
 
-=======
+
 import os
 from dotenv import load_dotenv
 from dotenv import dotenv_values
 load_dotenv()
->>>>>>> f58ac9050b0c5bc44e0384a0690a8d9233d0cbfe
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
