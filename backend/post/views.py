@@ -6,6 +6,7 @@ from rest_framework import status
 from drf_spectacular.utils import extend_schema
 from rest_framework.views import APIView
 from .serializers import PostSerializer
+from django.core.paginator import Paginator
 
 
 from .models import Post
@@ -22,10 +23,6 @@ class PostView(APIView):
     
     @extend_schema(request=PostSerializer, responses=PostSerializer)
     def get(self, request, pk, format=None):
-        # post = self.get_object(pk)
-        # model = PostModel(post)
-
-        # return Response(model.data)
         """
         Returns information for the author.
         """
@@ -51,48 +48,55 @@ class PostView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
     @extend_schema(request=PostSerializer, responses=PostSerializer)
-    def post(self, request, format=None):
-        serializer = PostSerializer(data=request.data)
+    def post(self, request, author_id, format=None):
+
+        # set author id to the URL parameter
+        updated = request.data.copy()
+        updated['author'] = author_id
+
+        # save post to database, assigned to author_id
+        serializer = PostSerializer(data=updated)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+class AuthorPostList(APIView):
+
+    @extend_schema(request=PostSerializer, responses=PostSerializer)
+    def get(self, request, author_id):
+        """
+        Returns all posts for a specific author, can be used with pagination.
+        
+        Example: This will return the second page of posts belonging to author 39 if there are 3 posts per page
+        http://localhost:8000/posts/author/39?page=2&size=3 
+        
+        """
+        posts = Post.objects.all().filter(author_id=author_id).order_by('datePublished')
+        number = self.request.query_params.get('page', 1)
+        size = self.request.query_params.get('size', 5)
+
+        paginator = Paginator(posts, size)
+
+        serializer = PostSerializer(paginator.page(number), many=True)
+        return Response(serializer.data)
+    
 class PostList(APIView):
 
     @extend_schema(request=PostSerializer, responses=PostSerializer)
     def get(self, request):
-        serializer = PostSerializer(Post.objects.all(), many=True)
-        return Response(serializer.data)
-
-    #https://stackoverflow.com/questions/59516835/how-to-edit-an-object-using-model-form-in-django
-    # def newPost(request):
-    #     if request.method == 'GET':
-    #         form = PostModel()
-    #     else:
-    #         form = PostModel(request.POST)
-
-    #         if form.is_valid():
-    #             form.save()
-
-    #             #TODO connect to path
-    #             #return redirect()
+        """
+        Returns all posts, can be used with pagination.
         
-    #     #TODO connect to path   
-    #     #return render(request,)
-
-    # def editPost(request, pk):
-    #     object = Post.objects.get(id=pk)
-
-    #     if request.method == 'GET':
-    #         form = PostModel(instance=object)
-    #     else:
-    #         form = PostModel(request.POST, instance=object)
-
-    #         if form.is_valid():
-    #             form.save()
-
-    #             #TODO connect to path
-    #             #return redirect()
+        Example: This will return the second page of posts if there are 3 posts per page
+        http://localhost:8000/posts/all?page=2&size=3 
         
-    #     #TODO connect to path   
-    #     #return render(request,)
+        """
+        posts = Post.objects.all().order_by('datePublished')
+        number = self.request.query_params.get('page', 1)
+        size = self.request.query_params.get('size', 5)
+
+        paginator = Paginator(posts, size)
+        serializer = PostSerializer(paginator.page(number), many=True)
+        return Response(serializer.data)    
+
+    

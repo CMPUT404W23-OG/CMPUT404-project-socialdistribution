@@ -1,6 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.urls import reverse
+from django.core.files import File
+import os
+import urllib
+import environ
+env = environ.Env()
+environ.Env.read_env()
 
 
 # https://medium.com/@poorva59/implementing-simple-jwt-authentication-in-django-rest-framework-3e54212f14da
@@ -36,11 +42,14 @@ class AuthorManager(BaseUserManager):
 class Author(AbstractUser):
 
     profile_image_url = models.URLField(max_length=200, blank=True)
+    # profile_image_file = models.ImageField(upload_to='profile_images', blank=True)
+    host = models.URLField(max_length=200, blank=False, default=env('HOST'))
+    url = models.URLField(max_length=200, blank=False, default=env('HOST'))
+
+
     githubId = models.CharField(max_length=200, blank=True)
     api_user = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
-    first_name = models.CharField(max_length=200, blank=False)
-    last_name = models.CharField(max_length=200, blank=False)
     email = models.EmailField(max_length=200, unique=True, blank=True)
     
     objects = AuthorManager()
