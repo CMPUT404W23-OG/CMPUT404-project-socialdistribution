@@ -6,7 +6,6 @@ from drf_spectacular.utils import extend_schema
 from django.contrib.auth import get_user_model
 from rest_framework import status
 from .models import Author
-from rest_framework.pagination import LimitOffsetPagination
 from django.core.paginator import Paginator
 
 User = get_user_model()

@@ -4,9 +4,10 @@ from django.urls import reverse
 from django.core.files import File
 import os
 import urllib
-import environ
-env = environ.Env()
-environ.Env.read_env()
+from dotenv import load_dotenv
+load_dotenv()
+
+HOST = os.getenv('HOST')
 
 
 # https://medium.com/@poorva59/implementing-simple-jwt-authentication-in-django-rest-framework-3e54212f14da
@@ -43,9 +44,8 @@ class Author(AbstractUser):
 
     profile_image_url = models.URLField(max_length=200, blank=True)
     # profile_image_file = models.ImageField(upload_to='profile_images', blank=True)
-    host = models.URLField(max_length=200, blank=False, default=env('HOST'))
-    url = models.URLField(max_length=200, blank=False, default=env('HOST'))
-
+    host = models.URLField(max_length=200, blank=False, default=HOST)
+    url = models.URLField(max_length=200, blank=False, default=HOST)
 
     githubId = models.CharField(max_length=200, blank=True)
     api_user = models.BooleanField(default=False)

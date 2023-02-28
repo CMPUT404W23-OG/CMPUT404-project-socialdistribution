@@ -52,7 +52,7 @@ class PostView(APIView):
 
         # set author id to the URL parameter
         updated = request.data.copy()
-        updated['author'] = author_id
+        updated['author_id'] = author_id
 
         # save post to database, assigned to author_id
         serializer = PostSerializer(data=updated)
