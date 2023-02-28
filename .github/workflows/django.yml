@@ -9,7 +9,6 @@ on:
 jobs:
   build:
     runs-on: self-hosted
-    environment: DEV
     strategy:
       max-parallel: 4
       matrix:
