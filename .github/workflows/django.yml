@@ -29,4 +29,6 @@ jobs:
 
       - name: Run Tests
         working-directory: backend/
-        run: python manage.py test
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > .env
+          python manage.py test
