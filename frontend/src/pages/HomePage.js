@@ -33,7 +33,6 @@ function CreateArray() {
 
   const [posts, setPosts] = useState([])
   const [page, setPage] = useState(0)
-  const [author, setAuthor] = useState("")
 
   const [expanded, setExpanded] = useState(false);
 
@@ -58,7 +57,7 @@ function CreateArray() {
 
   if (page < 1) {
     getData()
-
+    console.log(posts)
   }
   
   const listItems = posts.map((post) =>
@@ -105,7 +104,7 @@ function CreateArray() {
         <MoreVertIcon />
       </IconButton>
     }
-    title={post.title + " - " + post.author}
+    title={post.title + " - " + post.author_name}
     subheader="September 14, 2016"
   />
   <CardMedia

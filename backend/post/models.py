@@ -8,7 +8,8 @@ from author.models import Author
 #contenttype -> image posts (how do we wanna do it) TODO
 
 class Post(models.Model):
-    author = models.ForeignKey('author.Author', default=None, on_delete=models.CASCADE)
+    author_name = models.CharField(max_length=200)
+    author_id = models.ForeignKey('author.Author', default=None, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     public = models.BooleanField(default=True)
     description = models.CharField(max_length=200)
