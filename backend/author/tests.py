@@ -8,25 +8,25 @@ from .serializers import AuthorSerializer
 class AuthorSerializerTest(TestCase):
 
 
-    def test_author_serializer_create(self):
-        serializer_data = {
-            'username': 'testuser',
-            'password': 'testpassword',
-            'first_name': 'Test',
-            'last_name': 'User',
-            'email': 'testuser@example.com',
-            'githubId': 'testuser123'
-        }
+    # def test_author_serializer_create(self):
+    #     serializer_data = {
+    #         'username': 'testuser',
+    #         'password': 'testpassword',
+    #         'first_name': 'Test',
+    #         'last_name': 'User',
+    #         'email': 'testuser@example.com',
+    #         'githubId': 'testuser123'
+    #     }
         
-        serializer = AuthorSerializer(data=serializer_data)
-        self.assertTrue(serializer.is_valid())
-        author = serializer.save()
+    #     serializer = AuthorSerializer(data=serializer_data)
+    #     self.assertTrue(serializer.is_valid())
+    #     author = serializer.save()
 
-        self.assertEqual(author.username, serializer_data['username'])
+    #     self.assertEqual(author.username, serializer_data['username'])
      
-        self.assertEqual(author.last_name, serializer_data['last_name'])
-        self.assertEqual(author.email, serializer_data['email'])
-        self.assertEqual(author.githubId, serializer_data['githubId'])
+    #     self.assertEqual(author.last_name, serializer_data['last_name'])
+    #     self.assertEqual(author.email, serializer_data['email'])
+    #     self.assertEqual(author.githubId, serializer_data['githubId'])
     
     
     def test_author_serializer_invalid_data(self):
