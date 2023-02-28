@@ -23,6 +23,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 
 import Home from "@mui/icons-material/Home";
+import People from '@mui/icons-material/PeopleAlt';
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -152,6 +153,14 @@ export default function Header() {
         </IconButton>
         <Link href="/">Home</Link>
       </MenuItem>
+      <MenuItem>
+        <IconButton size="large" color="inherit">
+          <Badge badgeContent={4} color="error">
+            <People />
+          </Badge>
+        </IconButton>
+        <Link href="/search">Search</Link>
+      </MenuItem>
       {/* <MenuItem>
         <IconButton size="large" aria-label="show 4 new mails" color="inherit">
           <Badge badgeContent={4} color="error">
@@ -195,7 +204,7 @@ export default function Header() {
         <Box sx={{ flexGrow: 1 }}>
           <AppBar position="static">
             <Toolbar>
-              <IconButton
+              {/* <IconButton
                 size="large"
                 edge="start"
                 color="inherit"
@@ -203,7 +212,7 @@ export default function Header() {
                 sx={{ mr: 2 }}
               >
                 <MenuIcon />
-              </IconButton>
+              </IconButton> */}
               <Typography
                 variant="h6"
                 noWrap
@@ -212,7 +221,7 @@ export default function Header() {
               >
                 OurAppName
               </Typography>
-              <Search>
+              {/* <Search>
                 <SearchIconWrapper>
                   <SearchIcon />
                 </SearchIconWrapper>
@@ -220,7 +229,7 @@ export default function Header() {
                   placeholder="Search…"
                   inputProps={{ "aria-label": "search" }}
                 />
-              </Search>
+              </Search> */}
               <Box sx={{ flexGrow: 1 }} />
               <Box sx={{ display: { xs: "none", md: "flex" } }}>
                 <IconButton size="large" color="inherit">
@@ -233,6 +242,12 @@ export default function Header() {
                   <Link href="/" color="inherit">
                     {" "}
                     <Home />
+                  </Link>
+                </IconButton>
+                <IconButton size="large" color="inherit">
+                  <Link href="/search" color="inherit">
+                    {" "}
+                    <People />
                   </Link>
                 </IconButton>
                 {/* <IconButton size="large" aria-label="show 4 new mails" color="inherit">
