@@ -9,6 +9,7 @@ from author.models import Author
 
 class Post(models.Model):
     author_name = models.CharField(max_length=200)
+    visibility = models.CharField(max_length=200, default='PUBLIC')
     author_id = models.ForeignKey('author.Author', default=None, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     public = models.BooleanField(default=True)
