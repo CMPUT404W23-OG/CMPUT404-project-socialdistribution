@@ -17,7 +17,7 @@ const TrueFriends = () => {
   const [trueFriends, setTrueFriends] = useState([]);
 
   useEffect(() => {
-    fetch(BasePath + "/friends/" + user.email + "/", {
+    fetch(BasePath + "/friends/" + user.user_id + "/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
