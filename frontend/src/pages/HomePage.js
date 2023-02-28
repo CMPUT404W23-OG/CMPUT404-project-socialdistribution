@@ -16,6 +16,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { format } from 'date-fns';
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -57,9 +58,8 @@ function CreateArray() {
 
   if (page < 1) {
     getData()
-    console.log(posts)
   }
-  
+  console.log(posts)
   const listItems = posts.map((post) =>
     //   <Box className={post.id}
     //   sx={{
@@ -105,7 +105,10 @@ function CreateArray() {
       </IconButton>
     }
     title={post.title + " - " + post.author_name}
-    subheader="September 14, 2016"
+    subheader={format(new Date(post.datePublished), "MMMM d, yyyy")}
+
+
+
   />
   <CardMedia
     component="img"
