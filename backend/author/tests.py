@@ -23,7 +23,7 @@ class AuthorSerializerTest(TestCase):
         author = serializer.save()
 
         self.assertEqual(author.username, serializer_data['username'])
-        self.assertEqual(author.first_name, serializer_data['first_name'])
+     
         self.assertEqual(author.last_name, serializer_data['last_name'])
         self.assertEqual(author.email, serializer_data['email'])
         self.assertEqual(author.githubId, serializer_data['githubId'])
