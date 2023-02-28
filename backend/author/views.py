@@ -6,6 +6,8 @@ from drf_spectacular.utils import extend_schema
 from django.contrib.auth import get_user_model
 from rest_framework import status
 from .models import Author
+from rest_framework.pagination import LimitOffsetPagination
+from django.core.paginator import Paginator
 
 User = get_user_model()
 
@@ -51,5 +53,27 @@ class SignUpView(APIView):
         author = Author.objects.get(pk=pk)
         author.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class AuthorList(APIView):
+
+
+    @extend_schema(request=AuthorSerializer, responses=AuthorSerializer)
+    def get(self, request):
+        """
+        Returns all authors, can be used with pagination.
         
+        Example: This will return the second page of authors if there are 3 authors per page
+        http://localhost:8000/authors/all?page=2&size=3 
+        
+        """
+        authors = Author.objects.all().order_by('id')
+        
+        number = self.request.query_params.get('page', 1)
+        size = self.request.query_params.get('size', 5)
+
+        paginator = Paginator(authors, size)
+        serializer = AuthorSerializer(paginator.page(number), many=True)
+
+        return Response(serializer.data)
+
 

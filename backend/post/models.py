@@ -1,13 +1,14 @@
 from django.db import models
 from django.forms import ModelForm
 from django.urls import reverse
-
+from author.models import Author
 
 #posts are public by default (True)
 #unlisted field for images
 #contenttype -> image posts (how do we wanna do it) TODO
 
 class Post(models.Model):
+    author = models.ForeignKey('author.Author', default=None, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     public = models.BooleanField(default=True)
     description = models.CharField(max_length=200)
