@@ -107,6 +107,7 @@ function CreateArray() {
   
   const listItems = postList.map((post) =>
     <Box
+    key={post.id}
     sx={{
       display: "flex",
       flex: "1 1 auto",
