@@ -26,6 +26,7 @@ import { useNavigate } from "react-router-dom";
 
 import Home from "@mui/icons-material/Home";
 import People from "@mui/icons-material/PeopleAlt";
+import Posts from "../pages/Posts";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -88,6 +89,11 @@ export default function Header() {
 
   const handleProfile = () => {
     navigate("/profile");
+    handleMenuClose();
+  };
+
+  const handlePost = () => {
+    
     handleMenuClose();
   };
 
@@ -160,9 +166,9 @@ export default function Header() {
       open={isPostOpen}
       onClose={handlePostMenuClose}
     >
-      <MenuItem onClick={handleProfile}>
+      <MenuItem onClick={handlePost}>
         {" "}
-        Text Post
+        <Posts postType={"text"}/>
       </MenuItem>
       <MenuItem onClick={handleLogout}>
         {" "}
