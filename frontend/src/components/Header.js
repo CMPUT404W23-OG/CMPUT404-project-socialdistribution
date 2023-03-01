@@ -71,13 +71,19 @@ export default function Header() {
   const navigate = useNavigate();
   let { user, logoutUser } = useContext(AuthContext);
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorElPost, setanchorElPost] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
   const isMenuOpen = Boolean(anchorEl);
+  const isPostOpen = Boolean(anchorElPost);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
+  };
+
+  const handlePostMenuOpen = (event) => {
+    setanchorElPost(event.currentTarget);
   };
 
   const handleProfile = () => {
@@ -96,6 +102,11 @@ export default function Header() {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+    handleMobileMenuClose();
+  };
+
+  const handlePostMenuClose = () => {
+    setanchorElPost(null);
     handleMobileMenuClose();
   };
 
@@ -126,7 +137,44 @@ export default function Header() {
       </MenuItem>
       <MenuItem onClick={handleLogout}>
         {" "}
-          Logout
+        Logout
+      </MenuItem>
+      
+    </Menu>
+  );
+
+  const menuIdPost = "primary-post-menu";
+  const renderMenuPost = (
+    <Menu
+      anchorEl={anchorElPost}
+      anchorOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      id={menuIdPost}
+      keepMounted
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      open={isPostOpen}
+      onClose={handlePostMenuClose}
+    >
+      <MenuItem onClick={handleProfile}>
+        {" "}
+        Text Post
+      </MenuItem>
+      <MenuItem onClick={handleLogout}>
+        {" "}
+        Md Post
+      </MenuItem>
+      <MenuItem onClick={handleLogout}>
+        {" "}
+        Image Post
+      </MenuItem>
+      <MenuItem onClick={handleLogout}>
+        {" "}
+        Image with caption Post
       </MenuItem>
     </Menu>
   );
@@ -243,29 +291,39 @@ export default function Header() {
               </Search> */}
               <Box sx={{ flexGrow: 1 }} />
               <Box sx={{ display: { xs: "none", md: "flex" } }}>
-                <IconButton size="large" color="inherit">
-                  <Link color="inherit">
-                    {" "}
-                    <Add />
-                  </Link>
+              <IconButton
+                  size="large"
+                  // edge="end"
+                  aria-label="posts menu"
+                  aria-controls={menuIdPost}
+                  aria-haspopup="true"
+                  onClick={handlePostMenuOpen}
+                  color="inherit"
+                >
+                  <Add />
                 </IconButton>
+
                 <IconButton size="large" color="inherit">
                   <Link href="/" color="inherit">
                     {" "}
                     <Home />
                   </Link>
                 </IconButton>
-                <IconButton size="large" color="inherit">
+
+                <IconButton 
+                size="large" color="inherit">
                   <Link href="/search" color="inherit">
                     {" "}
                     <People />
                   </Link>
                 </IconButton>
+
                 {/* <IconButton size="large" aria-label="show 4 new mails" color="inherit">
               <Badge badgeContent={4} color="error">
                 <MailIcon />
               </Badge>
             </IconButton> */}
+
                 <IconButton
                   size="large"
                   aria-label="show 17 new notifications"
@@ -277,6 +335,7 @@ export default function Header() {
                     </Link>
                   </Badge>
                 </IconButton>
+
                 <IconButton
                   size="large"
                   edge="end"
@@ -304,6 +363,7 @@ export default function Header() {
             </Toolbar>
           </AppBar>
           {renderMobileMenu}
+          {renderMenuPost}
           {renderMenu}
         </Box>
       ) : (
