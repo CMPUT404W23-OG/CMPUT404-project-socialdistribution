@@ -21,6 +21,8 @@ import MailIcon from "@mui/icons-material/Mail";
 import Add from "@mui/icons-material/AddToPhotos";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
+import { ListItem } from '@mui/material';
+import { useNavigate } from "react-router-dom";
 
 import Home from "@mui/icons-material/Home";
 
@@ -65,6 +67,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function Header() {
+  const navigate = useNavigate();
   let { user, logoutUser } = useContext(AuthContext);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -74,6 +77,16 @@ export default function Header() {
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
+  };
+
+  const handleProfile = () => {
+    navigate("/profile");
+    handleMenuClose();
+  };
+
+  const handleLogout = () => {
+    logoutUser();
+    handleMenuClose();
   };
 
   const handleMobileMenuClose = () => {
@@ -106,15 +119,13 @@ export default function Header() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>
+      <MenuItem onClick={handleProfile}>
         {" "}
-        <Link href="/profile">Profile</Link>
+        Profile
       </MenuItem>
-      <MenuItem onClick={handleMenuClose}>
+      <MenuItem onClick={handleLogout}>
         {" "}
-        <li>
-          <button onClick={logoutUser}> Logout</button>
-        </li>
+          Logout
       </MenuItem>
     </Menu>
   );
