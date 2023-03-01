@@ -23,7 +23,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 
 import Home from "@mui/icons-material/Home";
-import People from '@mui/icons-material/PeopleAlt';
+import People from "@mui/icons-material/PeopleAlt";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -219,7 +219,7 @@ export default function Header() {
                 component="div"
                 sx={{ display: { xs: "none", sm: "block" } }}
               >
-                OurAppName
+                Social Distrubution
               </Typography>
               {/* <Search>
                 <SearchIconWrapper>
