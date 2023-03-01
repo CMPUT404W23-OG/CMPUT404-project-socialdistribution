@@ -305,7 +305,6 @@ export default function Header() {
               </Search> */}
               <Box sx={{ flexGrow: 1 }} />
               <Box sx={{ display: { xs: "none", md: "flex" } }}>
-              <Posts postType={PostType} open={open} setOpen={setOpen}/>
               <IconButton
                   size="large"
                   // edge="end"
@@ -381,6 +380,7 @@ export default function Header() {
           {renderMenuPost}
           {renderMenu}
         </Box>
+        <Posts postType={PostType} open={open} setOpen={setOpen}/>
         </>
       ) : (
         <div className="header">
