@@ -99,7 +99,6 @@ export default function Header() {
   function handlePost(postType) {
     handlePostMenuClose();
     setType(postType);
-    // console.log(PostType);
     setOpen(true);
    
   };

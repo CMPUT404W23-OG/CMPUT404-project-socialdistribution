@@ -1,4 +1,4 @@
-import {Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography} from "@mui/material";
+import {Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography, Container} from "@mui/material";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 
@@ -9,11 +9,11 @@ import {useNavigate} from "react-router-dom";
 //   };
 
 export default function PostsDialog({postType, open, setOpen}) {
-    console.log("PostType: ", postType);
+    // console.log("PostType: ", postType);
     const navigate = useNavigate();
     // const [open, setOpen] = useState(false);
-    const [Posttext, setText] = useState({Text: ""});
-    const [ImageUrl, setUrl] = useState({Text: ""});
+    const [postText, setText] = useState( "");
+    const [imageUrl, setUrl] = useState("");
     const [submitted, setSubmitted] = useState(false);
 
     const handleClose = () => {
@@ -37,15 +37,19 @@ export default function PostsDialog({postType, open, setOpen}) {
     return (
         <div>
             <Dialog open={open} onClose={handleClose}
-            sx={{
-                minWidth: "900px",
-                minHeight: "500px",
-            }}
+        //    maxWidth="100%"
+        sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            m: 'auto',
+            width: '100%',
+          }}
             >
+                <Container maxWidth="lg">
                 <DialogTitle color={"black"}>Create Post</DialogTitle>
                 <DialogContent>
                     {/* {errorMessage && <Alert severity="error">{errorMessage}</Alert>} */}
-                   
+                    {postType === "text" || postType === "markdown" || postType === "textImage" ? (
                         <TextField
                         // error={submitted && !user.username}
                         autoFocus
@@ -56,16 +60,36 @@ export default function PostsDialog({postType, open, setOpen}) {
                         fullWidth
                         variant="outlined"
                         sx={{width: "100%"}}
-                        onChange={(e) => setText({...Posttext, text: e.target.value})}
+                        onChange={(e) => setText({...postText, text: e.target.value})}
                     />
-                   
-                   
+                    ) : ""}
+                    {postType === "image" || postType === "textImage" ? (
+                        <>
+                        <TextField
+                        // error={submitted && !user.username}
+                        autoFocus
+                        margin="dense"
+                        id="email"
+                        label="Image URL"
+                        type="email"
+                        fullWidth
+                        variant="outlined"
+                        sx={{width: "100%"}}
+                        onChange={(e) => setUrl({...imageUrl, text: e.target.value})}
+                    />
+                    <Typography variant="body2" sx={{color: "grey", marginTop: "10px", marginBottom: "10px"
+                }} align="center"
+                >Or</Typography>
+                    <Button variant="contained" sx={{width: "100%"}}>Upload Image</Button>
+                    </>
+                    ) : ""}
                 </DialogContent>
                 
                 <DialogActions>
                     <Button onClick={handleClose}>Cancel</Button>
                     <Button onClick={SubmitContent}>Post</Button>
                 </DialogActions>
+                </Container>
             </Dialog>
         </div>
     );
