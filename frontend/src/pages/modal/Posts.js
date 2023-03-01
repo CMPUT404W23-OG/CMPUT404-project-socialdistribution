@@ -13,6 +13,7 @@ export default function PostsDialog({postType, open, setOpen}) {
     const navigate = useNavigate();
     // const [open, setOpen] = useState(false);
     const [Posttext, setText] = useState({Text: ""});
+    const [ImageUrl, setUrl] = useState({Text: ""});
     const [submitted, setSubmitted] = useState(false);
 
     const handleClose = () => {
@@ -20,14 +21,16 @@ export default function PostsDialog({postType, open, setOpen}) {
     };
 
     const SubmitContent = () => {
-        setSubmitted(true);
+        // setSubmitted(true);
         // const action = login(user);
         // dispatch(action);
+        navigate("/");
+        handleClose();
     };
 
 
     if (submitted) {
-        navigate("/home");
+        // navigate("/");
         handleClose();
     }
 
@@ -40,10 +43,10 @@ export default function PostsDialog({postType, open, setOpen}) {
             }}
             >
                 <DialogTitle color={"black"}>Create Post</DialogTitle>
-                <DialogContent
-                >
+                <DialogContent>
                     {/* {errorMessage && <Alert severity="error">{errorMessage}</Alert>} */}
-                    <TextField
+                   
+                        <TextField
                         // error={submitted && !user.username}
                         autoFocus
                         margin="dense"
@@ -55,7 +58,10 @@ export default function PostsDialog({postType, open, setOpen}) {
                         sx={{width: "100%"}}
                         onChange={(e) => setText({...Posttext, text: e.target.value})}
                     />
+                   
+                   
                 </DialogContent>
+                
                 <DialogActions>
                     <Button onClick={handleClose}>Cancel</Button>
                     <Button onClick={SubmitContent}>Post</Button>
