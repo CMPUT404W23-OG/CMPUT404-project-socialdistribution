@@ -285,6 +285,7 @@ export default function Header() {
               >
                 <MenuIcon />
               </IconButton> */}
+              <Link href="/" color="inherit" sx={{ textDecoration: "none" }}>
               <Typography
                 variant="h6"
                 noWrap
@@ -293,6 +294,7 @@ export default function Header() {
               >
                 Social Distrubution
               </Typography>
+              </Link>
               {/* <Search>
                 <SearchIconWrapper>
                   <SearchIcon />
