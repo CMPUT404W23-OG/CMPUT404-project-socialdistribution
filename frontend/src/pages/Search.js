@@ -5,7 +5,9 @@ import * as React from "react";
 import { styled, alpha } from "@mui/material/styles";
 import BasePath from "../config/BasePath";
 import Box from "@mui/material/Box";
-
+import ListItemText from "@mui/material/ListItemText";
+import DeleteIcon from "@mui/icons-material/Delete";
+import IconButton from "@mui/material/IconButton";
 import InputBase from "@mui/material/InputBase";
 
 import SearchIcon from "@mui/icons-material/Search";
@@ -20,6 +22,7 @@ import {
   Button,
   Avatar,
   Grid,
+  ListItem,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 
@@ -97,31 +100,58 @@ function CreateArray() {
   const listItems = authors.map((author) => {
     if (author.username !== user.username)
       return (
-        <Box sx={{ mt: 3 }}>
-          <Card>
-            <CardContent>
-              <Box sx={{ maxWidth: 500 }}>
-                <Container maxWidth="md">
+        <Box sx={{ flexGrow: 0.5, marginTop: "0.8em" }}>
+          <Grid container spacing={1} wrap="wrap">
+            <Grid item xs="auto" key={author.username}>
+              <item>
+                <Container
+                  sx={{
+                    backgroundColor: "rgba(0, 0, 0, 0.05)",
+                    width: "auto",
+                    borderRadius: "1em",
+                    boxShadow: 1,
+                    p: 2,
+                  }}
+                >
                   <Avatar
                     src={author.profile_image_url}
                     alt="profile-image"
                     sx={{
-                      height: 64,
-                      mb: 2,
-                      width: 64,
+                      height: 120,
+                      // mb: 10,
+                      width: 120,
+                      margin: "auto",
                     }}
                   />
-                  <h2>{author.username}</h2>
+                  <div
+                    style={{
+                      marginLeft: "auto",
+                      marginRight: "auto",
+                      textAlign: "center",
+                    }}
+                  >
+                    <h3>{author.username}</h3>
+                  </div>
+
+                  <IconButton
+                    sx={{ "&:hover": { color: "red" }, marginTop: "1em" }}
+                  >
+                    <Button variant="contained">Send Follow Request</Button>
+                  </IconButton>
                 </Container>
-              </Box>
-            </CardContent>
-          </Card>
+              </item>
+            </Grid>
+          </Grid>
         </Box>
       );
     return null;
   });
 
-  return <div>{listItems}</div>;
+  return (
+    <Grid container spacing={0.5}>
+      {listItems}
+    </Grid>
+  );
 }
 
 export default function SearchPage() {
@@ -133,16 +163,28 @@ export default function SearchPage() {
           flex: "1 1 auto",
           flexDirection: "column",
           width: "100%",
-          paddingTop: "30px",
-          paddingBottom: "30px",
         }}
       >
         <Container maxWidth="md">
-          <Box sx={{ mt: 3 }}>
-            <Card>
+          <Box sx={{ mt: 3, marginTop: "1em" }}>
+            <Card
+              sx={{
+                height: "4em",
+                margin: "auto",
+              }}
+            >
               <CardContent>
-                <Box sx={{ maxWidth: 500 }}>
-                  <Search>
+                <Box>
+                  <Search
+                    sx={{
+                      backgroundColor: "rgba(0, 0, 0, 0.05)",
+                      position: "relative",
+                      marginTop: "-1.2em",
+                      ":hover": {
+                        backgroundColor: "rgba(0, 0, 0, 0.05)",
+                      },
+                    }}
+                  >
                     <SearchIconWrapper>
                       <SearchIcon />
                     </SearchIconWrapper>
@@ -155,6 +197,9 @@ export default function SearchPage() {
               </CardContent>
             </Card>
           </Box>
+          <h2 style={{ textAlign: "center", padding: "0.5em" }}>
+            Suggested Users
+          </h2>
           <CreateArray />
         </Container>
       </Box>
