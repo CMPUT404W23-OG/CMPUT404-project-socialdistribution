@@ -5,7 +5,7 @@ import "../themes/header.css";
 import * as React from "react";
 import {useState} from "react";
 import { styled, alpha } from "@mui/material/styles";
-import { Link } from "@mui/material";
+import { Link, Button } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -271,7 +271,7 @@ export default function Header() {
 
   return (
     <>
-      {user ? (
+      {/* {user ? ( */}
         <>
         <Box sx={{ flexGrow: 1 }}>
           <AppBar position="static">
@@ -304,19 +304,21 @@ export default function Header() {
                   inputProps={{ "aria-label": "search" }}
                 />
               </Search> */}
+              {user ? (
+                <>
               <Box sx={{ flexGrow: 1 }} />
               <Box sx={{ display: { xs: "none", md: "flex" } }}>
-              <IconButton
-                  size="large"
-                  // edge="end"
-                  aria-label="posts menu"
-                  aria-controls={menuIdPost}
-                  aria-haspopup="true"
-                  onClick={handlePostMenuOpen}
-                  color="inherit"
-                >
-                  <Add />
-                </IconButton>
+                <IconButton
+                    size="large"
+                    // edge="end"
+                    aria-label="posts menu"
+                    aria-controls={menuIdPost}
+                    aria-haspopup="true"
+                    onClick={handlePostMenuOpen}
+                    color="inherit"
+                  >
+                    <Add />
+                  </IconButton>
 
                 <IconButton size="large" color="inherit">
                   <Link href="/" color="inherit">
@@ -333,11 +335,11 @@ export default function Header() {
                   </Link>
                 </IconButton>
 
-                {/* <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-              <Badge badgeContent={4} color="error">
-                <MailIcon />
-              </Badge>
-            </IconButton> */}
+                  {/* <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+                <Badge badgeContent={4} color="error">
+                  <MailIcon />
+                </Badge>
+               </IconButton> */}
 
                 <IconButton
                   size="large"
@@ -375,6 +377,26 @@ export default function Header() {
                   <MoreIcon />
                 </IconButton>
               </Box>
+              </>
+              ) : (
+                <>
+                <Box sx={{ flexGrow: 1 }} />
+              <Box sx={{ display: { xs: "none", md: "flex" } }}>
+
+                <IconButton size="large" color="inherit">
+                  <Link href="/" color="inherit">
+                    {" "}
+                    <Home />
+                  </Link>
+                </IconButton>
+
+                <Link href="/login" sx={{color: "inherit", padding: "20px"}}>
+                  Login
+                </Link>
+              </Box>
+              </>
+              )}
+
             </Toolbar>
           </AppBar>
           {renderMobileMenu}
@@ -383,25 +405,25 @@ export default function Header() {
         </Box>
         <Posts postType={PostType} open={open} setOpen={setOpen}/>
         </>
-      ) : (
-        <div className="header">
-          <nav className="navbar">
-            <ul>
-              <li>
-                <Link href="/">
-                  <button>Home</button>
-                </Link>
-              </li>
-              <li>
-                <Link href="/login">
-                  <button>Login</button>
-                </Link>
-              </li>
-              {user && <p>Hello {user.username}</p>}
-            </ul>
-          </nav>
-        </div>
-      )}
+      {/* // ) : (
+      //   <div className="header">
+      //     <nav className="navbar">
+      //       <ul>
+      //         <li>
+      //           <Link href="/">
+      //             <button>Home</button>
+      //           </Link>
+      //         </li>
+      //         <li>
+      //           <Link href="/login">
+      //             <Button>Login</Button>
+      //           </Link>
+      //         </li>
+      //         {user && <p>Hello {user.username}</p>}
+      //       </ul>
+      //     </nav>
+      //   </div>
+      // )} */}
     </>
   );
 }
