@@ -3,6 +3,7 @@ import { useContext } from "react";
 import AuthContext from "../context/AuthContext";
 import "../themes/header.css";
 import * as React from "react";
+import {useState} from "react";
 import { styled, alpha } from "@mui/material/styles";
 import { Link } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
@@ -26,7 +27,7 @@ import { useNavigate } from "react-router-dom";
 
 import Home from "@mui/icons-material/Home";
 import People from "@mui/icons-material/PeopleAlt";
-import Posts from "../pages/Posts";
+import Posts from "../pages/modal/Posts";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -71,13 +72,16 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export default function Header() {
   const navigate = useNavigate();
   let { user, logoutUser } = useContext(AuthContext);
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [anchorElPost, setanchorElPost] = React.useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorElPost, setanchorElPost] = useState(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
 
   const isMenuOpen = Boolean(anchorEl);
   const isPostOpen = Boolean(anchorElPost);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+  const [open, setOpen] = useState(false);
+  const [PostType, setType] = useState("");
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -92,9 +96,12 @@ export default function Header() {
     handleMenuClose();
   };
 
-  const handlePost = () => {
-    
-    handleMenuClose();
+  function handlePost(postType) {
+    handlePostMenuClose();
+    setType(postType);
+    // console.log(PostType);
+    setOpen(true);
+   
   };
 
   const handleLogout = () => {
@@ -166,21 +173,21 @@ export default function Header() {
       open={isPostOpen}
       onClose={handlePostMenuClose}
     >
-      <MenuItem onClick={handlePost}>
+      <MenuItem onClick={() => handlePost("text")}>
         {" "}
-        <Posts postType={"text"}/>
+       Post thoughts
       </MenuItem>
-      <MenuItem onClick={handleLogout}>
+      <MenuItem onClick={() => handlePost("markdown")}>
         {" "}
-        Md Post
+        Markdown Post
       </MenuItem>
-      <MenuItem onClick={handleLogout}>
+      <MenuItem onClick={() => handlePost("image")}>
         {" "}
-        Image Post
+        Post an image
       </MenuItem>
-      <MenuItem onClick={handleLogout}>
+      <MenuItem onClick={() => handlePost("textImage")}>
         {" "}
-        Image with caption Post
+        Post Image with caption 
       </MenuItem>
     </Menu>
   );
@@ -266,6 +273,7 @@ export default function Header() {
   return (
     <>
       {user ? (
+        <>
         <Box sx={{ flexGrow: 1 }}>
           <AppBar position="static">
             <Toolbar>
@@ -297,6 +305,7 @@ export default function Header() {
               </Search> */}
               <Box sx={{ flexGrow: 1 }} />
               <Box sx={{ display: { xs: "none", md: "flex" } }}>
+              <Posts postType={PostType} open={open} setOpen={setOpen}/>
               <IconButton
                   size="large"
                   // edge="end"
@@ -372,6 +381,7 @@ export default function Header() {
           {renderMenuPost}
           {renderMenu}
         </Box>
+        </>
       ) : (
         <div className="header">
           <nav className="navbar">
