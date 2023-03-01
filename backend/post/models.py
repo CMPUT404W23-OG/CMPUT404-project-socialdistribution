@@ -21,6 +21,14 @@ class Post(models.Model):
     #author field TODO
     #ID field TODO
 
+
+class Comment(models.Model):
+    comment = models.TextField()
+    created_on = models.DateTimeField(auto_now_add=True)
+    author = models.ForeignKey('author.Author', on_delete=models.CASCADE)
+    post = models.ForeignKey('post.Post', on_delete=models.CASCADE)
+    
+
 #def get_absolute_path(self):
     #return reverse('posts-detail', kwargs={"pk": self.id})
 
