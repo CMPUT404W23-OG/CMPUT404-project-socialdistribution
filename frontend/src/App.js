@@ -14,6 +14,7 @@ import Followers from "./pages/Followers";
 import Following from "./pages/Following";
 import Header from "./components/Header";
 import TrueFriends from "./pages/TrueFriends";
+import Search from "./pages/Search";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
                 <Route path="trueFriends" element={<TrueFriends />} />
                 <Route path="profile" element={<ProfilePage />} />
                 <Route path="inbox" element={<Inbox />} />
+                <Route path="search" element={<Search />} />
               </Route>
 
               <Route path="signup" element={<SignUpPage />} />

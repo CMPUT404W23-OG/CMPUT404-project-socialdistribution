@@ -1,5 +1,5 @@
 import { Card, Box, Container } from '@mui/material';
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import BasePath from "../config/BasePath";
 import * as React from 'react';
 import { styled } from '@mui/material/styles';
@@ -16,6 +16,9 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { format } from 'date-fns';
+import axios from 'axios';
+
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -29,38 +32,80 @@ const ExpandMore = styled((props) => {
 }));
 
 
+
 function CreateArray() {
 
+
+  
   const [posts, setPosts] = useState([])
   const [page, setPage] = useState(0)
-
   const [expanded, setExpanded] = useState(false);
 
+  const listRef = useRef();
+  const [currPage, setCurrPage] = useState(1)
+  const [prevPage, setPrevPage] = useState(0)
+  const [postList, setPostList] = useState([])
+  const [wasLast, setWasLast] = useState(false)
+  const headers = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Expose-Headers": "X-PAGINATION-SIZE"
+  }
+  
+
+  const call = useEffect(() => {
+    
+    const getData = async () => {
+      const res = await axios.get(BasePath + `/posts/all/`, headers);
+
+      
+      if (!res.data.length) {
+        setWasLast(true)
+      }
+
+      setPrevPage(currPage)
+      setPostList([...postList, ...res.data])
+    }
+
+    if (!wasLast && prevPage !== currPage) {
+      getData()
+    }
+    
+  }, [currPage, prevPage, wasLast, postList])
+
+  const onScroll = () => {
+
+    if (listRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = listRef.current;
+      if (scrollTop + clientHeight === scrollHeight) {
+        call()
+    }
+
+    }
+  }
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
   
-  function getData() {
-    fetch(BasePath+'/posts/all/', {
-      method: 'GET',
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      }
-    })
-    .then((res) => res.json())
-    .then((result) => {
-      setPosts((result))
-      setPage(page+1)
-    })
-  }
+  // function getData() {
+  //   fetch(BasePath+'/posts/all/', {
+  //     method: 'GET',
+  //     headers: {
+  //       Accept: "application/json",
+  //       "Content-Type": "application/json"
+  //     }
+  //   })
+  //   .then((res) => res.json())
+  //   .then((result) => {
+  //     setPosts((result))
+  //     setPage(page+1)
+  //   })
+  // }
 
-  if (page < 1) {
-    getData()
-    console.log(posts)
-  }
+  // if (page < 1) {
+  //   getData()
+  // }
   
-  const listItems = posts.map((post) =>
+  const listItems = postList.map((post) =>
     //   <Box className={post.id}
     //   sx={{
     //     display: 'flex',
@@ -89,6 +134,8 @@ function CreateArray() {
       paddingLeft: "500px",
     }}
     className={post.id}
+    onScroll={onScroll}
+    ref={listRef}
   >
     <Container maxWidth="lg">
   <Card sx={{ maxWidth: 700 }}
@@ -105,7 +152,10 @@ function CreateArray() {
       </IconButton>
     }
     title={post.title + " - " + post.author_name}
-    subheader="September 14, 2016"
+    subheader={format(new Date(post.datePublished), "MMMM d, yyyy")}
+
+
+
   />
   <CardMedia
     component="img"
