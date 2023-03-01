@@ -106,24 +106,6 @@ function CreateArray() {
   // }
   
   const listItems = postList.map((post) =>
-    //   <Box className={post.id}
-    //   sx={{
-    //     display: 'flex',
-    //     flex: '1 1 auto',
-    //     flexDirection: 'column',
-    //     width: '100%',
-    //     margin:'15px',
-    //     border: '2px solid black'
-    //   }}>
-    //     <Container maxWidth="md">
-    //     <Card className={post.author}>
-    //       <h1>{post.title}</h1>
-    //       <h2>Author: {post.author}</h2>
-    //       <p>{post.body}</p>
-          
-    //     </Card>
-    //   </Container>
-    // </Box>
     <Box
     sx={{
       display: "flex",
@@ -131,6 +113,7 @@ function CreateArray() {
       flexDirection: "column",
       width: "100%",
       paddingTop: "30px",
+      paddingBottom: "30px",
       paddingLeft: "500px",
     }}
     className={post.id}
