@@ -22,11 +22,8 @@ export default function PostsDialog({postType, open, setOpen}) {
         user_name = user.username
     }
     const post_title = postTitle
-    // const post_text = postText
-    // const image_url = imageUrl
-    console.log(post_title)
-    let cont_type = ""
 
+    let cont_type = ""
     if (postType === "text") {
         cont_type = "text/plain"
     } else if (postType === "markdown") {
