@@ -36,7 +36,6 @@ const ExpandMore = styled((props) => {
 function CreateArray() {
 
 
-  
   // const [posts, setPosts] = useState([])
   // const [page, setPage] = useState(0)
   const [expanded, setExpanded] = useState(false);
@@ -50,17 +49,18 @@ function CreateArray() {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Expose-Headers": "X-PAGINATION-SIZE"
   }
-  
-
   useEffect(() => {
     const getData = async () => {
       const res = await axios.get(BasePath + `/posts/all/?page=${currPage}&size=5`, headers);
+      console.log('length', res.data.length)
       if (!res.data.length) {
         setWasLast(true)
       }
       setPrevPage(currPage)
       setPostList([...postList, ...res.data])
     }
+    
+    console.log(!wasLast, prevPage !== currPage)
     if (!wasLast && prevPage !== currPage) {
       getData()
     }     
@@ -70,8 +70,9 @@ function CreateArray() {
   useEffect(() => {
     console.log('here')
     const onScroll = () => {
+      console.log((window.innerHeight), ((window.innerHeight) * 2), window.scrollY, document.body.offsetHeight)
       setOffset(window.pageYOffset)
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+      if ((window.innerHeight+10) + window.scrollY >= document.body.offsetHeight) {
         setCurrPage(currPage + 1)
         
       }
@@ -81,30 +82,11 @@ function CreateArray() {
     
     return () => window.removeEventListener('scroll', onScroll)
         
-    }, []);
+    }, [offset]);
   
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
-  
-  // function getData() {
-  //   fetch(BasePath+'/posts/all/', {
-  //     method: 'GET',
-  //     headers: {
-  //       Accept: "application/json",
-  //       "Content-Type": "application/json"
-  //     }
-  //   })
-  //   .then((res) => res.json())
-  //   .then((result) => {
-  //     setPosts((result))
-  //     setPage(page+1)
-  //   })
-  // }
-
-  // if (page < 1) {
-  //   getData()
-  // }
   
   const listItems = postList.map((post) =>
     //   <Box className={post.id}

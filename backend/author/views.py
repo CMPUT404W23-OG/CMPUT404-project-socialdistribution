@@ -67,11 +67,14 @@ class AuthorList(APIView):
         """
         authors = Author.objects.all().order_by('id')
         
-        number = self.request.query_params.get('page', 1)
-        size = self.request.query_params.get('size', 5)
 
-        paginator = Paginator(authors, size)
-        serializer = AuthorSerializer(paginator.page(number), many=True)
+        if (request.query_params.get('page')):
+            number = self.request.query_params.get('page', 1)
+            size = self.request.query_params.get('size', 5)
+            paginator = Paginator(authors, size)
+            serializer = AuthorSerializer(paginator.page(number), many=True)
+        else:
+            serializer = AuthorSerializer(authors, many=True)
 
         return Response(serializer.data)
 
