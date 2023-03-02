@@ -16,28 +16,24 @@ import { useEffect, useState } from "react";
 import AuthContext from "../context/AuthContext";
 import BasePath from "../config/BasePath";
 
-
-
 const ProfilePage = () => {
   let { user, logoutUser } = useContext(AuthContext);
   let [url, setUrl] = useState();
 
   // https://stackoverflow.com/questions/69078642/how-use-get-method-in-react-js
   let profile_image_url = async () => {
-    let response = await fetch(BasePath + "/author/"+user.user_id+"/", {
+    let response = await fetch(BasePath + "/author/" + user.user_id + "/", {
       method: "GET",
     });
     response.json().then((response) => setUrl(response.profile_image_url));
-  }
+  };
 
   useEffect(() => {
     profile_image_url();
   }, []);
- 
-  
+
   return (
     <div>
-      
       <Box
         sx={{
           display: "flex",
@@ -58,7 +54,8 @@ const ProfilePage = () => {
                 }}
               >
                 <Avatar
-                  src={url} alt="profile-image"
+                  src={url}
+                  alt="profile-image"
                   sx={{
                     height: 64,
                     mb: 2,
@@ -83,7 +80,14 @@ const ProfilePage = () => {
                 py: 8,
               }}
             >
-              <Container maxWidth="md">
+              <Container
+                maxWidth="md"
+                sx={{
+                  marginLeft: "auto",
+                  marginRight: "auto",
+                  textAlign: "center",
+                }}
+              >
                 <Grid container spacing={4}>
                   <Grid item lg={4} md={6} xs={12}>
                     <a href="/Followers">Followers</a>
