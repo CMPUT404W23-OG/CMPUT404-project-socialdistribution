@@ -25,50 +25,17 @@ import {
   ListItem,
 } from "@mui/material";
 import { useEffect, useState } from "react";
+import { width } from "@mui/system";
 
-const Search = styled("div")(({ theme }) => ({
-  position: "relative",
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  "&:hover": {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginRight: theme.spacing(2),
-  marginLeft: 0,
-  width: "100%",
-  [theme.breakpoints.up("sm")]: {
-    marginLeft: theme.spacing(3),
-    width: "auto",
-  },
-}));
-
-const SearchIconWrapper = styled("div")(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: "100%",
-  position: "absolute",
-  pointerEvents: "none",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: "inherit",
-  "& .MuiInputBase-input": {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create("width"),
-    width: "100%",
-    [theme.breakpoints.up("md")]: {
-      width: "20ch",
-    },
-  },
-}));
+let followingList = [];
+let sentList = [];
+let searching = false;
 
 function CreateArray() {
   const [authors, setAuthors] = useState([]);
   const [page, setPage] = useState(0);
+  const [following, setFollowing] = useState([]);
+  const [sentRequests, setSentRequests] = useState([]);
 
   const [expanded, setExpanded] = useState(false);
   let { user, logoutUser } = useContext(AuthContext);
@@ -94,61 +61,160 @@ function CreateArray() {
 
   if (page < 1) {
     getData();
+    getFollowing();
+    getSentRequests();
     console.log(authors);
   }
 
+  function getFollowing() {
+    fetch(BasePath + "/following/" + user.user_id + "/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("printint out following list", data);
+        setFollowing(data);
+
+        for (let i = 0; i < data.length; i++) {
+          followingList.push(data[i].following.id);
+        }
+      })
+      .catch((err) => console.log(err));
+  }
+
+  function getSentRequests() {
+    fetch(BasePath + "/requests_sent/" + user.user_id + "/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("printint out sent list", data);
+        setSentRequests(data);
+
+        for (let i = 0; i < data.length; i++) {
+          sentList.push(data[i].following.id);
+        }
+      })
+      .catch((err) => console.log(err));
+  }
+
+  function sendFollowRequest(id) {
+    fetch(BasePath + "/follow/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        follower: user.user_id,
+        following: id,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("printint out sent list", data);
+        getData();
+        getFollowing();
+        getSentRequests();
+      })
+      .catch((err) => console.log(err));
+  }
+
   const listItems = authors.map((author) => {
-    if (author.username !== user.username)
+    console.log(author);
+    console.log("following list", followingList);
+
+    if (author.username !== user.username && !followingList.includes(author.id))
       return (
         <Box sx={{ flexGrow: 0.5, marginTop: "0.8em" }}>
           <Grid container spacing={1} wrap="wrap">
-            <Grid item xs="auto" key={author.username}>
-              <item>
-                <Container
+            <Grid item xs="auto" key={author.id}>
+              <Container
+                sx={{
+                  backgroundColor: "rgba(0, 0, 0, 0.05)",
+                  width: "auto",
+                  borderRadius: "1em",
+                  boxShadow: 1,
+                  p: 2,
+                }}
+              >
+                <Avatar
+                  src={author.profile_image_url}
+                  alt="profile-image"
                   sx={{
-                    backgroundColor: "rgba(0, 0, 0, 0.05)",
-                    width: "auto",
-                    borderRadius: "1em",
-                    boxShadow: 1,
-                    p: 2,
+                    height: 120,
+                    // mb: 10,
+                    width: 120,
+                    margin: "auto",
+                  }}
+                />
+                <div
+                  style={{
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                    textAlign: "center",
                   }}
                 >
-                  <Avatar
-                    src={author.profile_image_url}
-                    alt="profile-image"
-                    sx={{
-                      height: 120,
-                      // mb: 10,
-                      width: 120,
-                      margin: "auto",
-                    }}
-                  />
-                  <div
-                    style={{
-                      marginLeft: "auto",
-                      marginRight: "auto",
-                      textAlign: "center",
-                    }}
-                  >
-                    <h3>{author.username}</h3>
-                  </div>
+                  <h3>{author.username}</h3>
+                </div>
 
-                  <IconButton
-                    sx={{ "&:hover": { color: "red" }, marginTop: "1em" }}
-                  >
-                    <Button variant="contained">Send Follow Request</Button>
-                  </IconButton>
-                </Container>
-              </item>
+                <IconButton
+                  sx={{
+                    "&:hover": { color: "red" },
+                    marginTop: "1em",
+                    display: "block",
+                  }}
+                >
+                  {sentList.includes(author.id) ? (
+                    <>
+                      <Box>
+                        <Button
+                          variant="contained"
+                          sx={{
+                            bgcolor: "green",
+                            width: "100%",
+                            marginBottom: "0.5em",
+                          }}
+                        >
+                          Request Sent
+                        </Button>
+                      </Box>
+
+                      <Box>
+                        <Button variant="contained" sx={{ bgcolor: "red" }}>
+                          {" "}
+                          Cancel Request
+                        </Button>
+                      </Box>
+                    </>
+                  ) : (
+                    <Button
+                      variant="contained"
+                      onClick={() => sendFollowRequest(author.id)}
+                    >
+                      Send Follow Request
+                    </Button>
+                  )}
+                </IconButton>
+              </Container>
             </Grid>
           </Grid>
         </Box>
       );
+
     return null;
   });
 
   return (
-    <Grid container spacing={0.5}>
+    <Grid container spacing={1}>
       {listItems}
     </Grid>
   );
@@ -166,37 +232,40 @@ export default function SearchPage() {
         }}
       >
         <Container maxWidth="md">
-          <Box sx={{ mt: 3, marginTop: "1em" }}>
-            <Card
+          <CardContent
+            sx={{
+              height: "fit-content",
+              bgcolor: "background.paper",
+              marginTop: "0.5em",
+              borderRadius: "1em",
+              border: "1px",
+              boxShadow: 1,
+            }}
+          >
+            <Box
               sx={{
-                height: "4em",
-                margin: "auto",
+                height: "fit-content",
               }}
             >
-              <CardContent>
-                <Box>
-                  <Search
-                    sx={{
-                      backgroundColor: "rgba(0, 0, 0, 0.05)",
-                      position: "relative",
-                      marginTop: "-1.2em",
-                      ":hover": {
-                        backgroundColor: "rgba(0, 0, 0, 0.05)",
-                      },
-                    }}
-                  >
-                    <SearchIconWrapper>
-                      <SearchIcon />
-                    </SearchIconWrapper>
-                    <StyledInputBase
-                      placeholder="Search…"
-                      inputProps={{ "aria-label": "search" }}
-                    />
-                  </Search>
-                </Box>
-              </CardContent>
-            </Card>
-          </Box>
+              <form
+                style={{ display: "flex", alignItems: "center", height: "2em" }}
+              >
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  style={{ outline: "none", ":hover": { outline: "none" } }}
+                ></input>
+                <IconButton
+                  type="button"
+                  sx={{ p: "10px" }}
+                  aria-label="search"
+                >
+                  <SearchIcon />
+                </IconButton>
+              </form>
+            </Box>
+          </CardContent>
+
           <h2 style={{ textAlign: "center", padding: "0.5em" }}>
             Suggested Users
           </h2>
