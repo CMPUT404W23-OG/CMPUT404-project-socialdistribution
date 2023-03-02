@@ -70,6 +70,7 @@ export default function PostsDialog({postType, open, setOpen}) {
         )
          //, headers, payload);
         navigate("/");
+        window.location.reload();
         handleClose();
     };
 
