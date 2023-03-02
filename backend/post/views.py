@@ -98,5 +98,3 @@ class PostList(APIView):
         paginator = Paginator(posts, size)
         serializer = PostSerializer(paginator.page(number), many=True)
         return Response(serializer.data)    
-
-    
