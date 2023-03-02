@@ -9,6 +9,7 @@ import ListItemText from "@mui/material/ListItemText";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
 import InputBase from "@mui/material/InputBase";
+import DoneIcon from "@mui/icons-material/Done";
 
 import SearchIcon from "@mui/icons-material/Search";
 import {
@@ -26,6 +27,7 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { width } from "@mui/system";
+import { resolvePath } from "react-router";
 
 let followingList = [];
 let sentList = [];
@@ -130,8 +132,6 @@ function CreateArray() {
       .then((data) => {
         console.log("printint out sent list", data);
 
-        getData();
-        // getFollowing();
         getSentRequests();
       })
       .catch((err) => console.log(err));
@@ -159,9 +159,7 @@ function CreateArray() {
       }),
     });
     if ((await response).status === 204) {
-      // await getFollowing();
       await getSentRequests();
-      await getData();
       console.log("Deleted!");
     } else {
       console.log("Failed to delete!");
@@ -173,19 +171,24 @@ function CreateArray() {
       return (
         <Box
           sx={{
-            flexGrow: 0.5,
+            flexGrow: 0.03,
             marginTop: "0.8em",
           }}
         >
-          <Grid container spacing={0.5} wrap="wrap">
+          <Grid container spacing={2} wrap="wrap">
             <Grid item xs="auto" key={author.id}>
               <Container
                 sx={{
-                  backgroundColor: "rgba(0, 0, 0, 0.05)",
+                  backgroundColor: "paper",
                   width: "100%",
                   borderRadius: "1em",
                   boxShadow: 1,
                   p: 2,
+                }}
+                style={{
+                  border: "1px solid gray",
+                  padding: "1em",
+                  boxShadow: "4px 4px 4px -4px ",
                 }}
               >
                 <Avatar
@@ -205,6 +208,21 @@ function CreateArray() {
                   }}
                 >
                   <h3>{author.username}</h3>
+                  {sentList.includes(author.id) ? (
+                    <DoneIcon
+                      sx={{
+                        color: "green",
+                        width: "7.9em",
+                        height: "1.7em",
+                        marginLeft: "auto",
+                      }}
+                    />
+                  ) : (
+                    <>
+                      <br />
+                      <br />
+                    </>
+                  )}
                 </div>
 
                 <IconButton
@@ -219,29 +237,17 @@ function CreateArray() {
                       <Box>
                         <Button
                           variant="contained"
-                          sx={{
-                            bgcolor: "green",
-                            width: "100%",
-                            marginBottom: "0.5em",
-                          }}
-                        >
-                          Request Sent
-                        </Button>
-                      </Box>
-
-                      <Box>
-                        <Button
-                          variant="contained"
                           sx={{ bgcolor: "red" }}
                           onClick={() => cancelFollowRequest(author.id)}
                         >
-                          Cancel Request
+                          &nbsp;&nbsp;&nbsp;Cancel Request &nbsp;&nbsp; &nbsp;
                         </Button>
                       </Box>
                     </>
                   ) : (
                     <Button
                       variant="contained"
+                      sx={{ bgcolor: "green" }}
                       onClick={() => sendFollowRequest(author.id)}
                     >
                       Send Follow Request
@@ -258,7 +264,7 @@ function CreateArray() {
   });
 
   return (
-    <Grid container spacing={1}>
+    <Grid container spacing={0}>
       {listItems}
     </Grid>
   );
