@@ -16,7 +16,7 @@ export default function PostsDialog({postType, open, setOpen}) {
     const [postText, setText] = useState( "");
     const [imageUrl, setUrl] = useState("");
     const [submitted, setSubmitted] = useState(false);
-    const user_name = null;
+    let user_name = null;
     if (user) {
         user_name = user.username
     }
