@@ -71,7 +71,7 @@ class AuthorPostList(APIView):
         http://localhost:8000/posts/author/39?page=2&size=3 
         
         """
-        posts = Post.objects.all().filter(author_id=author_id).order_by('datePublished')
+        posts = Post.objects.all().filter(author_id=author_id).order_by('-datePublished')
         number = self.request.query_params.get('page', 1)
         size = self.request.query_params.get('size', 5)
 
@@ -91,12 +91,10 @@ class PostList(APIView):
         http://localhost:8000/posts/all?page=2&size=3 
         
         """
-        posts = Post.objects.all().filter(visibility="PUBLIC").order_by('datePublished')
+        posts = Post.objects.all().filter(visibility="PUBLIC").order_by('-datePublished')
         number = self.request.query_params.get('page', 1)
         size = self.request.query_params.get('size', 5)
 
         paginator = Paginator(posts, size)
         serializer = PostSerializer(paginator.page(number), many=True)
         return Response(serializer.data)    
-
-    
