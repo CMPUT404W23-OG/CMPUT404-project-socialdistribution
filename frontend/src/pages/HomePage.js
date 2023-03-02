@@ -14,6 +14,7 @@ import Typography from '@mui/material/Typography';
 import { red } from '@mui/material/colors';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
+import Comments from '@mui/icons-material/Comment'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { format } from 'date-fns';
@@ -25,7 +26,7 @@ const ExpandMore = styled((props) => {
   return <IconButton {...other} />;
 })(({ theme, expand }) => ({
   transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
-  marginLeft: 'auto',
+  // marginLeft: 'auto',
   transition: theme.transitions.create('transform', {
     duration: theme.transitions.duration.shortest,
   }),
@@ -35,16 +36,16 @@ const ExpandMore = styled((props) => {
 
 function CreateArray() {
 
-
   // const [posts, setPosts] = useState([])
   // const [page, setPage] = useState(0)
   const [expanded, setExpanded] = useState(false);
-
   const [offset, setOffset] = useState(0)
   const [currPage, setCurrPage] = useState(1)
   const [prevPage, setPrevPage] = useState(0)
   const [postList, setPostList] = useState([])
   const [wasLast, setWasLast] = useState(false)
+  // const [commentSection, setCommentSection] = useState(comments);
+
   const headers = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Expose-Headers": "X-PAGINATION-SIZE"
@@ -52,7 +53,7 @@ function CreateArray() {
   useEffect(() => {
     const getData = async () => {
       const res = await axios.get(BasePath + `/posts/all/?page=${currPage}&size=5`, headers);
-      console.log('length', res.data.length)
+
       if (!res.data.length) {
         setWasLast(true)
       }
@@ -89,31 +90,15 @@ function CreateArray() {
   };
   
   const listItems = postList.map((post) =>
-    //   <Box className={post.id}
-    //   sx={{
-    //     display: 'flex',
-    //     flex: '1 1 auto',
-    //     flexDirection: 'column',
-    //     width: '100%',
-    //     margin:'15px',
-    //     border: '2px solid black'
-    //   }}>
-    //     <Container maxWidth="md">
-    //     <Card className={post.author}>
-    //       <h1>{post.title}</h1>
-    //       <h2>Author: {post.author}</h2>
-    //       <p>{post.body}</p>
-          
-    //     </Card>
-    //   </Container>
-    // </Box>
     <Box
+    key={post.id}
     sx={{
       display: "flex",
       flex: "1 1 auto",
       flexDirection: "column",
       width: "100%",
       paddingTop: "30px",
+      paddingBottom: "30px",
       paddingLeft: "500px",
     }}
     className={post.id}
@@ -154,16 +139,13 @@ function CreateArray() {
         <IconButton aria-label="add to favorites">
           <FavoriteIcon />
         </IconButton>
-        <IconButton aria-label="share">
-          <ShareIcon />
-        </IconButton>
         <ExpandMore
           expand={expanded}
           onClick={handleExpandClick}
           aria-expanded={expanded}
           aria-label="show more"
         >
-          <ExpandMoreIcon />
+          <Comments />
         </ExpandMore>
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
@@ -212,7 +194,6 @@ function CreateArray() {
 
 
 const HomePage = () => {
-  
   return (
     <div>
       <CreateArray />
