@@ -61,7 +61,6 @@ function CreateArray() {
       setPostList([...postList, ...res.data])
     }
     
-    console.log(!wasLast, prevPage !== currPage)
     if (!wasLast && prevPage !== currPage) {
       getData()
     }     
@@ -69,7 +68,6 @@ function CreateArray() {
   }, [currPage, prevPage, wasLast, postList])
 
   useEffect(() => {
-    console.log('here')
     const onScroll = () => {
       console.log((window.innerHeight), ((window.innerHeight) * 2), window.scrollY, document.body.offsetHeight)
       setOffset(window.pageYOffset)
