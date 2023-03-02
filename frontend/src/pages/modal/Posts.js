@@ -16,11 +16,10 @@ export default function PostsDialog({postType, open, setOpen}) {
     const [postText, setText] = useState( "");
     const [imageUrl, setUrl] = useState("");
     const [submitted, setSubmitted] = useState(false);
-    const user_name = null;
+    var user_name = 'Author Not Found'
     if (user) {
         user_name = user.username
     }
-   
     const post_title = postTitle
     // const post_text = postText
     // const image_url = imageUrl
@@ -37,11 +36,10 @@ export default function PostsDialog({postType, open, setOpen}) {
         cont_type = "text/textImage"
     }
 
-    const headers = {
-        headers: {   
+    const headers = {  
         "Content-Type":"application/json",
-    }
-}
+        
+    }   
     const payload = {
         "title":post_title,
         "description": "private description here",
@@ -50,9 +48,9 @@ export default function PostsDialog({postType, open, setOpen}) {
         "contentType":cont_type,
         "author_id":null,
         "author_name":user_name,
-        "visibility":"FRIENDS",
+        "visibility":"PUBLIC",
     };
-
+    console.log(payload)
     const handleClose = () => {
         setOpen(false);
     };
@@ -67,7 +65,9 @@ export default function PostsDialog({postType, open, setOpen}) {
 
     const SubmitContent = async () => {
         // setSubmitted(true);
-        await axios.post(BasePath + `/posts/create/${user.user_id}`, payload, headers);
+        await axios.post(`http://127.0.0.1:8000/posts/create/3`, payload, headers
+        )
+         //, headers, payload);
         navigate("/");
         handleClose();
     };
