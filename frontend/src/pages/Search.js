@@ -36,6 +36,8 @@ function CreateArray() {
   const [page, setPage] = useState(0);
   const [following, setFollowing] = useState([]);
   const [sentRequests, setSentRequests] = useState([]);
+  const [followingList, setFollowingList] = useState([]);
+  const [sentList, setSentList] = useState([]);
 
   const [expanded, setExpanded] = useState(false);
   let { user, logoutUser } = useContext(AuthContext);
@@ -44,7 +46,7 @@ function CreateArray() {
     setExpanded(!expanded);
   };
 
-  function getData() {
+  async function getData() {
     fetch(BasePath + "/author/all/", {
       method: "GET",
       headers: {
@@ -66,7 +68,7 @@ function CreateArray() {
     console.log(authors);
   }
 
-  function getFollowing() {
+  async function getFollowing() {
     fetch(BasePath + "/following/" + user.user_id + "/", {
       method: "GET",
       headers: {
@@ -79,14 +81,18 @@ function CreateArray() {
         console.log("printint out following list", data);
         setFollowing(data);
 
+        let updatedFollowingList = [];
         for (let i = 0; i < data.length; i++) {
-          followingList.push(data[i].following.id);
+          if (!followingList.includes(data[i].following.id)) {
+            updatedFollowingList.push(data[i].following.id);
+          }
         }
+        setFollowingList(updatedFollowingList);
       })
       .catch((err) => console.log(err));
   }
 
-  function getSentRequests() {
+  async function getSentRequests() {
     fetch(BasePath + "/requests_sent/" + user.user_id + "/", {
       method: "GET",
       headers: {
@@ -99,14 +105,16 @@ function CreateArray() {
         console.log("printint out sent list", data);
         setSentRequests(data);
 
+        let updatedSentList = [];
         for (let i = 0; i < data.length; i++) {
-          sentList.push(data[i].following.id);
+          updatedSentList.push(data[i].following.id);
         }
+        setSentList(updatedSentList);
       })
       .catch((err) => console.log(err));
   }
 
-  function sendFollowRequest(id) {
+  async function sendFollowRequest(id) {
     fetch(BasePath + "/follow/", {
       method: "POST",
       headers: {
@@ -121,26 +129,60 @@ function CreateArray() {
       .then((res) => res.json())
       .then((data) => {
         console.log("printint out sent list", data);
+
         getData();
-        getFollowing();
+        // getFollowing();
         getSentRequests();
       })
       .catch((err) => console.log(err));
   }
 
-  const listItems = authors.map((author) => {
-    console.log(author);
-    console.log("following list", followingList);
+  async function cancelFollowRequest(id) {
+    let follow_id = 0;
 
+    for (let i = 0; i < sentRequests.length; i++) {
+      if (sentRequests[i].following.id === id) {
+        follow_id = sentRequests[i].id;
+      }
+    }
+
+    let response;
+
+    response = fetch(BasePath + "/request/" + follow_id + "/", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        follower: user.user_id,
+        following: id,
+      }),
+    });
+    if ((await response).status === 204) {
+      // await getFollowing();
+      await getSentRequests();
+      await getData();
+      console.log("Deleted!");
+    } else {
+      console.log("Failed to delete!");
+    }
+  }
+
+  const listItems = authors.map((author) => {
     if (author.username !== user.username && !followingList.includes(author.id))
       return (
-        <Box sx={{ flexGrow: 0.5, marginTop: "0.8em" }}>
-          <Grid container spacing={1} wrap="wrap">
+        <Box
+          sx={{
+            flexGrow: 0.5,
+            marginTop: "0.8em",
+          }}
+        >
+          <Grid container spacing={0.5} wrap="wrap">
             <Grid item xs="auto" key={author.id}>
               <Container
                 sx={{
                   backgroundColor: "rgba(0, 0, 0, 0.05)",
-                  width: "auto",
+                  width: "100%",
                   borderRadius: "1em",
                   boxShadow: 1,
                   p: 2,
@@ -151,7 +193,6 @@ function CreateArray() {
                   alt="profile-image"
                   sx={{
                     height: 120,
-                    // mb: 10,
                     width: 120,
                     margin: "auto",
                   }}
@@ -189,8 +230,11 @@ function CreateArray() {
                       </Box>
 
                       <Box>
-                        <Button variant="contained" sx={{ bgcolor: "red" }}>
-                          {" "}
+                        <Button
+                          variant="contained"
+                          sx={{ bgcolor: "red" }}
+                          onClick={() => cancelFollowRequest(author.id)}
+                        >
                           Cancel Request
                         </Button>
                       </Box>
