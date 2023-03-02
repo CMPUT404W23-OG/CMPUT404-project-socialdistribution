@@ -195,6 +195,7 @@ function CreateArray() {
               flexGrow: 0.03,
               marginTop: "0.8em",
             }}
+            key={author.id}
           >
             <Grid container spacing={2} wrap="wrap">
               <Grid item xs="auto" key={author.id}>
