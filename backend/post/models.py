@@ -1,11 +1,13 @@
 from django.db import models
-from django.forms import ModelForm
 from django.urls import reverse
 from author.models import Author
+from django.contrib.postgres.fields import ArrayField
 
 #posts are public by default (True)
 #unlisted field for images
 #contenttype -> image posts (how do we wanna do it) TODO
+
+#for categories with ArrayField: https://docs.djangoproject.com/en/2.2/ref/contrib/postgres/fields/#arrayfield
 
 class Post(models.Model):
     author_name = models.CharField(max_length=200)
@@ -14,12 +16,12 @@ class Post(models.Model):
     title = models.CharField(max_length=200)
     public = models.BooleanField(default=True)
     description = models.CharField(max_length=200)
+    contentType = models.CharField(max_length=200)
     body = models.TextField()
-    datePublished = models.DateTimeField(auto_now_add=True)
+    datePublished = models.DateTimeField(auto_now_add=True) 
     dateEdited = models.DateTimeField(auto_now=True)
     unlisted = models.BooleanField(default=False)
-    #author field TODO
-    #ID field TODO
+    categories = ArrayField(models.CharField(max_length=200), blank=True)
 
 #def get_absolute_path(self):
     #return reverse('posts-detail', kwargs={"pk": self.id})
