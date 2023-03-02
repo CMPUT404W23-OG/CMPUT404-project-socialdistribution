@@ -1,7 +1,11 @@
+import os
+
 from django.db import models
 from django.urls import reverse
 from author.models import Author
 from django.contrib.postgres.fields import ArrayField
+
+HOST = os.getenv('HOST')
 
 #posts are public by default (True)
 #unlisted field for images
@@ -17,6 +21,7 @@ class Post(models.Model):
     public = models.BooleanField(default=True)
     description = models.CharField(max_length=200)
     contentType = models.CharField(max_length=200)
+    image_url = models.URLField(max_length=200, blank=False, default=HOST)
     body = models.TextField()
     datePublished = models.DateTimeField(auto_now_add=True) 
     dateEdited = models.DateTimeField(auto_now=True)

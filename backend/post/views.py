@@ -54,15 +54,6 @@ class PostView(APIView):
         updated = request.data.copy()
         updated['author_id'] = author_id
 
-        # save post to database, assigned to author_id
-
-        #change the updated['content-type]
-
-        try:
-            if updated['description'][:4] == 'http':
-                updated['contentType'] == "application/base64"
-            
-
         serializer = PostSerializer(data=updated)
         serializer.is_valid(raise_exception=True)
         serializer.save()
