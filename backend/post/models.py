@@ -9,7 +9,6 @@ HOST = os.getenv('HOST')
 
 #posts are public by default (True)
 #unlisted field for images
-#contenttype -> image posts (how do we wanna do it) TODO
 
 #for categories with ArrayField: https://docs.djangoproject.com/en/2.2/ref/contrib/postgres/fields/#arrayfield
 
@@ -21,7 +20,8 @@ class Post(models.Model):
     public = models.BooleanField(default=True)
     description = models.CharField(max_length=200)
     contentType = models.CharField(max_length=200)
-    image_url = models.URLField(max_length=200, blank=False, default=HOST)
+    image_url = models.URLField(max_length=200, blank=True, default=HOST)
+    image_file = models.ImageField(upload_to='post_images', blank=True)
     body = models.TextField()
     datePublished = models.DateTimeField(auto_now_add=True) 
     dateEdited = models.DateTimeField(auto_now=True)
