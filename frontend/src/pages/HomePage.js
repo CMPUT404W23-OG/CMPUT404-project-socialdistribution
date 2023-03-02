@@ -14,6 +14,7 @@ import Typography from '@mui/material/Typography';
 import { red } from '@mui/material/colors';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
+import Comments from '@mui/icons-material/Comment'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { format } from 'date-fns';
@@ -25,7 +26,7 @@ const ExpandMore = styled((props) => {
   return <IconButton {...other} />;
 })(({ theme, expand }) => ({
   transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
-  marginLeft: 'auto',
+  // marginLeft: 'auto',
   transition: theme.transitions.create('transform', {
     duration: theme.transitions.duration.shortest,
   }),
@@ -40,12 +41,13 @@ function CreateArray() {
   // const [posts, setPosts] = useState([])
   // const [page, setPage] = useState(0)
   const [expanded, setExpanded] = useState(false);
-
   const [offset, setOffset] = useState(0)
   const [currPage, setCurrPage] = useState(1)
   const [prevPage, setPrevPage] = useState(0)
   const [postList, setPostList] = useState([])
   const [wasLast, setWasLast] = useState(false)
+  // const [commentSection, setCommentSection] = useState(comments);
+
   const headers = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Expose-Headers": "X-PAGINATION-SIZE"
@@ -55,6 +57,7 @@ function CreateArray() {
   useEffect(() => {
     const getData = async () => {
       const res = await axios.get(BasePath + `/posts/all/?page=${currPage}&size=5`, headers);
+      console.log(res.data)
       if (!res.data.length) {
         setWasLast(true)
       }
@@ -86,25 +89,6 @@ function CreateArray() {
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
-  
-  // function getData() {
-  //   fetch(BasePath+'/posts/all/', {
-  //     method: 'GET',
-  //     headers: {
-  //       Accept: "application/json",
-  //       "Content-Type": "application/json"
-  //     }
-  //   })
-  //   .then((res) => res.json())
-  //   .then((result) => {
-  //     setPosts((result))
-  //     setPage(page+1)
-  //   })
-  // }
-
-  // if (page < 1) {
-  //   getData()
-  // }
   
   const listItems = postList.map((post) =>
     <Box
@@ -156,16 +140,13 @@ function CreateArray() {
         <IconButton aria-label="add to favorites">
           <FavoriteIcon />
         </IconButton>
-        <IconButton aria-label="share">
-          <ShareIcon />
-        </IconButton>
         <ExpandMore
           expand={expanded}
           onClick={handleExpandClick}
           aria-expanded={expanded}
           aria-label="show more"
         >
-          <ExpandMoreIcon />
+          <Comments />
         </ExpandMore>
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
@@ -214,7 +195,6 @@ function CreateArray() {
 
 
 const HomePage = () => {
-  
   return (
     <div>
       <CreateArray />
