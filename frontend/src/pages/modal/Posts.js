@@ -50,7 +50,7 @@ export default function PostsDialog({postType, open, setOpen}) {
         "contentType":cont_type,
         "author_id":null,
         "author_name":user_name,
-        "visibility":"FRIENDS",
+        "visibility":"PUBLIC",
     };
 
     const handleClose = () => {
@@ -59,9 +59,9 @@ export default function PostsDialog({postType, open, setOpen}) {
 
     const handleChange = (event) => {
         if (event.target.checked) {
-            payload.visibility = "PRIVATE"
-        } else {
             payload.visibility = "FRIENDS"
+        } else {
+            payload.visibility = "PUBLIC"
         }
     }
 
