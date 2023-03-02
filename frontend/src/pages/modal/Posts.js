@@ -16,6 +16,7 @@ export default function PostsDialog({postType, open, setOpen}) {
     const [postText, setText] = useState( "");
     const [imageUrl, setUrl] = useState("");
     const [submitted, setSubmitted] = useState(false);
+
     var user_name = 'Author Not Found'
     if (user) {
         user_name = user.username
@@ -57,9 +58,9 @@ export default function PostsDialog({postType, open, setOpen}) {
 
     const handleChange = (event) => {
         if (event.target.checked) {
-            payload.visibility = "PRIVATE"
-        } else {
             payload.visibility = "FRIENDS"
+        } else {
+            payload.visibility = "PUBLIC"
         }
     }
 
