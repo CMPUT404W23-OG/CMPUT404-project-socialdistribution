@@ -97,7 +97,6 @@ class PostList(APIView):
             number = self.request.query_params.get('page', 1)
             size = self.request.query_params.get('size', 5)
             paginator = Paginator(posts, size)
-            print(str(paginator.num_pages), request.query_params.get('page'))
             if ((paginator.num_pages + 1) > int(number)):
                 serializer = PostSerializer(paginator.page(number), many=True)
             else:
