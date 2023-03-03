@@ -19,6 +19,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { format } from 'date-fns';
 import axios from 'axios';
+import AuthContext from "../context/AuthContext";
 
 
 const ExpandMore = styled((props) => {
@@ -33,12 +34,8 @@ const ExpandMore = styled((props) => {
 }));
 
 
-
 function CreateArray() {
-
-  
-  // const [posts, setPosts] = useState([])
-  // const [page, setPage] = useState(0)
+ 
   const [expanded, setExpanded] = useState(false);
   const [offset, setOffset] = useState(0)
   const [currPage, setCurrPage] = useState(1)
@@ -51,18 +48,17 @@ function CreateArray() {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Expose-Headers": "X-PAGINATION-SIZE"
   }
-  
-
   useEffect(() => {
     const getData = async () => {
       const res = await axios.get(BasePath + `/posts/all/?page=${currPage}&size=5`, headers);
-      console.log(res.data)
+
       if (!res.data.length) {
         setWasLast(true)
       }
       setPrevPage(currPage)
       setPostList([...postList, ...res.data])
     }
+    
     if (!wasLast && prevPage !== currPage) {
       getData()
     }     
@@ -70,10 +66,10 @@ function CreateArray() {
   }, [currPage, prevPage, wasLast, postList])
 
   useEffect(() => {
-    console.log('here')
     const onScroll = () => {
+      console.log((window.innerHeight), ((window.innerHeight) * 2), window.scrollY, document.body.offsetHeight)
       setOffset(window.pageYOffset)
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+      if ((window.innerHeight+10) + window.scrollY >= document.body.offsetHeight) {
         setCurrPage(currPage + 1)
         
       }
@@ -83,7 +79,7 @@ function CreateArray() {
     
     return () => window.removeEventListener('scroll', onScroll)
         
-    }, []);
+    }, [offset]);
   
   const handleExpandClick = () => {
     setExpanded(!expanded);

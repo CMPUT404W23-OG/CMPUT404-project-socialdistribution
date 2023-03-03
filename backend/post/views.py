@@ -92,9 +92,23 @@ class PostList(APIView):
         
         """
         posts = Post.objects.all().filter(visibility="PUBLIC").order_by('-datePublished')
-        number = self.request.query_params.get('page', 1)
-        size = self.request.query_params.get('size', 5)
+        
+        if (request.query_params.get('page')):
+            number = self.request.query_params.get('page', 1)
+            size = self.request.query_params.get('size', 5)
+            paginator = Paginator(posts, size)
+            if ((paginator.num_pages + 1) > int(number)):
+                serializer = PostSerializer(paginator.page(number), many=True)
+            else:
+                return Response([])
+        else:
 
-        paginator = Paginator(posts, size)
-        serializer = PostSerializer(paginator.page(number), many=True)
+            serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)    
+    
+class PostCount(APIView):
+    @extend_schema(request=PostSerializer, responses=PostSerializer)
+    def get(self, request):
+        count = Post.objects.all().filter(visibility="PUBLIC").order_by('-datePublished').count()
+
+        return Response(count)

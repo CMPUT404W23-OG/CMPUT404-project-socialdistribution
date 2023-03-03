@@ -36,14 +36,8 @@ const SignUpPage = () => {
                 />
                 <input
                 type="text"
-                name="email"
-                placeholder="Enter Email Address"
-                />
-                <input
-                type="text"
                 name="githubId"
                 placeholder="Enter Github Username"
-
                 />
                 <button type="submit"> Sign Up </button>
             </form>
