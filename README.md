@@ -32,7 +32,6 @@ Contributors:
     Braedy Kuzma
     Nhan Nguyen 
     
-  Winter 2023
     Vardan Saini
     Matthew Sheydwasse
     Vivek Malhotra
