@@ -19,6 +19,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { format } from 'date-fns';
 import axios from 'axios';
+import AuthContext from "../context/AuthContext";
 
 
 const ExpandMore = styled((props) => {
@@ -33,11 +34,8 @@ const ExpandMore = styled((props) => {
 }));
 
 
-
 function CreateArray() {
-
-  // const [posts, setPosts] = useState([])
-  // const [page, setPage] = useState(0)
+ 
   const [expanded, setExpanded] = useState(false);
   const [offset, setOffset] = useState(0)
   const [currPage, setCurrPage] = useState(1)

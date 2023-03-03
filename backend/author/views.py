@@ -24,7 +24,7 @@ class SignUpView(APIView):
                 return Response({'detail': 'Author not found.'}, status=status.HTTP_404_NOT_FOUND)
             author = Author.objects.get(pk=authorId)
 
-
+            print(author.set_absolute_url())
             serializer = AuthorSerializer(author)
             return Response(serializer.data)
         else:
@@ -39,8 +39,8 @@ class SignUpView(APIView):
         
         serializer = AuthorSerializer(data = request.data)
         serializer.is_valid(raise_exception = True)
-        
         serializer.save()
+
         return Response(serializer.data)
     
     @extend_schema(request=AuthorSerializer, responses=AuthorSerializer)
