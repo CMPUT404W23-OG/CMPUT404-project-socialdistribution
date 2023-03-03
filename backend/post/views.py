@@ -7,6 +7,8 @@ from drf_spectacular.utils import extend_schema
 from rest_framework.views import APIView
 from .serializers import PostSerializer
 from django.core.paginator import Paginator
+import base64
+from django.core.files.base import ContentFile
 
 
 from .models import Post
@@ -54,7 +56,12 @@ class PostView(APIView):
         updated = request.data.copy()
         updated['author_id'] = author_id
 
-        # save post to database, assigned to author_id
+        if updated['contentType'][:5] == "image" and 'image_file' in updated:
+            ext = updated['contentType'][6:]
+            format, imageDecoded = updated['image_file'].split(';base64,') 
+            data = ContentFile(base64.b64decode(imageDecoded), name="postImage." + ext)
+            updated['image_file'] = data
+
         serializer = PostSerializer(data=updated)
         serializer.is_valid(raise_exception=True)
         serializer.save()
