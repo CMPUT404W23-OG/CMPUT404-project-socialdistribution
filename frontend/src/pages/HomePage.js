@@ -84,7 +84,18 @@ function CreateArray() {
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
-  
+  function getImg(post) {
+    if (!post.image_url) {
+      return
+    } else {
+      return (<CardMedia
+      component="img"
+      height="194"
+      image={post.image_url}
+      alt={post.description}
+    />)
+    }
+  }
   const listItems = postList.map((post) =>
     <Box
     key={post.id}
@@ -120,12 +131,7 @@ function CreateArray() {
 
 
       />
-      <CardMedia
-        component="img"
-        height="194"
-        image="/static/images/cards/paella.jpg"
-        alt="Paella dish"
-      />
+      {getImg(post)}
       <CardContent>
         <Typography variant="body2" color="text.secondary">
         {post.body}
