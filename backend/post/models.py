@@ -18,9 +18,7 @@ class Post(models.Model):
     datePublished = models.DateTimeField(auto_now_add=True)
     dateEdited = models.DateTimeField(auto_now=True)
     unlisted = models.BooleanField(default=False)
-    #author field TODO
-    #ID field TODO
-
+    
 #def get_absolute_path(self):
     #return reverse('posts-detail', kwargs={"pk": self.id})
 
