@@ -7,6 +7,8 @@ from drf_spectacular.utils import extend_schema
 from rest_framework.views import APIView
 from .serializers import PostSerializer, CommentSerializer, LikeSerializer
 from django.core.paginator import Paginator
+import base64
+from django.core.files.base import ContentFile
 
 
 from .models import Post, Comment, Likes
@@ -54,7 +56,12 @@ class PostView(APIView):
         updated = request.data.copy()
         updated['author_id'] = author_id
 
-        # save post to database, assigned to author_id
+        if updated['contentType'][:5] == "image" and 'image_file' in updated:
+            ext = updated['contentType'][6:]
+            format, imageDecoded = updated['image_file'].split(';base64,') 
+            data = ContentFile(base64.b64decode(imageDecoded), name="postImage." + ext)
+            updated['image_file'] = data
+
         serializer = PostSerializer(data=updated)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -71,7 +78,7 @@ class AuthorPostList(APIView):
         http://localhost:8000/posts/author/39?page=2&size=3 
         
         """
-        posts = Post.objects.all().filter(author_id=author_id).order_by('datePublished')
+        posts = Post.objects.all().filter(author_id=author_id).order_by('-datePublished')
         number = self.request.query_params.get('page', 1)
         size = self.request.query_params.get('size', 5)
 
@@ -91,13 +98,26 @@ class PostList(APIView):
         http://localhost:8000/posts/all?page=2&size=3 
         
         """
-        posts = Post.objects.all().filter(visibility="PUBLIC").order_by('datePublished')
-        number = self.request.query_params.get('page', 1)
-        size = self.request.query_params.get('size', 5)
+        posts = Post.objects.all().filter(visibility="PUBLIC").order_by('-datePublished')
+        
+        if (request.query_params.get('page')):
+            number = self.request.query_params.get('page', 1)
+            size = self.request.query_params.get('size', 5)
+            paginator = Paginator(posts, size)
+            if ((paginator.num_pages + 1) > int(number)):
+                serializer = PostSerializer(paginator.page(number), many=True)
+            else:
+                return Response([])
+        else:
 
-        paginator = Paginator(posts, size)
-        serializer = PostSerializer(paginator.page(number), many=True)
+            serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)    
+    
+class PostCount(APIView):
+    @extend_schema(request=PostSerializer, responses=PostSerializer)
+    def get(self, request):
+        count = Post.objects.all().filter(visibility="PUBLIC").order_by('-datePublished').count()
+        return Response(count)
 
 class CommentView(APIView):
     def get_object(self, pk):
@@ -178,3 +198,4 @@ class LikesViewAdd(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response({'detail': 'Author ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
+

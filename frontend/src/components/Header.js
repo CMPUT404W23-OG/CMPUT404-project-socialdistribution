@@ -3,8 +3,9 @@ import { useContext } from "react";
 import AuthContext from "../context/AuthContext";
 import "../themes/header.css";
 import * as React from "react";
+import {useState} from "react";
 import { styled, alpha } from "@mui/material/styles";
-import { Link } from "@mui/material";
+import { Link, Button } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -21,9 +22,12 @@ import MailIcon from "@mui/icons-material/Mail";
 import Add from "@mui/icons-material/AddToPhotos";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
+import { ListItem } from '@mui/material';
+import { useNavigate } from "react-router-dom";
 
 import Home from "@mui/icons-material/Home";
 import People from "@mui/icons-material/PeopleAlt";
+import Posts from "../pages/modal/Posts";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -66,15 +70,42 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function Header() {
+  const navigate = useNavigate();
   let { user, logoutUser } = useContext(AuthContext);
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorElPost, setanchorElPost] = useState(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
 
   const isMenuOpen = Boolean(anchorEl);
+  const isPostOpen = Boolean(anchorElPost);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+  const [open, setOpen] = useState(false);
+  const [PostType, setType] = useState("");
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
+  };
+
+  const handlePostMenuOpen = (event) => {
+    setanchorElPost(event.currentTarget);
+  };
+
+  const handleProfile = () => {
+    navigate("/profile");
+    handleMenuClose();
+  };
+
+  function handlePost(postType) {
+    handlePostMenuClose();
+    setType(postType);
+    setOpen(true);
+   
+  };
+
+  const handleLogout = () => {
+    logoutUser();
+    handleMenuClose();
   };
 
   const handleMobileMenuClose = () => {
@@ -83,6 +114,11 @@ export default function Header() {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+    handleMobileMenuClose();
+  };
+
+  const handlePostMenuClose = () => {
+    setanchorElPost(null);
     handleMobileMenuClose();
   };
 
@@ -107,15 +143,50 @@ export default function Header() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>
+      <MenuItem onClick={handleProfile}>
         {" "}
-        <Link href="/profile">Profile</Link>
+        Profile
       </MenuItem>
-      <MenuItem onClick={handleMenuClose}>
+      <MenuItem onClick={handleLogout}>
         {" "}
-        <li>
-          <button onClick={logoutUser}> Logout</button>
-        </li>
+        Logout
+      </MenuItem>
+      
+    </Menu>
+  );
+
+  const menuIdPost = "primary-post-menu";
+  const renderMenuPost = (
+    <Menu
+      anchorEl={anchorElPost}
+      anchorOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      id={menuIdPost}
+      keepMounted
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      open={isPostOpen}
+      onClose={handlePostMenuClose}
+    >
+      <MenuItem onClick={() => handlePost("text")}>
+        {" "}
+       Post thoughts
+      </MenuItem>
+      <MenuItem onClick={() => handlePost("markdown")}>
+        {" "}
+        Markdown Post
+      </MenuItem>
+      <MenuItem onClick={() => handlePost("image")}>
+        {" "}
+        Post an image
+      </MenuItem>
+      <MenuItem onClick={() => handlePost("textImage")}>
+        {" "}
+        Post Image with caption 
       </MenuItem>
     </Menu>
   );
@@ -200,7 +271,8 @@ export default function Header() {
 
   return (
     <>
-      {user ? (
+      {/* {user ? ( */}
+        <>
         <Box sx={{ flexGrow: 1 }}>
           <AppBar position="static">
             <Toolbar>
@@ -213,6 +285,7 @@ export default function Header() {
               >
                 <MenuIcon />
               </IconButton> */}
+              <Link href="/" color="inherit" sx={{ textDecoration: "none" }}>
               <Typography
                 variant="h6"
                 noWrap
@@ -221,6 +294,7 @@ export default function Header() {
               >
                 Social Distrubution
               </Typography>
+              </Link>
               {/* <Search>
                 <SearchIconWrapper>
                   <SearchIcon />
@@ -230,31 +304,43 @@ export default function Header() {
                   inputProps={{ "aria-label": "search" }}
                 />
               </Search> */}
+              {user ? (
+                <>
               <Box sx={{ flexGrow: 1 }} />
               <Box sx={{ display: { xs: "none", md: "flex" } }}>
-                <IconButton size="large" color="inherit">
-                  <Link color="inherit">
-                    {" "}
+                <IconButton
+                    size="large"
+                    // edge="end"
+                    aria-label="posts menu"
+                    aria-controls={menuIdPost}
+                    aria-haspopup="true"
+                    onClick={handlePostMenuOpen}
+                    color="inherit"
+                  >
                     <Add />
-                  </Link>
-                </IconButton>
+                  </IconButton>
+
                 <IconButton size="large" color="inherit">
                   <Link href="/" color="inherit">
                     {" "}
                     <Home />
                   </Link>
                 </IconButton>
-                <IconButton size="large" color="inherit">
+
+                <IconButton 
+                size="large" color="inherit">
                   <Link href="/search" color="inherit">
                     {" "}
                     <People />
                   </Link>
                 </IconButton>
-                {/* <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-              <Badge badgeContent={4} color="error">
-                <MailIcon />
-              </Badge>
-            </IconButton> */}
+
+                  {/* <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+                <Badge badgeContent={4} color="error">
+                  <MailIcon />
+                </Badge>
+               </IconButton> */}
+
                 <IconButton
                   size="large"
                   aria-label="show 17 new notifications"
@@ -266,6 +352,7 @@ export default function Header() {
                     </Link>
                   </Badge>
                 </IconButton>
+
                 <IconButton
                   size="large"
                   edge="end"
@@ -290,30 +377,53 @@ export default function Header() {
                   <MoreIcon />
                 </IconButton>
               </Box>
+              </>
+              ) : (
+                <>
+                <Box sx={{ flexGrow: 1 }} />
+              <Box sx={{ display: { xs: "none", md: "flex" } }}>
+
+                <IconButton size="large" color="inherit">
+                  <Link href="/" color="inherit">
+                    {" "}
+                    <Home />
+                  </Link>
+                </IconButton>
+
+                <Link href="/login" sx={{color: "inherit", padding: "20px"}}>
+                  Login
+                </Link>
+              </Box>
+              </>
+              )}
+
             </Toolbar>
           </AppBar>
           {renderMobileMenu}
+          {renderMenuPost}
           {renderMenu}
         </Box>
-      ) : (
-        <div className="header">
-          <nav className="navbar">
-            <ul>
-              <li>
-                <Link href="/">
-                  <button>Home</button>
-                </Link>
-              </li>
-              <li>
-                <Link href="/login">
-                  <button>Login</button>
-                </Link>
-              </li>
-              {user && <p>Hello {user.username}</p>}
-            </ul>
-          </nav>
-        </div>
-      )}
+        <Posts postType={PostType} open={open} setOpen={setOpen}/>
+        </>
+      {/* // ) : (
+      //   <div className="header">
+      //     <nav className="navbar">
+      //       <ul>
+      //         <li>
+      //           <Link href="/">
+      //             <button>Home</button>
+      //           </Link>
+      //         </li>
+      //         <li>
+      //           <Link href="/login">
+      //             <Button>Login</Button>
+      //           </Link>
+      //         </li>
+      //         {user && <p>Hello {user.username}</p>}
+      //       </ul>
+      //     </nav>
+      //   </div>
+      // )} */}
     </>
   );
 }

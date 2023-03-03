@@ -68,7 +68,6 @@ export const AuthProvider = ({ children }) => {
           username: e.target.username.value,
           password: e.target.password.value,
           githubId: e.target.githubId.value,
-          email: e.target.email.value,
         }),
       });
       if (response.status === 200) {
