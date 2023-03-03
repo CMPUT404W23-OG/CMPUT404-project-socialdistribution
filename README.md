@@ -31,3 +31,11 @@ Contributors:
     Abram Hindle
     Braedy Kuzma
     Nhan Nguyen 
+    
+    ### Winter 2023
+    Vardan Saini
+    Matthew Sheydwasse
+    Vivek Malhotra
+    Daisy Lau
+    Kashish Sansanwal
+    
