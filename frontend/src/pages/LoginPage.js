@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import AuthContext from "../context/AuthContext";
 import { Navigate, Link } from "react-router-dom";
+import { Box, Button, Container } from "@mui/material";
 import '../themes/login.css';
 
 const LoginPage = () => {
@@ -8,6 +9,15 @@ const LoginPage = () => {
   let { user } = useContext(AuthContext);
   if (!user) {
     return (
+      <Box
+          sx={{
+            display: 'flex',
+            flex: '1 1 auto',
+            flexDirection: 'column',
+            width: '100%',
+          }}
+        >
+          <Container maxWidth="md">
       <div className='loginForm'>
         <h1>Welcome to Social Distribution!</h1>
         <h2>Create an account or login.</h2>
@@ -30,6 +40,8 @@ const LoginPage = () => {
         <Link to="/signup"><button className="signupbtn">Sign up</button></Link>
         <p>Don't have an account, Please wait for signup page </p>
       </div>
+      </Container>
+      </Box>
     );
   } else {
     return <Navigate to="/" />;
