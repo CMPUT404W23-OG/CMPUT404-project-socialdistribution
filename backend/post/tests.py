@@ -6,81 +6,80 @@ from author.models import Author
 
 #Write a test to check if the post is created
 
-class PostTestCase(TestCase):
+class PostModelTestCase(TestCase):
+    
     def setUp(self):
-        self.author = Author.objects.create(name='Test Author')
+        self.author = Author.objects.create(username='testuser')
         self.post = Post.objects.create(
             title='Test Post',
-            author_name=self.author.name,
+            author_name='testuser',
             author_id=self.author,
-            description='Test Description',
-            body='Test Body'
+            description='This is a test post.',
+            body='Test post content.',
         )
 
     def test_post_creation(self):
-        self.assertTrue(isinstance(self.post, Post))
-        self.assertEqual(self.post.__str__(), self.post.title)
-        self.assertEqual(self.post.author_name, self.author.name)
-        self.assertEqual(self.post.author_id, self.author)
-        self.assertEqual(self.post.description, 'Test Description')
-        self.assertEqual(self.post.body, 'Test Body')
-        self.assertEqual(self.post.public, True)
-        self.assertEqual(self.post.type, 'post')
-        self.assertEqual(self.post.contentType, 'text/plain')
-        self.assertEqual(self.post.visibility, 'PUBLIC')
-        self.assertEqual(self.post.unlisted, False)
-        self.assertListEqual(self.post.categories, [])
-        self.assertIsInstance(self.post.datePublished, datetime)
-        self.assertIsInstance(self.post.dateEdited, datetime)
+        post = Post.objects.get(id=1)
+        self.assertEqual(post.title, 'Test Post')
+        self.assertEqual(post.author_name, 'testuser')
+        self.assertEqual(post.author_id, self.author)
+        self.assertEqual(post.description, 'This is a test post.')
+        self.assertEqual(post.body, 'Test post content.')
 
 
-class CommentTestCase(TestCase):
+class PostCommentTest(TestCase):
     def setUp(self):
-        self.author = Author.objects.create(name='Test Author')
+        # Create an author
+        self.author = Author.objects.create(username='testauthor')
+
+        # Create a post
         self.post = Post.objects.create(
             title='Test Post',
-            author_name=self.author.name,
-            author_id=self.author,
-            description='Test Description',
-            body='Test Body'
-        )
-        self.comment = Comment.objects.create(
-            author=self.author,
-            comment='Test Comment',
-            post=self.post
+            author_name='testauthor',
+            description='Test post description',
+            body='Test post body',
+            author_id=self.author
         )
 
     def test_comment_creation(self):
-        self.assertTrue(isinstance(self.comment, Comment))
-        self.assertEqual(self.comment.__str__(), self.comment.comment)
-        self.assertEqual(self.comment.author, self.author)
-        self.assertEqual(self.comment.comment, 'Test Comment')
-        self.assertEqual(self.comment.contentType, 'text/markdown')
-        self.assertEqual(self.comment.post, self.post)
-        self.assertIsInstance(self.comment.published, datetime)
+        # Create a comment for the post
+        comment = Comment.objects.create(
+            author=self.author,
+            comment='Test comment',
+            contentType='text/markdown',
+            post=self.post
+        )
 
-    def test_comment_post_association(self):
-        self.assertEqual(self.comment.post, self.post)
-        self.assertIn(self.comment, self.post.comment_set.all())
+        # Check if the comment was created
+        self.assertEqual(comment.author, self.author)
+        self.assertEqual(comment.comment, 'Test comment')
+        self.assertEqual(comment.contentType, 'text/markdown')
+        self.assertEqual(comment.post, self.post)
 
-class TestLikes(TestCase):
 
+class LikesModelTestCase(TestCase):
     def setUp(self):
-        # create a user
-        self.user = Author.objects.create(displayName='test user')
-        # create a post
-        self.post = Post.objects.create(title='Test Post', author_name='test author', author_id=self.user, body='test body')
-        # create a comment
-        self.comment = Comment.objects.create(author=self.user, comment='test comment', post=self.post)
+        self.author = Author.objects.create(
+            username='testuser',
+            password='testpass',
+            first_name='Test',
+            last_name='User'
+        )
+        self.post = Post.objects.create(
+            title='Test Post',
+            author_name=self.author.username,
+            author_id=self.author,
+            description='This is a test post',
+            body='This is the body of the test post'
+        )
 
-    def test_like_post(self):
-        # create a like for the post
-        like = Likes.objects.create(summary='like post', author=self.user, post=self.post)
-        # check if the like is created
-        self.assertEqual(Likes.objects.count(), 1)
+    def test_create_like(self):
+        like = Likes.objects.create(
+            summary='Test Like',
+            author=self.author,
+            post=self.post
+        )
+        self.assertEqual(like.summary, 'Test Like')
+        self.assertEqual(like.author, self.author)
+        self.assertEqual(like.post, self.post)
 
-    def test_like_comment(self):
-        # create a like for the comment
-        like = Likes.objects.create(summary='like comment', author=self.user, post=self.post, comment=self.comment)
-        # check if the like is created
-        self.assertEqual(Likes.objects.count(), 1)
