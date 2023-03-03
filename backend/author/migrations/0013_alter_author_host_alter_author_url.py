@@ -7,6 +7,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('author', '0012_alter_author_host_alter_author_url'),
+
     ]
 
     operations = [
@@ -19,5 +20,6 @@ class Migration(migrations.Migration):
             model_name='author',
             name='url',
             field=models.URLField(default='http://localhost:8000/'),
+
         ),
     ]

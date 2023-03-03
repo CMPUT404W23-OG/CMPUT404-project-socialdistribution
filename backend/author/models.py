@@ -5,8 +5,9 @@ from django.core.files import File
 import os
 import urllib
 from dotenv import load_dotenv
-load_dotenv()
 
+BASEDIR = os.path.abspath(os.path.dirname(__file__))
+load_dotenv(os.path.join(BASEDIR, '.env'))
 HOST = os.getenv('HOST')
 
 
@@ -41,16 +42,15 @@ class AuthorManager(BaseUserManager):
 # AbstractUser is a built-in Django model that has all the fields we need for a user
 # We can add more fields to this model if we want to
 class Author(AbstractUser):
-
+    
     profile_image_url = models.URLField(max_length=200, blank=True)
     # profile_image_file = models.ImageField(upload_to='profile_images', blank=True)
     host = models.URLField(max_length=200, blank=False, default=HOST)
     url = models.URLField(max_length=200, blank=False, default=HOST)
-
+    
     githubId = models.CharField(max_length=200, blank=True)
     api_user = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
-    email = models.EmailField(max_length=200, unique=True, blank=True)
     
     objects = AuthorManager()
     USERNAME_FIELD = 'username'
@@ -62,9 +62,11 @@ class Author(AbstractUser):
         else:
             return "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
     
-    # use id as the primary key and get url to the author profile
-    def get_absolute_url(self): 
-        return reverse("author-detail", kwargs={"pk": self.id})
+    # set author url to base url and path to author
+    def set_absolute_url(self): 
+        self.url = self.url + 'author/' + str(self.id)
+        return None
+        # return reverse("author-detail", kwargs={"pk": self.id})
 
     def __str__(self):
         return self.username

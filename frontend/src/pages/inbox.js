@@ -108,7 +108,7 @@ export default function Inbox() {
           ))}
         </List>
       </Paper>
-      <AppBar position="fixed" color="primary" sx={{ top: 'auto', bottom: 0 }}>
+      {/* <AppBar position="fixed" color="primary" sx={{ top: 'auto', bottom: 0 }}>
         <Toolbar>
           <IconButton color="inherit" aria-label="open drawer">
             <MenuIcon />
@@ -124,7 +124,7 @@ export default function Inbox() {
             <MoreIcon />
           </IconButton>
         </Toolbar>
-      </AppBar>
+      </AppBar> */}
     </React.Fragment>
   );
 }
