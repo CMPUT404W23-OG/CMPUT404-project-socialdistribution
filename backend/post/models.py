@@ -19,14 +19,14 @@ class Post(models.Model):
     title = models.CharField(max_length=200)
     public = models.BooleanField(default=True)
     description = models.CharField(max_length=200)
-    contentType = models.CharField(max_length=200)
-    image_url = models.URLField(max_length=200, blank=True, default=HOST)
+    contentType = models.CharField(max_length=200, default='text/plain', blank=True)
+    image_url = models.URLField(max_length=200, blank=True)
     image_file = models.ImageField(upload_to='post_images', blank=True)
     body = models.TextField()
     datePublished = models.DateTimeField(auto_now_add=True) 
     dateEdited = models.DateTimeField(auto_now=True)
     unlisted = models.BooleanField(default=False)
-    categories = ArrayField(models.CharField(max_length=200), blank=True)
+    categories = ArrayField(models.CharField(max_length=200), blank=True, default=list)
 
 #def get_absolute_path(self):
     #return reverse('posts-detail', kwargs={"pk": self.id})
