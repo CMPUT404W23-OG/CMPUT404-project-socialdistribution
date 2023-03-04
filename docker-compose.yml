@@ -58,10 +58,9 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    command: python manage.py makemigrations && python manage.py migrate --noinput
+    command: python manage.py migrate
 
     depends_on:
-      - database
       - backend
 
 volumes:
