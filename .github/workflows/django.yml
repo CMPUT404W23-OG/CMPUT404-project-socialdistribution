@@ -59,10 +59,5 @@ jobs:
           PORT: ${{secrets.PORT}}
           KEY: ${{secrets.KEY}}
           script: |
-            cd ~/prod/backend
-            echo ${{secrets.BACK_END}} > .env
-            cd ..
-            cd frontend/
-            echo ${{secrets.FRONT_END}} > .env
-            cd ..
+            cd ~/prod
             docker-compose down && docker-compose up --build -d
