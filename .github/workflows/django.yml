@@ -60,9 +60,9 @@ jobs:
           KEY: ${{secrets.KEY}}
           script: |
             cd ~/prod/backend
-            echo "${{secrets.BACK_END}}" > .env
+            echo ${{secrets.BACK_END}} > .env
             cd ..
             cd frontend/
-            echo "${{secrets.FRONT_END}}" > .env
+            echo ${{secrets.FRONT_END}} > .env
             cd ..
             docker-compose down && docker-compose up --build -d
