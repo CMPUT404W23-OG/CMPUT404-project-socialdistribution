@@ -31,3 +31,37 @@ jobs:
         run: |
           echo "${{ secrets.ENV_FILE }}" > .env
           python manage.py test
+
+  deploy:
+    needs: build
+    runs-on: self-hosted
+    steps:
+      - uses: rtCamp/action-cleanup@master
+      - uses: actions/checkout@master
+
+      - name: Copy repo to VM
+        uses: appleboy/scp-action@master
+        env:
+          HOST: ${{secrets.HOST}}
+          USERNAME: ${{secrets.USERNAME}}
+          PORT: ${{secrets.PORT}}
+          KEY: ${{secrets.KEY}}
+        with:
+          source: "./"
+          target: "~/prod"
+
+      - name: Deploy
+        uses: appleboy/scp-action@master
+        with:
+          HOST: ${{secrets.HOST}}
+          USERNAME: ${{secrets.USERNAME}}
+          PORT: ${{secrets.PORT}}
+          KEY: ${{secrets.KEY}}
+          scripts: |
+            cd ~/backend
+            echo "${{secrets.BACK_END}}" > .env
+            cd ..
+            cd frontend/
+            echo "${{secrets.FRONT_END}}" > .env
+            cd ..
+            docker-compose down && docker-compose up --build -d
