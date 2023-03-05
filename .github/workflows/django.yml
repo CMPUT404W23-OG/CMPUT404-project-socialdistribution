@@ -15,6 +15,7 @@ jobs:
         python-version: [3.9]
 
     steps:
+      - uses: rtCamp/action-cleanup@master
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v3
@@ -57,7 +58,7 @@ jobs:
           USERNAME: ${{secrets.USERNAME}}
           PORT: ${{secrets.PORT}}
           KEY: ${{secrets.KEY}}
-          scripts: |
+          script: |
             cd ~/backend
             echo "${{secrets.BACK_END}}" > .env
             cd ..
