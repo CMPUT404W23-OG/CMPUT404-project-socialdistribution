@@ -30,4 +30,6 @@ jobs:
         working-directory: backend/
         run: |
           echo "${{ secrets.ENV_FILE }}" > .env
+          python manage.py makemigrations
+          python manage.py migrate
           python manage.py test
