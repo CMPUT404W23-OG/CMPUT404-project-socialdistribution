@@ -1,6 +1,4 @@
 from django.test import TestCase
-from .models import Post
-from datetime import datetime
 from .models import Post, Comment, Likes
 from author.models import Author
 
