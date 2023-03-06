@@ -32,6 +32,13 @@ Contributors:
     Braedy Kuzma
     Nhan Nguyen 
 
+    Vardan Saini
+    Matthew Sheydwasse
+    Vivek Malhotra
+    Daisy Lau
+    Kashish Sansanwal
+
+
 ### Theme.js is used and modified from 
 Copyright (c) 2021 Devias
 
