@@ -152,7 +152,7 @@ function CreateArray() {
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          <Typography paragraph>Author name: {post.author_name}</Typography>
+          <Typography paragraph>Post ID: {post.id}</Typography>
         </CardContent>
       </Collapse>
     </Card>
