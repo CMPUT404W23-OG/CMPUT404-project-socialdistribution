@@ -133,8 +133,8 @@ class CommentView(APIView):
         """
         if post_id and author_id:
             if Post.objects.filter(id=post_id, author_id=author_id).exists():
-                if Comment.objects.filter(post_id=post_id, author_id=author_id).exists():
-                    comments = Comment.objects.filter(post_id=post_id, author_id=author_id)
+                if Comment.objects.filter(post=post_id).exists():
+                    comments = Comment.objects.filter(post=post_id)
                     number = self.request.query_params.get('page', 1)
                     size = self.request.query_params.get('size', 5)
                     paginator = Paginator(comments, size)
@@ -148,8 +148,8 @@ class CommentView(APIView):
     def post(self, request, author_id, post_id, format=None):
         if author_id and post_id:
             updated = request.data.copy()
-            updated['author_id'] = author_id
-            updated['post_id'] = post_id
+            updated['post'] = post_id
+            print(updated)
 
             serializer = CommentSerializer(data=updated)
             serializer.is_valid(raise_exception=True)
@@ -168,17 +168,17 @@ class LikesView(APIView):
     def get(self, request, author_id, post_id, comment_id = None, format= None):
         if author_id and post_id and not comment_id:
             if Post.objects.filter(id=post_id, author_id=author_id).exists():
-                if Likes.objects.filter(post_id=post_id, author_id=author_id).exists():
-                    likes = Likes.objects.filter(post_id=post_id, author_id=author_id)
+                if Likes.objects.filter(post=post_id, comment__isnull=True).exists():
+                    likes = Likes.objects.filter(post=post_id, comment__isnull=True)
                     serializer = LikeSerializer(likes, many=True)
                     return Response(serializer.data, status=status.HTTP_200_OK)
                 return Response({'detail': 'No likes found.'}, status=status.HTTP_404_NOT_FOUND)
             return Response({'detail': 'Post not found.'}, status=status.HTTP_404_NOT_FOUND)
                 
         elif author_id and post_id and comment_id:
-            if Comment.objects.filter(post_id=post_id, post_id__author_id=author_id, id=comment_id).exists():
-                if Likes.objects.filter(post_id=post_id, author_id=author_id, comment_id=comment_id).exists():
-                    likes = Likes.objects.filter(post_id=post_id, author_id=author_id, comment_id=comment_id)
+            if Comment.objects.filter(post=post_id, post__author_id=author_id, id=comment_id).exists():
+                if Likes.objects.filter(post=post_id, comment=comment_id).exists():
+                    likes = Likes.objects.filter(post=post_id, comment=comment_id)
                     serializer = LikeSerializer(likes, many=True)
                     return Response(serializer.data, status=status.HTTP_200_OK)
                 return Response({'detail': 'No likes found.'}, status=status.HTTP_404_NOT_FOUND)
@@ -192,7 +192,8 @@ class LikesViewAdd(APIView):
     def post(self, request, author_id, format=None):
         if author_id:
             updated = request.data.copy()
-            updated['author_id'] = author_id
+            print(updated)
+            # updated['author'] = author_id
             serializer = LikeSerializer(data=updated)
             serializer.is_valid(raise_exception=True)
             serializer.save()
