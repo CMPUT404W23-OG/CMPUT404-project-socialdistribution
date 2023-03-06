@@ -127,12 +127,12 @@ class CommentView(APIView):
             raise Http404
     
     @extend_schema(request=CommentSerializer, responses=CommentSerializer)
-    def get(self, request, author_id, post_id, format=None):
+    def get(self, request, post_id, format=None):
         """
         Returns comments for a specific post.
         """
-        if post_id and author_id:
-            if Post.objects.filter(id=post_id, author_id=author_id).exists():
+        if post_id:
+            if Post.objects.filter(id=post_id).exists():
                 if Comment.objects.filter(post=post_id).exists():
                     comments = Comment.objects.filter(post=post_id)
                     number = self.request.query_params.get('page', 1)
@@ -142,20 +142,21 @@ class CommentView(APIView):
                     return Response(serializer.data, status=status.HTTP_200_OK)
                 return Response({'detail': 'No comments found.'}, status=status.HTTP_404_NOT_FOUND)
             return Response({'detail': 'Post not found.'}, status=status.HTTP_404_NOT_FOUND)
-        return Response({'detail': 'POST ID and Author ID are required.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'detail': 'POST ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
     
     @extend_schema(request=CommentSerializer, responses=CommentSerializer)
-    def post(self, request, author_id, post_id, format=None):
-        if author_id and post_id:
+    def post(self, request, post_id, author_id, format=None):
+        if  post_id and author_id:
             updated = request.data.copy()
             updated['post'] = post_id
+            updated['author'] = author_id
             print(updated)
 
             serializer = CommentSerializer(data=updated)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response({'detail': 'POST ID and Author ID are required.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'detail': 'POST ID and Author ID required.'}, status=status.HTTP_400_BAD_REQUEST)
     
 class LikesView(APIView):
     def get_object(self, pk):
@@ -165,9 +166,9 @@ class LikesView(APIView):
             raise Http404
         
     @extend_schema(request=LikeSerializer, responses=LikeSerializer)
-    def get(self, request, author_id, post_id, comment_id = None, format= None):
-        if author_id and post_id and not comment_id:
-            if Post.objects.filter(id=post_id, author_id=author_id).exists():
+    def get(self, request, post_id = None, comment_id = None, format= None):
+        if post_id and not comment_id:
+            if Post.objects.filter(id=post_id).exists():
                 if Likes.objects.filter(post=post_id, comment__isnull=True).exists():
                     likes = Likes.objects.filter(post=post_id, comment__isnull=True)
                     serializer = LikeSerializer(likes, many=True)
@@ -175,16 +176,18 @@ class LikesView(APIView):
                 return Response({'detail': 'No likes found.'}, status=status.HTTP_404_NOT_FOUND)
             return Response({'detail': 'Post not found.'}, status=status.HTTP_404_NOT_FOUND)
                 
-        elif author_id and post_id and comment_id:
-            if Comment.objects.filter(post=post_id, post__author_id=author_id, id=comment_id).exists():
-                if Likes.objects.filter(post=post_id, comment=comment_id).exists():
-                    likes = Likes.objects.filter(post=post_id, comment=comment_id)
+        elif comment_id:
+            if Comment.objects.filter(id=comment_id).exists():
+                if Likes.objects.filter(comment=comment_id).exists():
+                    likes = Likes.objects.filter(comment=comment_id)
                     serializer = LikeSerializer(likes, many=True)
                     return Response(serializer.data, status=status.HTTP_200_OK)
                 return Response({'detail': 'No likes found.'}, status=status.HTTP_404_NOT_FOUND)
             return Response({'detail': 'Comment not found.'}, status=status.HTTP_404_NOT_FOUND)
         
-        return Response({'detail': 'POST ID and Author ID are required.'}, status=status.HTTP_400_BAD_REQUEST)
+        if not post_id and not comment_id:
+            return Response({'detail': 'Either POST ID or Comment ID required.'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class LikesViewAdd(APIView):
     
@@ -192,8 +195,8 @@ class LikesViewAdd(APIView):
     def post(self, request, author_id, format=None):
         if author_id:
             updated = request.data.copy()
+            updated['author'] = author_id
             print(updated)
-            # updated['author'] = author_id
             serializer = LikeSerializer(data=updated)
             serializer.is_valid(raise_exception=True)
             serializer.save()
