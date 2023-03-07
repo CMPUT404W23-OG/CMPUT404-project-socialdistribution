@@ -100,12 +100,12 @@ function CreateArray() {
     <Box
     key={post.id}
     sx={{
-      display: "flex",
-      flex: "1 1 auto",
-      flexDirection: "column",
-      width: "100%",
-      paddingTop: "100px",
-      paddingBottom: "30px",
+      // display: "flex",
+      // flex: "1 1 auto",
+      // flexDirection: "column",
+      // width: "100%",
+      paddingTop: "10px",
+      paddingBottom: "10px",
     }}
     className={post.id}
     
@@ -202,7 +202,18 @@ function CreateArray() {
 const HomePage = () => {
   return (
     <div>
+      <Box
+  sx={{
+    display: "flex",
+    flex: "1 1 auto",
+    flexDirection: "column",
+    width: "100%",
+    paddingTop: "100px",
+    paddingBottom: "30px",
+  }}
+  >
       <CreateArray />
+      </Box>
           </div>
   );
 };
