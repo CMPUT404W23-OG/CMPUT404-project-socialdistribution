@@ -38,7 +38,7 @@ class Comment(models.Model):
     type = models.CharField(max_length=200, default='comment')
     author = models.ForeignKey('author.Author', on_delete=models.CASCADE)
     comment = models.TextField()
-    contentType = models.CharField(max_length=200, default='text/markdown')
+    contentType = models.CharField(max_length=200, default='text/plain')
     published = models.DateTimeField(auto_now_add=True)
     post = models.ForeignKey('post.Post', on_delete=models.CASCADE)
     
