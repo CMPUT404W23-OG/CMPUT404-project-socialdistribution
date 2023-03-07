@@ -1,5 +1,5 @@
 import {Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography, Container} from "@mui/material";
-import {useState, useContext} from "react";
+import {useState, useContext, useRef} from "react";
 import {useNavigate} from "react-router-dom";
 import AuthContext from "../../context/AuthContext";
 import BasePath from "../../config/BasePath";
@@ -12,16 +12,18 @@ export default function PostsDialog({postType, open, setOpen}) {
     const navigate = useNavigate();
 
     var { user, logoutUser } = useContext(AuthContext);
-    const [postTitle, setTitle] = useState( "");
-    const [postText, setText] = useState( "");
+    const [postTitle, setTitle] = useState("");
+    const [postText, setText] = useState("");
     const [imageUrl, setUrl] = useState("");
-    const [submitted, setSubmitted] = useState(false);
+    const [fileSelected, setFileSelected] = useState(null);
+    // const [submitted, setSubmitted] = useState(false);
 
     var user_name = 'Author Not Found'
     if (user) {
         user_name = user.username
     }
-    const post_title = postTitle
+    // const post_title = postTitle
+    const fileInput = useRef(null)
 
     let cont_type = ""
     if (postType === "text") {
@@ -39,10 +41,10 @@ export default function PostsDialog({postType, open, setOpen}) {
         
     }   
     const payload = {
-        "title":post_title,
+        "title":postTitle,
         "description": "private description here",
         "body": postText,
-        "image_url":"",
+        "image_url":imageUrl,
         "contentType":cont_type,
         "author_id":null,
         "author_name":user_name,
@@ -72,10 +74,18 @@ export default function PostsDialog({postType, open, setOpen}) {
     };
 
 
-    if (submitted) {
-        // navigate("/");
-        handleClose();
+    // if (submitted) {
+    //     // navigate("/");
+    //     handleClose();
+    // }
+
+    const uploadImage = (event) => {
+        setFileSelected(event.target.files[0]);
     }
+
+    function handleClick () {
+        fileInput.current.focus();
+      }
 
     return (
         <div>
@@ -135,7 +145,9 @@ export default function PostsDialog({postType, open, setOpen}) {
                     <Typography variant="body2" sx={{color: "grey", marginTop: "10px", marginBottom: "10px"
                 }} align="center"
                 >Or</Typography>
-                    <Button variant="contained" sx={{width: "100%"}}>Upload Image</Button>
+                    <input type="file" name="Image" onChange={uploadImage} ref={fileInput}/>
+                    {/* <Button variant="contained" sx={{width: "100%"}} onClick={handleClick}>Upload Image</Button> */}
+                    
                     </>
                     ) : ""}
                 <FormGroup>
