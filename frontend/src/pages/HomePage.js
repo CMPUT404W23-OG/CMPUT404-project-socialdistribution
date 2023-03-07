@@ -106,12 +106,11 @@ function CreateArray() {
       width: "100%",
       paddingTop: "30px",
       paddingBottom: "30px",
-      paddingLeft: "500px",
     }}
     className={post.id}
     
   >
-    <Container maxWidth="lg">
+    <Container maxWidth="sm">
       <Card sx={{ maxWidth: 700 }}
       className={post.author}>
       <CardHeader
