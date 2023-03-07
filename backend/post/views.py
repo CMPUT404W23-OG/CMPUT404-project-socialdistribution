@@ -129,8 +129,8 @@ class CommentView(APIView):
     @extend_schema(request=CommentSerializer, responses=CommentSerializer)
     def get(self, request, post_id, format=None):
         """
-        Provide the post ID as a URL parameter.
-        Returns all comments for a specific post. 
+        Provide the post ID as a URL parameter.\n
+        Returns all comments for a specific post.\n 
         Example: http://localhost:8000/posts/1/comments Returns all comments for post 1
         """
         if post_id:
@@ -149,9 +149,9 @@ class CommentView(APIView):
     @extend_schema(request=CommentSerializer, responses=CommentSerializer)
     def post(self, request, post_id, format=None):
         """
-        Provide the post ID and author ID of the user who wants to comment as URL parameters.
-        Creates a new comment for a specific post.
-        Example: http://localhost:8000/posts/27/comments Creates a new comment for post 27
+        Provide the post ID as URL parameters and author ID in Request body.\n
+        Creates a new comment for a specific post.\n
+        Example: http://localhost:8000/posts/27/comments Creates a new comment for post 27\n
         Request body: {"comment": "This is a comment", 
                         "author": 2}
         """
@@ -173,12 +173,12 @@ class LikesView(APIView):
     @extend_schema(request=LikeSerializer, responses=LikeSerializer)
     def get(self, request, post_id = None, comment_id = None, format= None):
         """
-        Provide only post ID as a URL parameter.
-        Returns all likes for a specific post.
-        Example: http://localhost:8000/posts/27/likes Returns all likes for post with id 27
+        Provide only post ID as a URL parameter.\n
+        Returns all likes for a specific post.\n
+        Example: http://localhost:8000/posts/27/likes Returns all likes for post with id 27\n
         
-        Provide only comment ID as a URL parameter.
-        Returns all likes for a specific comment.
+        Provide only comment ID as a URL parameter.\n
+        Returns all likes for a specific comment.\n
         Example: http://localhost:8000/posts/comments/2/likes Returns all likes for comment with id 2
         """
         if post_id and not comment_id:
@@ -204,15 +204,15 @@ class LikesView(APIView):
     @extend_schema(request=LikeSerializer, responses=LikeSerializer)
     def post(self, request, post_id = None, comment_id = None, format= None):
         """
-        Provide only post ID as a URL parameter.
-        Creates a new like for a specific post.
-        Example: http://localhost:8000/posts/27/likes Creates a new like for post with id 
+        Provide only post ID as a URL parameter and author ID of the user who wants to like the comment in the request body.\n
+        Creates a new like for a specific post.\n
+        Example: http://localhost:8000/posts/27/likes Creates a new like for post with id\n
         Request body: {"summary" : "Author 1 likes your post.",
                        "author" : "1"}
         
-        Provide only comment ID as a URL parameter.
-        Creates a new like for a specific comment.
-        Example: http://localhost:8000/posts/comments/2/likes Creates a new like for comment with id 2
+        Provide only comment ID as a URL parameter and author ID of the user who wants to like the comment in the request body.\n
+        Creates a new like for a specific comment.\n
+        Example: http://localhost:8000/posts/comments/2/likes Creates a new like for comment with id 2\n
         Request body: {"summary" : "Author 1 likes your comment.",
                         "author" : "1"}
         """
