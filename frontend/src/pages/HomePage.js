@@ -86,7 +86,7 @@ function CreateArray() {
   };
   function getImg(post) {
     if (!post.image_url) {
-      return
+      return null
     } else {
       return (<CardMedia
       component="img"
@@ -132,9 +132,14 @@ function CreateArray() {
       />
       {getImg(post)}
       <CardContent>
-        <Typography variant="body2" color="text.secondary">
-        {post.body}
-        </Typography>
+      {getImg(post) === null ? (
+         <Typography variant="h5" color="black">
+         {post.body}
+         </Typography>
+      ): ( <Typography variant="h6" color="text.secondary">
+      {post.body}
+      </Typography>) }
+       
       </CardContent>
       <CardActions disableSpacing>
         <IconButton aria-label="add to favorites">
