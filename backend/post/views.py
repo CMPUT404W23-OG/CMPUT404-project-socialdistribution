@@ -129,7 +129,9 @@ class CommentView(APIView):
     @extend_schema(request=CommentSerializer, responses=CommentSerializer)
     def get(self, request, post_id, format=None):
         """
-        Returns comments for a specific post.
+        Provide the post ID as a URL parameter.
+        Returns all comments for a specific post. 
+        Example: http://localhost:8000/posts/1/comments Returns all comments for post 1
         """
         if post_id:
             if Post.objects.filter(id=post_id).exists():
@@ -145,18 +147,21 @@ class CommentView(APIView):
         return Response({'detail': 'POST ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
     
     @extend_schema(request=CommentSerializer, responses=CommentSerializer)
-    def post(self, request, post_id, author_id, format=None):
-        if  post_id and author_id:
-            updated = request.data.copy()
-            updated['post'] = post_id
-            updated['author'] = author_id
-            print(updated)
-
-            serializer = CommentSerializer(data=updated)
+    def post(self, request, post_id, format=None):
+        """
+        Provide the post ID and author ID of the user who wants to comment as URL parameters.
+        Creates a new comment for a specific post.
+        Example: http://localhost:8000/posts/27/comments Creates a new comment for post 27
+        Request body: {"comment": "This is a comment", 
+                        "author": 2}
+        """
+        if  post_id:
+            request.data['post'] = post_id
+            serializer = CommentSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response({'detail': 'POST ID and Author ID required.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'detail': 'POST ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
     
 class LikesView(APIView):
     def get_object(self, pk):
@@ -167,6 +172,15 @@ class LikesView(APIView):
         
     @extend_schema(request=LikeSerializer, responses=LikeSerializer)
     def get(self, request, post_id = None, comment_id = None, format= None):
+        """
+        Provide only post ID as a URL parameter.
+        Returns all likes for a specific post.
+        Example: http://localhost:8000/posts/27/likes Returns all likes for post with id 27
+        
+        Provide only comment ID as a URL parameter.
+        Returns all likes for a specific comment.
+        Example: http://localhost:8000/posts/comments/2/likes Returns all likes for comment with id 2
+        """
         if post_id and not comment_id:
             if Post.objects.filter(id=post_id).exists():
                 if Likes.objects.filter(post=post_id, comment__isnull=True).exists():
@@ -176,7 +190,7 @@ class LikesView(APIView):
                 return Response({'detail': 'No likes found.'}, status=status.HTTP_404_NOT_FOUND)
             return Response({'detail': 'Post not found.'}, status=status.HTTP_404_NOT_FOUND)
                 
-        elif comment_id:
+        elif comment_id and not post_id:
             if Comment.objects.filter(id=comment_id).exists():
                 if Likes.objects.filter(comment=comment_id).exists():
                     likes = Likes.objects.filter(comment=comment_id)
@@ -185,21 +199,40 @@ class LikesView(APIView):
                 return Response({'detail': 'No likes found.'}, status=status.HTTP_404_NOT_FOUND)
             return Response({'detail': 'Comment not found.'}, status=status.HTTP_404_NOT_FOUND)
         
-        if not post_id and not comment_id:
-            return Response({'detail': 'Either POST ID or Comment ID required.'}, status=status.HTTP_400_BAD_REQUEST)
-
-
-class LikesViewAdd(APIView):
-    
+        return Response({'detail': 'Either POST ID or Comment ID required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
     @extend_schema(request=LikeSerializer, responses=LikeSerializer)
-    def post(self, request, author_id, format=None):
-        if author_id:
-            updated = request.data.copy()
-            updated['author'] = author_id
-            print(updated)
-            serializer = LikeSerializer(data=updated)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response({'detail': 'Author ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request, post_id = None, comment_id = None, format= None):
+        """
+        Provide only post ID as a URL parameter.
+        Creates a new like for a specific post.
+        Example: http://localhost:8000/posts/27/likes Creates a new like for post with id 
+        Request body: {"summary" : "Author 1 likes your post.",
+                       "author" : "1"}
+        
+        Provide only comment ID as a URL parameter.
+        Creates a new like for a specific comment.
+        Example: http://localhost:8000/posts/comments/2/likes Creates a new like for comment with id 2
+        Request body: {"summary" : "Author 1 likes your comment.",
+                        "author" : "1"}
+        """
+        if post_id and not comment_id:
+            request.data['post'] = post_id
+            like_author = request.data.get('author')
+            if like_author:
+                if Likes.objects.filter(author=like_author, post=post_id, comment__isnull=True).exists():
+                    return Response({'detail': 'You have already liked this post.'}, status=status.HTTP_400_BAD_REQUEST)
+        elif comment_id and not post_id:
+            request.data['comment'] = comment_id
+            like_author = request.data.get('author')
+            if like_author:
+                if Likes.objects.filter(author=like_author, comment=comment_id, post__isnull=True).exists():
+                    return Response({'detail': 'You have already liked this comment.'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'detail': 'Either POST ID or Comment ID required.'}, status=status.HTTP_400_BAD_REQUEST)
+                
+        serializer = LikeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 

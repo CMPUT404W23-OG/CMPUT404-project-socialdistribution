@@ -47,5 +47,5 @@ class Likes(models.Model):
     summary = models.CharField(max_length=200)
     type = models.CharField(max_length=200, default='Like')
     author = models.ForeignKey('author.Author', on_delete=models.CASCADE)
-    post = models.ForeignKey('post.Post', on_delete=models.CASCADE)
+    post = models.ForeignKey('post.Post', null=True,blank=True,on_delete=models.CASCADE)
     comment = models.ForeignKey('post.Comment', null=True,blank=True, on_delete=models.CASCADE)

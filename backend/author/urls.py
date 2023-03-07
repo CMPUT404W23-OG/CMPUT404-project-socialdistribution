@@ -1,6 +1,6 @@
 from django.urls import path 
 from .views import SignUpView, AuthorList
-from post.views import CommentView, LikesView, LikesViewAdd
+# from post.views import CommentView, LikesView, LikesViewAdd
 
 urlpatterns = [
     path('<int:pk>/', SignUpView.as_view(), name='author'),
