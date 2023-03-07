@@ -104,7 +104,7 @@ function CreateArray() {
       flex: "1 1 auto",
       flexDirection: "column",
       width: "100%",
-      paddingTop: "30px",
+      paddingTop: "100px",
       paddingBottom: "30px",
     }}
     className={post.id}
