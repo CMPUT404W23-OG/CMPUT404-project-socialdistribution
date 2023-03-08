@@ -1,4 +1,4 @@
-import { Card, Box, Container } from '@mui/material';
+import { Card, Box, Container, Menu, MenuItem } from '@mui/material';
 import { useEffect, useState, useRef } from "react";
 import BasePath from "../config/BasePath";
 import * as React from 'react';
@@ -13,13 +13,13 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { red } from '@mui/material/colors';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import ShareIcon from '@mui/icons-material/Share';
 import Comments from '@mui/icons-material/Comment'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { format } from 'date-fns';
 import axios from 'axios';
 import AuthContext from "../context/AuthContext";
+import { useContext } from "react";
 
 
 const ExpandMore = styled((props) => {
@@ -35,23 +35,69 @@ const ExpandMore = styled((props) => {
 
 
 function CreateArray() {
- 
+  var { user } = useContext(AuthContext);
+  const userId = user.user_id
+  console.log(userId);
+  console.log(user);
   const [expanded, setExpanded] = useState(false);
   const [offset, setOffset] = useState(0)
   const [currPage, setCurrPage] = useState(1)
   const [prevPage, setPrevPage] = useState(0)
   const [postList, setPostList] = useState([])
   const [wasLast, setWasLast] = useState(false)
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [menuId, setMenuId] = useState(0)
   // const [commentSection, setCommentSection] = useState(comments);
+
+  const isMenuOpen = Boolean(anchorEl);
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+
+  let menuIdPost = "primary-menu-post";
+  const renderMenuPost = (
+    <Menu
+      anchorEl={anchorEl}
+      anchorOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      id={menuIdPost}
+      keepMounted
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      open={isMenuOpen}
+      onClose={handleMenuClose}
+    >
+      <MenuItem >
+        {" "}
+        Edit
+      </MenuItem>
+      <MenuItem >
+        {" "}
+        Delete
+      </MenuItem>
+      
+    </Menu>
+  );
 
   const headers = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Expose-Headers": "X-PAGINATION-SIZE"
   }
+
   useEffect(() => {
     const getData = async () => {
       const res = await axios.get(BasePath + `/posts/all/?page=${currPage}&size=5`, headers);
-
+      console.log(res.data[0]);
       if (!res.data.length) {
         setWasLast(true)
       }
@@ -67,7 +113,7 @@ function CreateArray() {
 
   useEffect(() => {
     const onScroll = () => {
-      console.log((window.innerHeight), ((window.innerHeight) * 2), window.scrollY, document.body.offsetHeight)
+      // console.log((window.innerHeight), ((window.innerHeight) * 2), window.scrollY, document.body.offsetHeight)
       setOffset(window.pageYOffset)
       if ((window.innerHeight+10) + window.scrollY >= document.body.offsetHeight) {
         setCurrPage(currPage + 1)
@@ -100,15 +146,10 @@ function CreateArray() {
     <Box
     key={post.id}
     sx={{
-      // display: "flex",
-      // flex: "1 1 auto",
-      // flexDirection: "column",
-      // width: "100%",
       paddingTop: "10px",
       paddingBottom: "10px",
     }}
     className={post.id}
-    
   >
     <Container maxWidth="sm">
       <Card sx={{ maxWidth: 700 }}
@@ -120,15 +161,15 @@ function CreateArray() {
           </Avatar>
         }
         action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
-          </IconButton>
+            <IconButton aria-label="settings"
+            aria-controls={menuIdPost}
+            onClick={handleMenuOpen}
+            >
+              <MoreVertIcon />
+            </IconButton>
         }
         title={post.title + " - " + post.author_name}
         subheader={format(new Date(post.datePublished), "MMMM d, yyyy")}
-
-
-
       />
       {getImg(post)}
       <CardContent>
@@ -170,21 +211,16 @@ function CreateArray() {
             stirring often until thickened and fragrant, about 10 minutes. Add
             saffron broth and remaining 4 1/2 cups chicken broth; bring to a boil.
           </Typography>
-          <Typography paragraph>
-            Add rice and stir very gently to distribute. Top with artichokes and
-            peppers, and cook without stirring, until most of the liquid is absorbed,
-            15 to 18 minutes. Reduce heat to medium-low, add reserved shrimp and
-            mussels, tucking them down into the rice, and cook again without
-            stirring, until mussels have opened and rice is just tender, 5 to 7
-            minutes more. (Discard any mussels that don&apos;t open.)
-          </Typography>
-          <Typography>
-            Set aside off of the heat to let rest for 10 minutes, and then serve.
-          </Typography>
         </CardContent>
       </Collapse>
     </Card>
   </Container>
+  {/* {renderMenuPost} */}
+  {userId === post.author_id ? (
+     {renderMenuPost}
+  ): ( null )
+    }
+ 
 </Box>
 
 
