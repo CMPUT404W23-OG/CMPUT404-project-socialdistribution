@@ -42,7 +42,7 @@ class Comment(models.Model):
     published = models.DateTimeField(auto_now_add=True)
     post = models.ForeignKey('post.Post', on_delete=models.CASCADE)
     
-class Likes(models.Model):
+class Like(models.Model):
     context = models.CharField(max_length=200, default='https://www.w3.org/ns/activitystreams')
     summary = models.CharField(max_length=200)
     type = models.CharField(max_length=200, default='Like')

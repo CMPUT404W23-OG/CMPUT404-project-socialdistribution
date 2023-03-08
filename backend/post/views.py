@@ -11,7 +11,7 @@ import base64
 from django.core.files.base import ContentFile
 
 
-from .models import Post, Comment, Likes
+from .models import Post, Comment, Like
 
 # Create your views here.
 # TODO NEED TO CONNECT TO FRONT END
@@ -163,7 +163,7 @@ class CommentView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response({'detail': 'POST ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
     
-class LikesView(APIView):
+class LikeView(APIView):
     def get_object(self, pk):
         try:
             Comment.objects.get(id=pk)
@@ -183,8 +183,8 @@ class LikesView(APIView):
         """
         if post_id and not comment_id:
             if Post.objects.filter(id=post_id).exists():
-                if Likes.objects.filter(post=post_id, comment__isnull=True).exists():
-                    likes = Likes.objects.filter(post=post_id, comment__isnull=True)
+                if Like.objects.filter(post=post_id, comment__isnull=True).exists():
+                    likes = Like.objects.filter(post=post_id, comment__isnull=True)
                     serializer = LikeSerializer(likes, many=True)
                     return Response(serializer.data, status=status.HTTP_200_OK)
                 return Response({'detail': 'No likes found.'}, status=status.HTTP_404_NOT_FOUND)
@@ -192,8 +192,8 @@ class LikesView(APIView):
                 
         elif comment_id and not post_id:
             if Comment.objects.filter(id=comment_id).exists():
-                if Likes.objects.filter(comment=comment_id).exists():
-                    likes = Likes.objects.filter(comment=comment_id)
+                if Like.objects.filter(comment=comment_id).exists():
+                    likes = Like.objects.filter(comment=comment_id)
                     serializer = LikeSerializer(likes, many=True)
                     return Response(serializer.data, status=status.HTTP_200_OK)
                 return Response({'detail': 'No likes found.'}, status=status.HTTP_404_NOT_FOUND)
@@ -220,13 +220,13 @@ class LikesView(APIView):
             request.data['post'] = post_id
             like_author = request.data.get('author')
             if like_author:
-                if Likes.objects.filter(author=like_author, post=post_id, comment__isnull=True).exists():
+                if Like.objects.filter(author=like_author, post=post_id, comment__isnull=True).exists():
                     return Response({'detail': 'You have already liked this post.'}, status=status.HTTP_400_BAD_REQUEST)
         elif comment_id and not post_id:
             request.data['comment'] = comment_id
             like_author = request.data.get('author')
             if like_author:
-                if Likes.objects.filter(author=like_author, comment=comment_id, post__isnull=True).exists():
+                if Like.objects.filter(author=like_author, comment=comment_id, post__isnull=True).exists():
                     return Response({'detail': 'You have already liked this comment.'}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({'detail': 'Either POST ID or Comment ID required.'}, status=status.HTTP_400_BAD_REQUEST)

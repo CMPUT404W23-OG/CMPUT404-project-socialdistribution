@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import Post, Comment, Likes
+from .models import Post, Comment, Like
 from author.models import Author
 
 class TestCase(TestCase):
@@ -77,7 +77,7 @@ class TestCase(TestCase):
         self.like_data["post"] = post
         self.like_data["author"] = author
         self.like_data["comment"] = comment
-        like = Likes.objects.create(**self.like_data)
+        like = Like.objects.create(**self.like_data)
         self.assertEqual(like.author, self.like_data['author'])
         self.assertEqual(like.summary, self.like_data['summary'])
         self.assertEqual(like.post, self.like_data['post'])
