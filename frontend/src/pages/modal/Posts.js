@@ -19,8 +19,10 @@ export default function PostsDialog({postType, open, setOpen}) {
     // const [submitted, setSubmitted] = useState(false);
 
     var user_name = 'Author Not Found'
+    var userId = 0
     if (user) {
         user_name = user.username
+        userId = user.user_id
     }
     // const post_title = postTitle
     const fileInput = useRef(null)
@@ -46,9 +48,10 @@ export default function PostsDialog({postType, open, setOpen}) {
         "body": postText,
         "image_url":imageUrl,
         "contentType":cont_type,
-        "author_id":null,
+        "author_id":userId,
         "author_name":user_name,
         "visibility":"PUBLIC",
+        "type":"post",
     };
     console.log(payload)
     const handleClose = () => {
@@ -65,9 +68,9 @@ export default function PostsDialog({postType, open, setOpen}) {
 
     const SubmitContent = async () => {
         // setSubmitted(true);
-        await axios.post(`http://127.0.0.1:8000/posts/create/3`, payload, headers
+        await axios.post(BasePath+`/posts/create/`+userId, payload, headers
         )
-         //, headers, payload);
+        
         navigate("/");
         window.location.reload();
         handleClose();
