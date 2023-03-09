@@ -66,10 +66,7 @@ const ProfilePage = () => {
                   {user.username}
                 </Typography>
                 <Typography color="textSecondary" variant="body2">
-                  {`Edmonton`}
-                </Typography>
-                <Typography color="textSecondary" variant="body2">
-                  {"trial"}
+                  {user.email}
                 </Typography>
               </Box>
             </CardContent>
