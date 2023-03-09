@@ -6,5 +6,4 @@ urlpatterns = [
     path('delete/<int:pk>', SignUpView.as_view(), name='delete-author'),
     path('signup/', SignUpView.as_view(), name='signup'),
     path('all/', AuthorList.as_view(), name='all-authors'),
-
 ]

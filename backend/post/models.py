@@ -13,10 +13,11 @@ HOST = os.getenv('HOST')
 #for categories with ArrayField: https://docs.djangoproject.com/en/2.2/ref/contrib/postgres/fields/#arrayfield
 
 class Post(models.Model):
+    type = models.CharField(max_length=200, default='post')
+    title = models.CharField(max_length=200)
     author_name = models.CharField(max_length=200)
     visibility = models.CharField(max_length=200, default='PUBLIC')
     author_id = models.ForeignKey('author.Author', default=None, on_delete=models.CASCADE)
-    title = models.CharField(max_length=200)
     public = models.BooleanField(default=True)
     description = models.CharField(max_length=200)
     contentType = models.CharField(max_length=200, default='text/plain', blank=True)
@@ -28,8 +29,23 @@ class Post(models.Model):
     unlisted = models.BooleanField(default=False)
     categories = ArrayField(models.CharField(max_length=200), blank=True, default=list)
 
-#def get_absolute_path(self):
-    #return reverse('posts-detail', kwargs={"pk": self.id})
+    #author field TODO
+    #ID field TODO
+    def __str__(self):
+        return self.title
 
-def __str__(self):
-    return self.title
+class Comment(models.Model):
+    type = models.CharField(max_length=200, default='comment')
+    author = models.ForeignKey('author.Author', on_delete=models.CASCADE)
+    comment = models.TextField()
+    contentType = models.CharField(max_length=200, default='text/plain')
+    published = models.DateTimeField(auto_now_add=True)
+    post = models.ForeignKey('post.Post', on_delete=models.CASCADE)
+    
+class Like(models.Model):
+    context = models.CharField(max_length=200, default='https://www.w3.org/ns/activitystreams')
+    summary = models.CharField(max_length=200)
+    type = models.CharField(max_length=200, default='Like')
+    author = models.ForeignKey('author.Author', on_delete=models.CASCADE)
+    post = models.ForeignKey('post.Post', null=True,blank=True,on_delete=models.CASCADE)
+    comment = models.ForeignKey('post.Comment', null=True,blank=True, on_delete=models.CASCADE)
