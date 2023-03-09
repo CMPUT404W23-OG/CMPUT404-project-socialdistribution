@@ -5,13 +5,13 @@ from rest_framework.response import Response
 from rest_framework import status
 from drf_spectacular.utils import extend_schema
 from rest_framework.views import APIView
-from .serializers import PostSerializer
+from .serializers import PostSerializer, CommentSerializer, LikeSerializer
 from django.core.paginator import Paginator
 import base64
 from django.core.files.base import ContentFile
 
 
-from .models import Post
+from .models import Post, Comment, Like
 
 # Create your views here.
 # TODO NEED TO CONNECT TO FRONT END
@@ -117,5 +117,122 @@ class PostCount(APIView):
     @extend_schema(request=PostSerializer, responses=PostSerializer)
     def get(self, request):
         count = Post.objects.all().filter(visibility="PUBLIC").order_by('-datePublished').count()
-
         return Response(count)
+
+class CommentView(APIView):
+    def get_object(self, pk):
+        try:
+            Comment.objects.get(id=pk)
+        except Comment.DoesNotExist:
+            raise Http404
+    
+    @extend_schema(request=CommentSerializer, responses=CommentSerializer)
+    def get(self, request, post_id, format=None):
+        """
+        Provide the post ID as a URL parameter.\n
+        Returns all comments for a specific post.\n 
+        Example: http://localhost:8000/posts/1/comments Returns all comments for post 1
+        """
+        if post_id:
+            if Post.objects.filter(id=post_id).exists():
+                if Comment.objects.filter(post=post_id).exists():
+                    comments = Comment.objects.filter(post=post_id)
+                    number = self.request.query_params.get('page', 1)
+                    size = self.request.query_params.get('size', 5)
+                    paginator = Paginator(comments, size)
+                    serializer = CommentSerializer(paginator.page(number), many=True)
+                    return Response(serializer.data, status=status.HTTP_200_OK)
+                return Response({'detail': 'No comments found.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'detail': 'Post not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'detail': 'POST ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    @extend_schema(request=CommentSerializer, responses=CommentSerializer)
+    def post(self, request, post_id, format=None):
+        """
+        Provide the post ID as URL parameters and author ID in Request body.\n
+        Creates a new comment for a specific post.\n
+        Example: http://localhost:8000/posts/27/comments Creates a new comment for post 27\n
+        Request body: {"comment": "This is a comment", 
+                        "author": 2}
+        """
+        if  post_id:
+            request.data['post'] = post_id
+            serializer = CommentSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response({'detail': 'POST ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
+    
+class LikeView(APIView):
+    def get_object(self, pk):
+        try:
+            Comment.objects.get(id=pk)
+        except Comment.DoesNotExist:
+            raise Http404
+        
+    @extend_schema(request=LikeSerializer, responses=LikeSerializer)
+    def get(self, request, post_id = None, comment_id = None, format= None):
+        """
+        Provide only post ID as a URL parameter.\n
+        Returns all likes for a specific post.\n
+        Example: http://localhost:8000/posts/27/likes Returns all likes for post with id 27\n
+        
+        Provide only comment ID as a URL parameter.\n
+        Returns all likes for a specific comment.\n
+        Example: http://localhost:8000/posts/comments/2/likes Returns all likes for comment with id 2
+        """
+        if post_id and not comment_id:
+            if Post.objects.filter(id=post_id).exists():
+                if Like.objects.filter(post=post_id, comment__isnull=True).exists():
+                    likes = Like.objects.filter(post=post_id, comment__isnull=True)
+                    serializer = LikeSerializer(likes, many=True)
+                    return Response(serializer.data, status=status.HTTP_200_OK)
+                return Response({'detail': 'No likes found.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'detail': 'Post not found.'}, status=status.HTTP_404_NOT_FOUND)
+                
+        elif comment_id and not post_id:
+            if Comment.objects.filter(id=comment_id).exists():
+                if Like.objects.filter(comment=comment_id).exists():
+                    likes = Like.objects.filter(comment=comment_id)
+                    serializer = LikeSerializer(likes, many=True)
+                    return Response(serializer.data, status=status.HTTP_200_OK)
+                return Response({'detail': 'No likes found.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'detail': 'Comment not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        return Response({'detail': 'Either POST ID or Comment ID required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+    @extend_schema(request=LikeSerializer, responses=LikeSerializer)
+    def post(self, request, post_id = None, comment_id = None, format= None):
+        """
+        Provide only post ID as a URL parameter and author ID of the user who wants to like the comment in the request body.\n
+        Creates a new like for a specific post.\n
+        Example: http://localhost:8000/posts/27/likes Creates a new like for post with id\n
+        Request body: {"summary" : "Author 1 likes your post.",
+                       "author" : "1"}
+        
+        Provide only comment ID as a URL parameter and author ID of the user who wants to like the comment in the request body.\n
+        Creates a new like for a specific comment.\n
+        Example: http://localhost:8000/posts/comments/2/likes Creates a new like for comment with id 2\n
+        Request body: {"summary" : "Author 1 likes your comment.",
+                        "author" : "1"}
+        """
+        if post_id and not comment_id:
+            request.data['post'] = post_id
+            like_author = request.data.get('author')
+            if like_author:
+                if Like.objects.filter(author=like_author, post=post_id, comment__isnull=True).exists():
+                    return Response({'detail': 'You have already liked this post.'}, status=status.HTTP_400_BAD_REQUEST)
+        elif comment_id and not post_id:
+            request.data['comment'] = comment_id
+            like_author = request.data.get('author')
+            if like_author:
+                if Like.objects.filter(author=like_author, comment=comment_id, post__isnull=True).exists():
+                    return Response({'detail': 'You have already liked this comment.'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'detail': 'Either POST ID or Comment ID required.'}, status=status.HTTP_400_BAD_REQUEST)
+                
+        serializer = LikeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
