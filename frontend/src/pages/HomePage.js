@@ -202,11 +202,11 @@ function CreateArray() {
       </Collapse>
     </Card>
   </Container>
-  {/* {renderMenuPost} */}
+  {/* {renderMenuPost}
   {userId === post.author_id ? (
      {renderMenuPost}
   ): ( null )
-    }
+    } */}
  
 </Box>
 
