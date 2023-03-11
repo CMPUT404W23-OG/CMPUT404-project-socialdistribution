@@ -86,6 +86,55 @@ export default function Inbox() {
       .catch((error) => console.log(error));
   }, []);
 
+  const handleDelete = async (id) => {
+    const newRequests = requests.filter((request) => request.id !== id);
+    setRequests(newRequests);
+
+    try {
+      const response = fetch(BasePath + "/request/" + id + "/", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      });
+      if ((await response.status) === 204) {
+        console.log("Deleted");
+      } else {
+        console.log("Error");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleAccept = async (id) => {
+    const newRequests = requests.filter((request) => request.id !== id);
+    setRequests(newRequests);
+
+    try {
+      const response = fetch(BasePath + "/request/" + id + "/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          Approve: true,
+          Cancel: false,
+        }),
+      });
+      if ((await response).ok === true) {
+        console.log("Accepted");
+        console.log("Response: ", response);
+      } else {
+        console.log("Error");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <Container maxWidth="md">
       <div>
@@ -117,7 +166,11 @@ export default function Inbox() {
                 }
               />
 
-              <Button variant="contained" sx={{ bgcolor: "green" }}>
+              <Button
+                variant="contained"
+                sx={{ bgcolor: "green" }}
+                onClick={() => handleAccept(request.id)}
+              >
                 Accept
               </Button>
               <Button
@@ -128,6 +181,7 @@ export default function Inbox() {
                   marginRight: "0.5em",
                   bgcolor: "red",
                 }}
+                onClick={() => handleDelete(request.id)}
               >
                 Decline
               </Button>
