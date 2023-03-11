@@ -45,6 +45,7 @@ export default function PostsDialog({postType, open, setOpen}) {
     const payload = {
         "title":postTitle,
         "description": "private description here",
+        "public": true,
         "body": postText,
         "image_url":imageUrl,
         "contentType":cont_type,

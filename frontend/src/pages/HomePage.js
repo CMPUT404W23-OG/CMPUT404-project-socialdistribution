@@ -36,8 +36,6 @@ const ExpandMore = styled((props) => {
 function CreateArray() {
   var { user } = useContext(AuthContext);
   const userId = user.user_id;
-  console.log(userId);
-  console.log(user);
   const [expanded, setExpanded] = useState(false);
   const [offset, setOffset] = useState(0);
   const [currPage, setCurrPage] = useState(1);
@@ -45,8 +43,8 @@ function CreateArray() {
   const [postList, setPostList] = useState([]);
   const [wasLast, setWasLast] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [menuId, setMenuId] = useState(0);
-  // const [commentSection, setCommentSection] = useState(comments);
+  const [menuId, setMenuId] = useState(0)
+  const [commentSection, setCommentSection] = useState([]);
 
   const isMenuOpen = Boolean(anchorEl);
 
@@ -158,7 +156,25 @@ function CreateArray() {
       );
     }
   }
-  const listItems = postList.map((post) => (
+
+  // function getComments(post) {
+  //     return fetch(BasePath + `/posts/46/comments`)
+  //     .then(function(res) {
+  //       return res.json();
+  //     }).then(function(json) {
+  //       return json;
+  //     });
+    
+  // }
+
+  // function comm() {
+  //   getComments().then(
+  //     function(json) {
+  //       setCommentSection(json)
+  //     })
+  // }
+
+  const listItems = postList.map((post) =>
     <Box
       key={post.id}
       sx={{
@@ -203,41 +219,56 @@ function CreateArray() {
             <IconButton aria-label="add to favorites">
               <FavoriteIcon />
             </IconButton>
-            <ExpandMore
-              expand={expanded}
-              onClick={handleExpandClick}
-              aria-expanded={expanded}
-              aria-label="show more"
-            >
-              <Comments />
-            </ExpandMore>
-          </CardActions>
-          <Collapse in={expanded} timeout="auto" unmountOnExit>
-            <CardContent>
-              <Typography paragraph>Method:</Typography>
-              <Typography paragraph>
-                Heat 1/2 cup of the broth in a pot until simmering, add saffron
-                and set aside for 10 minutes.
-              </Typography>
-              <Typography paragraph>
-                Heat oil in a (14- to 16-inch) paella pan or a large, deep
-                skillet over medium-high heat. Add chicken, shrimp and chorizo,
-                and cook, stirring occasionally until lightly browned, 6 to 8
-                minutes. Transfer shrimp to a large plate and set aside, leaving
-                chicken and chorizo in the pan. Add pimentón, bay leaves,
-                garlic, tomatoes, onion, salt and pepper, and cook, stirring
-                often until thickened and fragrant, about 10 minutes. Add
-                saffron broth and remaining 4 1/2 cups chicken broth; bring to a
-                boil.
-              </Typography>
-            </CardContent>
-          </Collapse>
-        </Card>
-      </Container>
-      {/* {renderMenuPost} */}
-      {userId === post.author_id ? { renderMenuPost } : null}
-    </Box>
-  ));
+        }
+        title={post.title + " - " + post.author_name}
+        subheader={format(new Date(post.datePublished), "MMMM d, yyyy")}
+      />
+      {getImg(post)}
+      <CardContent>
+      {getImg(post) === null ? (
+         <Typography variant="h5" color="black">
+         {post.body}
+         </Typography>
+      ): ( <Typography variant="h6" color="text.secondary">
+      {post.body}
+      </Typography>) }
+       
+      </CardContent>
+      <CardActions disableSpacing>
+        <IconButton aria-label="add to favorites">
+          <FavoriteIcon />
+        </IconButton>
+        <ExpandMore
+          expand={expanded}
+          onClick={handleExpandClick}
+          aria-expanded={expanded}
+          aria-label="show more"
+        >
+          <Comments />
+        </ExpandMore>
+      </CardActions>
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <CardContent>
+          <Typography paragraph>
+  
+              <div>{post.author_name}</div>
+           
+
+          </Typography>
+        </CardContent>
+      </Collapse>
+    </Card>
+  </Container>
+  {/* {renderMenuPost}
+  {userId === post.author_id ? (
+     {renderMenuPost}
+  ): ( null )
+    } */}
+ 
+</Box>
+
+
+  )
 
   return <div>{listItems}</div>;
 }
