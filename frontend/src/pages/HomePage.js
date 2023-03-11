@@ -37,8 +37,7 @@ const ExpandMore = styled((props) => {
 function CreateArray() {
   var { user } = useContext(AuthContext);
   const userId = user.user_id
-  console.log(userId);
-  console.log(user);
+  
   const [expanded, setExpanded] = useState(false);
   const [offset, setOffset] = useState(0)
   const [currPage, setCurrPage] = useState(1)
@@ -47,7 +46,7 @@ function CreateArray() {
   const [wasLast, setWasLast] = useState(false)
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuId, setMenuId] = useState(0)
-  // const [commentSection, setCommentSection] = useState(comments);
+  const [commentSection, setCommentSection] = useState([]);
 
   const isMenuOpen = Boolean(anchorEl);
 
@@ -97,7 +96,6 @@ function CreateArray() {
   useEffect(() => {
     const getData = async () => {
       const res = await axios.get(BasePath + `/posts/all/?page=${currPage}&size=5`, headers);
-      console.log(res.data[0]);
       if (!res.data.length) {
         setWasLast(true)
       }
@@ -142,6 +140,24 @@ function CreateArray() {
     />)
     }
   }
+
+  // function getComments(post) {
+  //     return fetch(BasePath + `/posts/46/comments`)
+  //     .then(function(res) {
+  //       return res.json();
+  //     }).then(function(json) {
+  //       return json;
+  //     });
+    
+  // }
+
+  // function comm() {
+  //   getComments().then(
+  //     function(json) {
+  //       setCommentSection(json)
+  //     })
+  // }
+
   const listItems = postList.map((post) =>
     <Box
     key={post.id}
@@ -197,7 +213,12 @@ function CreateArray() {
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          <Typography paragraph>Post ID: {post.id}</Typography>
+          <Typography paragraph>
+  
+              <div>{post.author_name}</div>
+           
+
+          </Typography>
         </CardContent>
       </Collapse>
     </Card>
