@@ -203,26 +203,6 @@ function CreateArray() {
             title={post.title + " - " + post.author_name}
             subheader={format(new Date(post.datePublished), "MMMM d, yyyy")}
           />
-          {getImg(post)}
-          <CardContent>
-            {getImg(post) === null ? (
-              <Typography variant="h5" color="black">
-                {post.body}
-              </Typography>
-            ) : (
-              <Typography variant="h6" color="text.secondary">
-                {post.body}
-              </Typography>
-            )}
-          </CardContent>
-          <CardActions disableSpacing>
-            <IconButton aria-label="add to favorites">
-              <FavoriteIcon />
-            </IconButton>
-        }
-        title={post.title + " - " + post.author_name}
-        subheader={format(new Date(post.datePublished), "MMMM d, yyyy")}
-      />
       {getImg(post)}
       <CardContent>
       {getImg(post) === null ? (
@@ -267,8 +247,7 @@ function CreateArray() {
  
 </Box>
 
-
-  )
+)
 
   return <div>{listItems}</div>;
 }
