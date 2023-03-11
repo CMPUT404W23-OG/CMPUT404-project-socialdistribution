@@ -84,6 +84,9 @@ export default function Inbox() {
                 listOfPosts.push(followingPostList[i][j]);
               }
             }
+            listOfPosts.sort((a, b) => {
+              return new Date(b.datePublished) - new Date(a.datePublished);
+            });
             console.log("List of posts: ", listOfPosts);
             setPosts(listOfPosts);
           });
