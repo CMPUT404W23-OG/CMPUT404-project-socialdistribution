@@ -63,6 +63,7 @@ const Followers = () => {
           textAlign: "center",
           fontStyle: "italic",
           fontFamily: "serif",
+          marginTop: "4em",
         }}
       >
         Followers

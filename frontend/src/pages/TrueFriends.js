@@ -39,6 +39,7 @@ const TrueFriends = () => {
           textAlign: "center",
           fontStyle: "italic",
           fontFamily: "serif",
+          marginTop: "4em",
         }}
       >
         True Friends
