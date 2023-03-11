@@ -25,65 +25,77 @@ export default function Inbox() {
   const [following, setFollowing] = useState([]);
 
   useEffect(() => {
-    Promise.all([
-      fetch(BasePath + "/requests_received/" + user.user_id + "/", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      }),
-      fetch(BasePath + "/following/" + user.user_id + "/", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      }),
-    ])
-      .then(([requestsResponse, followingResponse]) =>
-        Promise.all([requestsResponse.json(), followingResponse.json()])
-      )
-      .then(([requestsData, followingData]) => {
-        console.log("populateRequests: ", requestsData);
-        setRequests(requestsData);
-        console.log(followingData);
-        setFollowing(followingData);
-        console.log("Testing following ", followingData);
-        if (followingData) {
-          const followingPostListPromises = followingData.map((following) =>
-            fetch(
-              BasePath +
-                "/posts/author/" +
-                JSON.stringify(following.following.id),
-              {
-                method: "GET",
-                headers: {
-                  "Content-Type": "application/json",
-                  Accept: "application/json",
-                },
-              }
-            ).then((res) => res.json())
-          );
-          Promise.all(followingPostListPromises).then((followingPostList) => {
-            console.log("Following post list: ", followingPostList);
+    const fetchData = () => {
+      Promise.all([
+        fetch(BasePath + "/requests_received/" + user.user_id + "/", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }),
+        fetch(BasePath + "/following/" + user.user_id + "/", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }),
+      ])
+        .then(([requestsResponse, followingResponse]) =>
+          Promise.all([requestsResponse.json(), followingResponse.json()])
+        )
+        .then(([requestsData, followingData]) => {
+          console.log("populateRequests: ", requestsData);
+          setRequests(requestsData);
+          console.log(followingData);
+          setFollowing(followingData);
+          console.log("Testing following ", followingData);
+          if (followingData) {
+            const followingPostListPromises = followingData.map((following) =>
+              fetch(
+                BasePath +
+                  "/posts/author/" +
+                  JSON.stringify(following.following.id),
+                {
+                  method: "GET",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                  },
+                }
+              ).then((res) => res.json())
+            );
+            Promise.all(followingPostListPromises).then((followingPostList) => {
+              console.log("Following post list: ", followingPostList);
 
-            console.log("Posts: ", followingPostList);
-            let listOfPosts = [];
-            for (let i = 0; i < followingPostList.length; i++) {
-              for (let j = 0; j < followingPostList[i].length; j++) {
-                listOfPosts.push(followingPostList[i][j]);
+              console.log("Posts: ", followingPostList);
+              let listOfPosts = [];
+              for (let i = 0; i < followingPostList.length; i++) {
+                for (let j = 0; j < followingPostList[i].length; j++) {
+                  listOfPosts.push(followingPostList[i][j]);
+                }
               }
-            }
-            listOfPosts.sort((a, b) => {
-              return new Date(b.datePublished) - new Date(a.datePublished);
+              listOfPosts.sort((a, b) => {
+                return new Date(b.datePublished) - new Date(a.datePublished);
+              });
+              console.log("List of posts: ", listOfPosts);
+              setPosts(listOfPosts);
             });
-            console.log("List of posts: ", listOfPosts);
-            setPosts(listOfPosts);
-          });
-        }
-      })
-      .catch((error) => console.log(error));
+          }
+        })
+        .catch((error) => console.log(error));
+    };
+
+    // fetch data and update state initially
+    fetchData();
+    // fetch data and update state every 10 seconds
+    const interval = setInterval(() => {
+      fetchData();
+    }, 10000);
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   const handleDelete = async (id) => {
