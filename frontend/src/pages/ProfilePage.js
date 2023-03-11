@@ -41,6 +41,7 @@ const ProfilePage = () => {
           flexDirection: "column",
           width: "100%",
           paddingTop: "30px",
+          marginTop: "3em",
         }}
       >
         <Container maxWidth="md">
