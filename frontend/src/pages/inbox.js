@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import BasePath from "../config/BasePath";
 import AuthContext from "../context/AuthContext";
 import { useContext } from "react";
@@ -23,15 +23,6 @@ export default function Inbox() {
   const postRef = useRef(null);
   const [posts, setPosts] = useState([]);
   const [following, setFollowing] = useState([]);
-  var followingPostList = [];
-  const history = useNavigate();
-
-  const handlePostClick = () => {
-    history.push({
-      pathname: "/",
-      state: { scrollToPost: true },
-    });
-  };
 
   useEffect(() => {
     Promise.all([
@@ -101,7 +92,7 @@ export default function Inbox() {
         <Typography variant="h5" style={{ marginTop: "5rem" }}>
           Follow Requests
         </Typography>
-        <List>
+        <List style={{ maxHeight: "30vh", overflowY: "scroll" }}>
           {requests.map((request) => (
             <ListItem
               key={request.id}
@@ -149,45 +140,58 @@ export default function Inbox() {
         </Typography>
         <List>
           {posts.map((post) => (
-            <ListItem
+            <Link
               key={post.id}
-              sx={{
-                bgcolor: "background.paper",
-                borderRadius: "1em",
-                boxShadow: 1,
-                marginTop: "0.5em",
-              }}
+              to="/"
+              state={post.id}
+              style={{ textDecoration: "none" }}
             >
-              <ListItemAvatar>
-                <Avatar alt="Profile Picture">
-                  {post.author_name
-                    ? post.author_name.charAt(0).toUpperCase()
-                    : "Unkonwn"}
-                </Avatar>
-                <ListItemText primary={post.author_name} />
-              </ListItemAvatar>
+              <ListItem
+                key={post.id}
+                sx={{
+                  bgcolor: "background.paper",
+                  borderRadius: "1em",
+                  boxShadow: 1,
+                  marginTop: "0.5em",
+                }}
+              >
+                <ListItemAvatar>
+                  <Avatar alt="Profile Picture">
+                    {post.author_name
+                      ? post.author_name.charAt(0).toUpperCase()
+                      : "Unkonwn"}
+                  </Avatar>
+                  <ListItemText primary={post.author_name} />
+                </ListItemAvatar>
 
-              <ListItemText sx={{ marginLeft: "1em" }} primary={post.title} />
-              <ListItemText
-                secondary={post.description}
-                sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
-              />
+                <ListItemText
+                  primary={post.title}
+                  secondary={post.description}
+                  sx={{
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    display: "inline",
+                    marginLeft: "1em",
+                    textAlign: "center",
+                  }}
+                />
 
-              {post.image_file || post.image_url ? (
-                <Card>
-                  <CardMedia
-                    component="img"
-                    height="150"
-                    image={
-                      post.image_url
-                        ? post.image_url
-                        : URL.createObjectURL(post.image_file)
-                    }
-                    alt="Post Image"
-                  />
-                </Card>
-              ) : null}
-            </ListItem>
+                {post.image_file || post.image_url ? (
+                  <Card>
+                    <CardMedia
+                      component="img"
+                      height="150"
+                      image={
+                        post.image_url
+                          ? post.image_url
+                          : URL.createObjectURL(post.image_file)
+                      }
+                      alt="Post Image"
+                    />
+                  </Card>
+                ) : null}
+              </ListItem>
+            </Link>
           ))}
         </List>
       </div>
