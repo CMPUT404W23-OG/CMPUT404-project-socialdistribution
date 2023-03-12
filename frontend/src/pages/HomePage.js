@@ -39,7 +39,7 @@ function CreateArray() {
   // const [commentSection, setCommentSection] = useState([]);
 
   const isMenuOpen = Boolean(anchorElMenu);
-  const isCommentsOpen = Boolean(expanded);
+  // const isCommentsOpen = Boolean(expanded);
 
   const handleMenuOpen = (event) => {
     setAnchorElMenu(event.currentTarget);
