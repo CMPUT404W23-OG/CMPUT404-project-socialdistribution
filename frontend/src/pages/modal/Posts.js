@@ -123,6 +123,8 @@ export default function PostsDialog({postType, open, setOpen}) {
                         fullWidth
                         variant="outlined"
                         sx={{width: "100%"}}
+                        multiline
+                        rows={5}
                         onChange={(e) => setText(e.target.value)}
                     />
                     ) : ""}
