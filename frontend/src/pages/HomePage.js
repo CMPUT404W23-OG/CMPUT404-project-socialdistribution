@@ -21,7 +21,7 @@ import axios from "axios";
 import AuthContext from "../context/AuthContext";
 import { useContext } from "react";
 import { useLocation } from "react-router-dom";
-
+import { Divider, Grid, Paper } from "@mui/material";
 
 
 function CreateArray() {
@@ -34,7 +34,7 @@ function CreateArray() {
   const [postList, setPostList] = useState([]);
   const [wasLast, setWasLast] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [anchorComments, setAnchorComments] = useState(null);
+  // const [anchorComments, setAnchorComments] = useState(null);
   const [menuId, setMenuId] = useState(0)
   // const [commentSection, setCommentSection] = useState([]);
 
@@ -63,23 +63,43 @@ function CreateArray() {
 
   var location = useLocation();
 
+  const imgLink =
+  "https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260";
+
   let commentsId = "primary-comments-post"
-  const ExpandMore = styled((props) => {
-    // anchorEl = {anchorComments}
-    const { expand, ...other } = props;
-    return <IconButton {...other} 
-    anchorEl = {expanded}
-    id = {commentsId}
-    open = {isCommentsOpen}
-    onClose = {handleCommentsClose}
-    />;
-  })(({ theme, expand }) => ({
-    transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
-    // marginLeft: 'auto',
-    transition: theme.transitions.create("transform", {
-      duration: theme.transitions.duration.shortest,
-    }),
-  }));
+  // const ExpandMore = styled((props) => {
+  //   // anchorEl = {anchorComments}
+  //   const { expand, ...other } = props;
+  //   return <IconButton {...other} 
+  //   anchorEl = {expanded}
+  //   id = {commentsId}
+  //   open = {isCommentsOpen}
+  //   onClose = {handleCommentsClose}
+  //   />;
+  // })(({ theme, expand }) => ({
+  //   transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
+  //   // marginLeft: 'auto',
+  //   transition: theme.transitions.create("transform", {
+  //     duration: theme.transitions.duration.shortest,
+  //   }),
+  // }));
+
+  let renderComments = (
+    <Collapse 
+    in={expanded} 
+    id={commentsId}
+    // open={isCommentsOpen}
+    // onClose={handleCommentsClose}
+    timeout="auto" 
+    unmountOnExit>
+        <CardContent>
+          <Typography paragraph>
+              <div><h1>"THIS IS A TEST"</h1></div>
+          </Typography>
+        </CardContent>
+      </Collapse>
+  );
+
 
   let menuIdPost = "primary-menu-post";
   const renderMenuPost = (
@@ -243,7 +263,14 @@ function CreateArray() {
         <IconButton aria-label="add to favorites">
           <FavoriteIcon />
         </IconButton>
-        <ExpandMore
+        {/* <IconButton 
+        aria-label="comments"
+        aria-controls={commentsId}
+        onClick={handleCommentsOpen}
+        >
+          <Comments />
+          </IconButton> */}
+        {/* <ExpandMore
           expand={expanded}
           onClick={handleCommentsOpen}
           aria-expanded={expanded}
@@ -251,21 +278,65 @@ function CreateArray() {
           aria-label="show more"
         >
           <Comments />
-        </ExpandMore>
+        </ExpandMore> */}
       </CardActions>
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <CardContent>
-          <Typography paragraph>
-  
-              <div>{post.author_name}</div>
-           
-
-          </Typography>
-        </CardContent>
-      </Collapse>
+      {/* https://stackoverflow.com/questions/43788878/scrollable-list-component-from-material-ui-in-react */}
+      {/* https://codesandbox.io/s/comment-box-with-material-ui-10p3c?file=/src/index.js:153-285 */}
+      <div style={{ padding: 14 }}>
+      <h3 style={{padding: 20}}>Comments</h3>
+      <Paper style={{ maxHeight: 200, overflow: 'auto'}}>
+        <Grid container wrap="nowrap" spacing={2}>
+          <Grid item>
+            <Avatar alt="Remy Sharp" src={imgLink} />
+          </Grid>
+          <Grid justifyContent="left" item xs zeroMinWidth>
+            <h4 style={{ margin: 0, textAlign: "left" }}>Michel Michel</h4>
+            <p style={{ textAlign: "left" }}>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean
+              luctus ut est sed faucibus. Duis bibendum ac ex vehicula laoreet.
+              Suspendisse congue vulputate lobortis. Pellentesque at interdum
+              tortor. Quisque arcu quam, malesuada vel mauris et, posuere
+              sagittis ipsum. Aliquam ultricies a ligula nec faucibus. In elit
+              metus, efficitur lobortis nisi quis, molestie porttitor metus.
+              Pellentesque et neque risus. Aliquam vulputate, mauris vitae
+              tincidunt interdum, mauris mi vehicula urna, nec feugiat quam
+              lectus vitae ex.{" "}
+            </p>
+            <p style={{ textAlign: "left", color: "gray" }}>
+              posted 1 minute ago
+            </p>
+          </Grid>
+        </Grid>
+        <Divider variant="fullWidth" style={{ margin: "30px 0" }} />
+        <Grid container wrap="nowrap" spacing={2}>
+          <Grid item>
+            <Avatar alt="Remy Sharp" src={imgLink} />
+          </Grid>
+          <Grid justifyContent="left" item xs zeroMinWidth>
+            <h4 style={{ margin: 0, textAlign: "left" }}>Michel Michel</h4>
+            <p style={{ textAlign: "left" }}>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean
+              luctus ut est sed faucibus. Duis bibendum ac ex vehicula laoreet.
+              Suspendisse congue vulputate lobortis. Pellentesque at interdum
+              tortor. Quisque arcu quam, malesuada vel mauris et, posuere
+              sagittis ipsum. Aliquam ultricies a ligula nec faucibus. In elit
+              metus, efficitur lobortis nisi quis, molestie porttitor metus.
+              Pellentesque et neque risus. Aliquam vulputate, mauris vitae
+              tincidunt interdum, mauris mi vehicula urna, nec feugiat quam
+              lectus vitae ex.{" "}
+            </p>
+            <p style={{ textAlign: "left", color: "gray" }}>
+              posted 1 minute ago
+            </p>
+          </Grid>
+        </Grid>
+      </Paper>
+    </div>
+      
     </Card>
   </Container>
   {renderMenuPost}
+  {/* {renderComments} */}
   {/* {userId === post.author_id ? (
      {renderMenuPost}
   ): ( null )
