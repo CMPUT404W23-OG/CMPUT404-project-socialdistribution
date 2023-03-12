@@ -1,4 +1,4 @@
-import { Card, Box, Container, Menu, MenuItem } from "@mui/material";
+import { Card, Box, Container, Menu, MenuItem, TextField } from "@mui/material";
 import { useEffect, useState, useRef } from "react";
 import BasePath from "../config/BasePath";
 import * as React from "react";
@@ -21,8 +21,7 @@ import axios from "axios";
 import AuthContext from "../context/AuthContext";
 import { useContext } from "react";
 import { useLocation } from "react-router-dom";
-import { Divider, Grid, Paper } from "@mui/material";
-
+import { Divider, Grid, Paper, Button } from "@mui/material";
 
 function CreateArray() {
   var { user } = useContext(AuthContext);
@@ -34,6 +33,9 @@ function CreateArray() {
   const [postList, setPostList] = useState([]);
   const [wasLast, setWasLast] = useState(false);
   const [anchorElMenu, setAnchorElMenu] = useState(null);
+  const [italic, setItalic] = useState(false);
+  const [fontWeight, setFontWeight] = useState('normal');
+  const [anchorEl, setAnchorEl] = useState(null);
   // const [anchorComments, setAnchorComments] = useState(null);
   const [menuId, setMenuId] = useState(0)
   // const [commentSection, setCommentSection] = useState([]);
@@ -332,8 +334,32 @@ function CreateArray() {
         </Grid>
       </Paper>
     </div>
-
-      
+    <div style={{ padding: 14 }}>
+    <TextField
+            margin="dense"
+            id="comment"
+            label="Write Comment"
+            placeholder="Comment goes here..."
+            type="text"
+            fullWidth
+            variant="outlined"
+            multiline
+            rows={2}
+            // value={postBody}
+            // onChange={(e) => setPostBody(e.target.value)}
+          />
+           <Box
+        sx={{
+          display: "flex",
+          flex: "1 1 auto",
+          flexDirection: "column",
+        }}
+      >
+          <Button 
+          >Add</Button>
+          </Box>
+    </div>
+    
     </Card>
   </Container>
   {renderMenuPost}
