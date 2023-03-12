@@ -35,7 +35,7 @@ export default function PostsDialog({postType, open, setOpen}) {
     } else if (postType === "image") {
         cont_type = "image/png;base64"
     } else if (postType === "textImage") {
-        cont_type = "text/textImage"
+        cont_type = "image/png;base64"
     }
 
     const headers = {  
