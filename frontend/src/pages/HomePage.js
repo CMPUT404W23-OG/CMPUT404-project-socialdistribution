@@ -22,16 +22,7 @@ import AuthContext from "../context/AuthContext";
 import { useContext } from "react";
 import { useLocation } from "react-router-dom";
 
-const ExpandMore = styled((props) => {
-  const { expand, ...other } = props;
-  return <IconButton {...other} />;
-})(({ theme, expand }) => ({
-  transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
-  // marginLeft: 'auto',
-  transition: theme.transitions.create("transform", {
-    duration: theme.transitions.duration.shortest,
-  }),
-}));
+
 
 function CreateArray() {
   var { user } = useContext(AuthContext);
@@ -43,10 +34,12 @@ function CreateArray() {
   const [postList, setPostList] = useState([]);
   const [wasLast, setWasLast] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorComments, setAnchorComments] = useState(null);
   const [menuId, setMenuId] = useState(0)
-  const [commentSection, setCommentSection] = useState([]);
+  // const [commentSection, setCommentSection] = useState([]);
 
   const isMenuOpen = Boolean(anchorEl);
+  const isCommentsOpen = Boolean(expanded);
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -55,7 +48,38 @@ function CreateArray() {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+
+  const handleCommentsOpen = (event) => {
+    setExpanded(event.currentTarget);
+  };
+
+  const handleCommentsClose = () => {
+    setExpanded(null);
+  };
+
+  // const handleExpandClick = () => {
+  //   setExpanded(!expanded);
+  // };
+
   var location = useLocation();
+
+  let commentsId = "primary-comments-post"
+  const ExpandMore = styled((props) => {
+    // anchorEl = {anchorComments}
+    const { expand, ...other } = props;
+    return <IconButton {...other} 
+    anchorEl = {expanded}
+    id = {commentsId}
+    open = {isCommentsOpen}
+    onClose = {handleCommentsClose}
+    />;
+  })(({ theme, expand }) => ({
+    transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
+    // marginLeft: 'auto',
+    transition: theme.transitions.create("transform", {
+      duration: theme.transitions.duration.shortest,
+    }),
+  }));
 
   let menuIdPost = "primary-menu-post";
   const renderMenuPost = (
@@ -139,9 +163,6 @@ function CreateArray() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [offset]);
 
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
   function getImg(post) {
     if (!post.image_url) {
       return null;
@@ -197,7 +218,11 @@ function CreateArray() {
                 aria-controls={menuIdPost}
                 onClick={handleMenuOpen}
               >
-                <MoreVertIcon />
+                {userId === post.author_id ? (
+                   <MoreVertIcon /> )
+                    : (null)
+                  }
+               
               </IconButton>
             }
             title={post.title + " - " + post.author_name}
@@ -220,8 +245,9 @@ function CreateArray() {
         </IconButton>
         <ExpandMore
           expand={expanded}
-          onClick={handleExpandClick}
+          onClick={handleCommentsOpen}
           aria-expanded={expanded}
+          aria-controls={commentsId}
           aria-label="show more"
         >
           <Comments />
@@ -239,11 +265,12 @@ function CreateArray() {
       </Collapse>
     </Card>
   </Container>
-  {/* {renderMenuPost}
-  {userId === post.author_id ? (
+  {renderMenuPost}
+  {/* {userId === post.author_id ? (
      {renderMenuPost}
   ): ( null )
     } */}
+  
  
 </Box>
 
