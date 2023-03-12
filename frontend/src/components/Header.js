@@ -132,10 +132,10 @@ export default function Header() {
         {" "}
         Markdown Post
       </MenuItem>
-      <MenuItem onClick={() => handlePost("image")}>
+      {/* <MenuItem onClick={() => handlePost("image")}>
         {" "}
         Post an image
-      </MenuItem>
+      </MenuItem> */}
       <MenuItem onClick={() => handlePost("textImage")}>
         {" "}
         Post Image with caption 

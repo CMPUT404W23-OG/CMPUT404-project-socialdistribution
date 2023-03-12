@@ -35,7 +35,7 @@ export default function PostsDialog({postType, open, setOpen}) {
     } else if (postType === "image") {
         cont_type = "image/png;base64"
     } else if (postType === "textImage") {
-        cont_type = "text/textImage"
+        cont_type = "image/png;base64"
     }
 
     const headers = {  
@@ -72,7 +72,6 @@ export default function PostsDialog({postType, open, setOpen}) {
         // setSubmitted(true);
         await axios.post(BasePath+`/posts/create/`+userId, payload, headers
         )
-        
         navigate("/");
         window.location.reload();
         handleClose();
@@ -151,6 +150,8 @@ export default function PostsDialog({postType, open, setOpen}) {
                         fullWidth
                         variant="outlined"
                         sx={{width: "100%"}}
+                        multiline
+                        rows={5}
                         onChange={(e) => setText(e.target.value)}
                     />
                     ) : ""}
