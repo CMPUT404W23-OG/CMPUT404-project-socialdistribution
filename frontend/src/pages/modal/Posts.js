@@ -47,7 +47,7 @@ export default function PostsDialog({postType, open, setOpen}) {
         "description": "private description here",
         "public": true,
         "body": postText,
-        //"image_url":imageUrl,
+        "image_url":imageUrl,
         "contentType":cont_type,
         "author_id":userId,
         "author_name":user_name,
