@@ -250,9 +250,9 @@ export default function Inbox() {
                       image={
                         post.image_url
                           ? post.image_url
-                          : URL.createObjectURL(post.image_file)
+                          : BasePath + post.image_file
                       }
-                      alt="Post Image"
+                      alt="Post image"
                     />
                   </Card>
                 ) : null}
