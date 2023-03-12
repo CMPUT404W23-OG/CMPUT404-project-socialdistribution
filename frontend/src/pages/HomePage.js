@@ -189,7 +189,14 @@ function CreateArray() {
 
   function getImg(post) {
     if (!post.image_url) {
-      return null;
+       return post.image_file ? 
+       <CardMedia
+          component="img"
+          height="194"
+          image={BasePath + post.image_file}
+          alt={post.description}
+        />
+        : null;
     } else {
       return (
         <CardMedia
