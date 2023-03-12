@@ -72,7 +72,6 @@ export default function PostsDialog({postType, open, setOpen}) {
         // setSubmitted(true);
         await axios.post(BasePath+`/posts/create/`+userId, payload, headers
         )
-        
         navigate("/");
         window.location.reload();
         handleClose();
