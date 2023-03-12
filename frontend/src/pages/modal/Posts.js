@@ -47,14 +47,15 @@ export default function PostsDialog({postType, open, setOpen}) {
         "description": "private description here",
         "public": true,
         "body": postText,
-        "image_url":imageUrl,
+        //"image_url":imageUrl,
         "contentType":cont_type,
         "author_id":userId,
         "author_name":user_name,
         "visibility":"PUBLIC",
         "type":"post",
+        "image_file":fileSelected
     };
-    console.log(payload)
+
     const handleClose = () => {
         setOpen(false);
     };
@@ -66,7 +67,7 @@ export default function PostsDialog({postType, open, setOpen}) {
             payload.visibility = "PUBLIC"
         }
     }
-
+    
     const SubmitContent = async () => {
         // setSubmitted(true);
         await axios.post(BasePath+`/posts/create/`+userId, payload, headers
@@ -83,8 +84,29 @@ export default function PostsDialog({postType, open, setOpen}) {
     //     handleClose();
     // }
 
-    const uploadImage = (event) => {
-        setFileSelected(event.target.files[0]);
+    const uploadImage = async (event) => {
+        
+        const image_file = event.target.files[0]
+        const base64 = await convertImage(image_file)
+        setFileSelected(base64)
+        
+    }
+   
+    // https://medium.com/nerd-for-tech/how-to-store-an-image-to-a-database-with-react-using-base-64-9d53147f6c4f
+    const convertImage = (file) => {
+
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                resolve(reader.result)
+            }
+            reader.onerror = (error) => {
+                reject(error)
+            }
+
+        });
+
     }
 
     function handleClick () {
