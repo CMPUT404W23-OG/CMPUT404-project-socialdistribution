@@ -22,6 +22,7 @@ import AuthContext from "../context/AuthContext";
 import { useContext } from "react";
 import { useLocation } from "react-router-dom";
 import { Divider, Grid, Paper, Button } from "@mui/material";
+import ReactMarkdown from "react-markdown";
 
 function CreateArray() {
   var { user } = useContext(AuthContext);
@@ -33,9 +34,10 @@ function CreateArray() {
   const [postList, setPostList] = useState([]);
   const [wasLast, setWasLast] = useState(false);
   const [anchorElMenu, setAnchorElMenu] = useState(null);
-  const [italic, setItalic] = useState(false);
-  const [fontWeight, setFontWeight] = useState('normal');
-  const [anchorEl, setAnchorEl] = useState(null);
+  // const [italic, setItalic] = useState(false);
+  // const [fontWeight, setFontWeight] = useState('normal');
+  // const [anchorEl, setAnchorEl] = useState(null);
+  const markdown = `**Just** a link: [https://reactjs.com](https://reactjs.com.)`
   // const [anchorComments, setAnchorComments] = useState(null);
   const [menuId, setMenuId] = useState(0)
   // const [commentSection, setCommentSection] = useState([]);
@@ -200,6 +202,26 @@ function CreateArray() {
     }
   }
 
+  function renderMarkdown(post) {
+    if(post.contentType === "text/markdown") {
+      // var test = "`" + post.body + "`";
+      // console.log(test);
+      console.log(post.body === markdown)
+      // const markdown = post.body;
+    return (
+      <ReactMarkdown>
+        {post.body}
+      </ReactMarkdown>
+    );
+  } else {
+    return (
+      <Typography variant="h5" color="black">
+          {post.body}
+      </Typography>
+    )
+  }
+}
+
   // function getComments(post) {
   //     return fetch(BasePath + `/posts/46/comments`)
   //     .then(function(res) {
@@ -253,9 +275,7 @@ function CreateArray() {
       {getImg(post)}
       <CardContent>
       {getImg(post) === null ? (
-         <Typography variant="h5" color="black">
-         {post.body}
-         </Typography>
+        renderMarkdown(post)
       ): ( <Typography variant="h6" color="text.secondary">
       {post.body}
       </Typography>) }
@@ -363,13 +383,6 @@ function CreateArray() {
     </Card>
   </Container>
   {renderMenuPost}
-  {/* {renderComments} */}
-  {/* {userId === post.author_id ? (
-     {renderMenuPost}
-  ): ( null )
-    } */}
-  
- 
 </Box>
 
 )
