@@ -33,29 +33,29 @@ function CreateArray() {
   const [prevPage, setPrevPage] = useState(0);
   const [postList, setPostList] = useState([]);
   const [wasLast, setWasLast] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorElMenu, setAnchorElMenu] = useState(null);
   // const [anchorComments, setAnchorComments] = useState(null);
   const [menuId, setMenuId] = useState(0)
   // const [commentSection, setCommentSection] = useState([]);
 
-  const isMenuOpen = Boolean(anchorEl);
+  const isMenuOpen = Boolean(anchorElMenu);
   const isCommentsOpen = Boolean(expanded);
 
   const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
+    setAnchorElMenu(event.currentTarget);
   };
 
   const handleMenuClose = () => {
-    setAnchorEl(null);
+    setAnchorElMenu(null);
   };
 
-  const handleCommentsOpen = (event) => {
-    setExpanded(event.currentTarget);
-  };
+  // const handleCommentsOpen = (event) => {
+  //   setExpanded(event.currentTarget);
+  // };
 
-  const handleCommentsClose = () => {
-    setExpanded(null);
-  };
+  // const handleCommentsClose = () => {
+  //   setExpanded(null);
+  // };
 
   // const handleExpandClick = () => {
   //   setExpanded(!expanded);
@@ -104,7 +104,7 @@ function CreateArray() {
   let menuIdPost = "primary-menu-post";
   const renderMenuPost = (
     <Menu
-      anchorEl={anchorEl}
+      anchorEl={anchorElMenu}
       anchorOrigin={{
         vertical: "top",
         horizontal: "right",
@@ -332,6 +332,7 @@ function CreateArray() {
         </Grid>
       </Paper>
     </div>
+
       
     </Card>
   </Container>
