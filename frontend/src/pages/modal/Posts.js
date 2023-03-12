@@ -77,12 +77,6 @@ export default function PostsDialog({postType, open, setOpen}) {
         handleClose();
     };
 
-
-    // if (submitted) {
-    //     // navigate("/");
-    //     handleClose();
-    // }
-
     const uploadImage = (event) => {
         setFileSelected(event.target.files[0]);
     }
