@@ -232,7 +232,7 @@ export default function Inbox() {
 
                 <ListItemText
                   primary={post.title}
-                  secondary={post.description}
+                  secondary={post.body}
                   sx={{
                     overflow: "hidden",
                     textOverflow: "ellipsis",
