@@ -82,4 +82,50 @@ class TestCase(TestCase):
         self.assertEqual(like.summary, self.like_data['summary'])
         self.assertEqual(like.post, self.like_data['post'])
         self.assertEqual(like.comment, self.like_data['comment'])
-    
+
+    def test_comment_model_update(self):
+        '''
+        Test for comment update
+        '''
+        author = Author.objects.createAuthor(**self.author_data)
+        author.save()
+        self.post_data["author_id"] = author
+        post = Post.objects.create(**self.post_data)
+        self.comment_data["post"] = post
+        self.comment_data["author"] = author
+        comment = Comment.objects.create(**self.comment_data)
+        comment.comment = "Updated Comment"
+        comment.save()
+        self.assertEqual(comment.comment, "Updated Comment")
+
+    def test_comment_model_delete(self):
+        '''
+        Test for comment deletion
+        '''
+        author = Author.objects.createAuthor(**self.author_data)
+        author.save()
+        self.post_data["author_id"] = author
+        post = Post.objects.create(**self.post_data)
+        self.comment_data["post"] = post
+        self.comment_data["author"] = author
+        comment = Comment.objects.create(**self.comment_data)
+        comment.delete()
+        self.assertEqual(Comment.objects.all().count(), 0)
+
+    def test_like_model_delete(self):
+        '''
+        Test for like deletion
+        '''
+        author = Author.objects.createAuthor(**self.author_data)
+        author.save()
+        self.post_data["author_id"] = author
+        post = Post.objects.create(**self.post_data)
+        self.comment_data["post"] = post
+        self.comment_data["author"] = author
+        comment = Comment.objects.create(**self.comment_data)
+        self.like_data["post"] = post
+        self.like_data["author"] = author
+        self.like_data["comment"] = comment
+        like = Like.objects.create(**self.like_data)
+        like.delete()
+        self.assertEqual(Like.objects.all().count(), 0)
