@@ -165,6 +165,7 @@ class CommentView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response({'detail': 'POST ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
     
+    @extend_schema(request=CommentSerializer, responses=CommentSerializer)
     def patch(self, request, post_id, comment_id, format=None):
         """
         Provide the post ID and comment ID as URL parameters and author ID in Request body.\n
@@ -185,6 +186,7 @@ class CommentView(APIView):
             return Response({'detail': 'Comment not found.'}, status=status.HTTP_404_NOT_FOUND)    
         return Response({'detail': 'POST ID and COMMENT ID are required.'}, status=status.HTTP_400_BAD_REQUEST)
     
+    @extend_schema(request=CommentSerializer, responses=CommentSerializer)
     def delete(self, request, post_id, comment_id, format=None):
         """
         Provide the post ID and comment ID as URL parameters.\n
@@ -272,6 +274,7 @@ class LikeView(APIView):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
+    @extend_schema(request=LikeSerializer, responses=LikeSerializer)
     def delete(self, request, like_id, format= None):
         """
         Provide the like ID as a URL parameter.\n
