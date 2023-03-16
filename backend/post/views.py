@@ -54,7 +54,6 @@ class PostView(APIView):
 
         # set author id to the URL parameter
         updated = request.data.copy()
-        print(updated["image_file"][:30])
         updated['author_id'] = author_id
         
         if updated['contentType'][:5] == "image" and 'image_file' in updated and updated['image_file'] != None:
