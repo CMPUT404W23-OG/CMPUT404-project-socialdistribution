@@ -28,6 +28,8 @@ function CreateArray() {
   var { user } = useContext(AuthContext);
   const userId = user.user_id;
   const [expanded, setExpanded] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [newComments, setNewComments] = useState([]);
   const [offset, setOffset] = useState(0);
   const [currPage, setCurrPage] = useState(1);
   const [prevPage, setPrevPage] = useState(0);
@@ -131,6 +133,35 @@ function CreateArray() {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Expose-Headers": "X-PAGINATION-SIZE",
   };
+  useEffect(() => {
+    
+    if (postList.length > 0) {
+      for (let i = (postList.length - 5); i < postList.length; i++) {
+        console.log(postList[i].id)
+        const getData = async () => {
+          try {
+            const res = await axios.get(
+              BasePath + `/posts/${postList[i].id}/comments`,
+              headers
+            );
+
+            console.log('here', res.data[0]);
+          
+            setNewComments([res.data]);
+            setComments([...comments, ...res.data])
+          } catch (err) {
+            console.log(err.response.status)
+          }
+        
+          
+        };
+
+        getData()
+        console.log(comments)
+      }
+
+    }
+  }, [postList])
 
   useEffect(() => {
     if (location.state) {
@@ -208,12 +239,11 @@ function CreateArray() {
       );
     }
   }
-
   function renderMarkdown(post) {
     if(post.contentType === "text/markdown") {
       // var test = "`" + post.body + "`";
       // console.log(test);
-      console.log(post.body === markdown)
+      // console.log(post.body === markdown)
       // const markdown = post.body;
     return (
       <ReactMarkdown>
@@ -229,22 +259,6 @@ function CreateArray() {
   }
 }
 
-  // function getComments(post) {
-  //     return fetch(BasePath + `/posts/46/comments`)
-  //     .then(function(res) {
-  //       return res.json();
-  //     }).then(function(json) {
-  //       return json;
-  //     });
-    
-  // }
-
-  // function comm() {
-  //   getComments().then(
-  //     function(json) {
-  //       setCommentSection(json)
-  //     })
-  // }
 
   const listItems = postList.map((post) =>
     <Box
@@ -313,6 +327,13 @@ function CreateArray() {
       {/* https://codesandbox.io/s/comment-box-with-material-ui-10p3c?file=/src/index.js:153-285 */}
       <div style={{ padding: 14 }}>
       <h3 style={{padding: 20}}>Comments</h3>
+      {/* {() => {
+        for (let i = 0; i < comments.length; i++) {
+          console.log(comments[i].id)
+        }
+      }} */}
+
+      <div>{comments.filter(x => x.post === post.id) === [] ? (console.log("No comments")) : console.log('here', comments.filter(x => x.post === post.id))} </div>
       <Paper style={{ maxHeight: 200, overflow: 'auto'}}>
         <Grid container wrap="nowrap" spacing={2}>
           <Grid item>
