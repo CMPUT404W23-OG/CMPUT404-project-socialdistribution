@@ -333,7 +333,17 @@ function CreateArray() {
         }
       }} */}
 
-      <div>{comments.filter(x => x.post === post.id) === [] ? (console.log("No comments")) : console.log('here', comments.filter(x => x.post === post.id))} </div>
+      {(comments.filter(x => x.post === post.id)).map((comment) => {
+        {console.log('inside')}
+        {console.log(comment)}
+               
+        {/* <div> here {comment}</div> */}
+        return (<div>{comment.comment}</div>)
+        
+
+      })}
+      <h3 style={{padding: 20}}>here</h3>
+
       <Paper style={{ maxHeight: 200, overflow: 'auto'}}>
         <Grid container wrap="nowrap" spacing={2}>
           <Grid item>
