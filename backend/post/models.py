@@ -25,7 +25,7 @@ class Post(models.Model):
     image_file = models.FileField(upload_to='post_images', blank=True, null=True)
     body = models.TextField(blank=True, null=True)
     datePublished = models.DateTimeField(auto_now_add=True) 
-    dateEdited = models.DateTimeField(auto_now=True)
+    dateEdited = models.DateTimeField(auto_now=False, auto_now_add=False, blank=True, null=True)
     unlisted = models.BooleanField(default=False)
     categories = ArrayField(models.CharField(max_length=200), blank=True, default=list)
 
