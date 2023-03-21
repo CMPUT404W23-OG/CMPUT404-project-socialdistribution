@@ -35,6 +35,7 @@ function CreateArray() {
   const [postList, setPostList] = useState([]);
   const [wasLast, setWasLast] = useState(false);
   const [anchorElMenu, setAnchorElMenu] = useState(null);
+  const [checkLikeBool, setCheckLike] = useState(false);
   // const [italic, setItalic] = useState(false);
   // const [fontWeight, setFontWeight] = useState('normal');
   // const [anchorEl, setAnchorEl] = useState(null);
@@ -229,23 +230,6 @@ function CreateArray() {
     )
   }
 }
-
-  // function getComments(post) {
-  //     return fetch(BasePath + `/posts/46/comments`)
-  //     .then(function(res) {
-  //       return res.json();
-  //     }).then(function(json) {
-  //       return json;
-  //     });
-    
-  // }
-
-  // function comm() {
-  //   getComments().then(
-  //     function(json) {
-  //       setCommentSection(json)
-  //     })
-  // }
  
 
   useEffect(() => {
@@ -258,16 +242,20 @@ function CreateArray() {
           for (let each in res.data) {
             if (res.data[each].author.id === userId) {
               document.getElementById(postList[i].id+'-like').style.color = 'red'
-            } 
+            } else {
+              document.getElementById(postList[i].id+'-like').style.color = 'default'
+            }
           }
+          document.getElementById(postList[i].id+'like-count').innerText = (res.data).length
         }
       }
     }
 
     checkLike()
+    setCheckLike(false)
+  }, [currPage, prevPage, wasLast, postList, checkLikeBool]);
 
-  }, [currPage, prevPage, wasLast, postList]);
-
+ 
   const listItems = postList.map((post) =>
     <Box
       key={post.id}
@@ -315,8 +303,13 @@ function CreateArray() {
           {async () => {
             var buttonColor = document.getElementById(post.id+'-like').style.color
             if (buttonColor === 'red') {
-              // implement unlike
-              return
+              const res = await axios.get(BasePath+`/posts/${post.id}/likes`)
+              
+              const likeId = (((res.data).filter(x => x.author.id === userId))[0]).id
+              console.log(likeId)
+              await axios.delete(BasePath+`/posts/likes/${likeId}`)
+              setCheckLike(true)
+              console.log('success')
             } else {
               await axios.post(BasePath+`/posts/${post.id}/likes`, 
                 {
@@ -337,6 +330,7 @@ function CreateArray() {
           >
           <FavoriteIcon id={post.id+'-like'} color='default' />
         </IconButton>
+        <h3 id={post.id+'like-count'}>Test</h3>
         {/* <IconButton 
         aria-label="comments"
         aria-controls={commentsId}
