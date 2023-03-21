@@ -243,19 +243,23 @@ function CreateArray() {
             if (res.data[each].author.id === userId) {
               document.getElementById(postList[i].id+'-like').style.color = 'red'
             } else {
-              document.getElementById(postList[i].id+'-like').style.color = 'default'
+              document.getElementById(postList[i].id+'-like').style.color = 'grey'
             }
           }
-          document.getElementById(postList[i].id+'like-count').innerText = (res.data).length
+          document.getElementById(postList[i].id+'-like-count').innerText = (res.data).length
         }
       }
     }
 
     checkLike()
     setCheckLike(false)
-  }, [currPage, prevPage, wasLast, postList, checkLikeBool]);
+  }, [currPage, prevPage, wasLast, postList]);
 
- 
+  function reload(post) {
+    var container = document.getElementById(post.id+'-like-count')
+    var content = container.innerHTML
+    container.innerHTML = content
+  }
   const listItems = postList.map((post) =>
     <Box
       key={post.id}
@@ -306,10 +310,13 @@ function CreateArray() {
               const res = await axios.get(BasePath+`/posts/${post.id}/likes`)
               
               const likeId = (((res.data).filter(x => x.author.id === userId))[0]).id
-              console.log(likeId)
               await axios.delete(BasePath+`/posts/likes/${likeId}`)
-              setCheckLike(true)
-              console.log('success')
+              
+              var count = parseInt(document.getElementById(post.id+'-like-count').innerHTML)
+                document.getElementById(post.id+'-like-count').innerHTML = count - 1
+              document.getElementById(post.id+'-like').style.color = 'grey'
+              
+
             } else {
               await axios.post(BasePath+`/posts/${post.id}/likes`, 
                 {
@@ -319,18 +326,20 @@ function CreateArray() {
                 {
                   "Content-Type":"application/json"
                 })
-
-
+                
+                var count = parseInt(document.getElementById(post.id+'-like-count').innerHTML)
+                document.getElementById(post.id+'-like-count').innerHTML = count + 1
                 document.getElementById(post.id+'-like').style.color = 'red'
 
               }
+              
             }
           }
           
           >
-          <FavoriteIcon id={post.id+'-like'} color='default' />
+          <FavoriteIcon id={post.id+'-like'} color='grey' />
         </IconButton>
-        <h3 id={post.id+'like-count'}>Test</h3>
+        <h3 id={post.id+'-like-count'}>No Likes</h3>
         {/* <IconButton 
         aria-label="comments"
         aria-controls={commentsId}
