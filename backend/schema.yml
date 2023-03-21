@@ -216,6 +216,33 @@ paths:
               schema:
                 $ref: '#/components/schemas/TokenRefresh'
           description: ''
+  /author/{author_id}/likes:
+    get:
+      operationId: author_likes_retrieve
+      description: |-
+        Provide the author ID as a URL parameter.
+
+        Returns all likes for a specific author.
+
+        Example: http://localhost:8000/authors/1/likes Returns all likes for author with id 1
+      parameters:
+      - in: path
+        name: author_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - author
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Like'
+          description: ''
   /author/{id}/:
     get:
       operationId: author_retrieve
@@ -288,6 +315,26 @@ paths:
       responses:
         '204':
           description: No response body
+  /author/all/:
+    get:
+      operationId: author_all_retrieve
+      description: |-
+        Returns all authors, can be used with pagination.
+
+        Example: This will return the second page of authors if there are 3 authors per page
+        http://localhost:8000/authors/all?page=2&size=3
+      tags:
+      - author
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+          description: ''
   /author/delete/{id}:
     get:
       operationId: author_delete_retrieve
@@ -549,6 +596,803 @@ paths:
               schema:
                 $ref: '#/components/schemas/Friend'
           description: ''
+  /posts/{id}/:
+    get:
+      operationId: posts_retrieve
+      description: Returns information for the author.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - posts
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+          description: ''
+    post:
+      operationId: posts_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - posts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Post'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Post'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Post'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+          description: ''
+    delete:
+      operationId: posts_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - posts
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /posts/{post_id}/comments:
+    get:
+      operationId: posts_comments_retrieve
+      description: |-
+        Provide the post ID as a URL parameter.
+
+        Returns all comments for a specific post.
+
+        Example: http://localhost:8000/posts/1/comments Returns all comments for post 1
+      parameters:
+      - in: path
+        name: post_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - posts
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+          description: ''
+    post:
+      operationId: posts_comments_create
+      description: |-
+        Provide the post ID as URL parameters and author ID in Request body.
+
+        Creates a new comment for a specific post.
+
+        Example: http://localhost:8000/posts/27/comments Creates a new comment for post 27
+
+        Request body: {"comment": "This is a comment",
+                        "author": 2}
+      parameters:
+      - in: path
+        name: post_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - posts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Comment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Comment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Comment'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+          description: ''
+    patch:
+      operationId: posts_comments_partial_update
+      description: |-
+        Provide the post ID and comment ID as URL parameters and author ID in Request body.
+
+        Updates a specific comment for a specific post.
+
+        Example: http://localhost:8000/posts/27/comments/2 Updates comment with id 2 for post 27
+
+        Request body: {"comment": "This is a comment"}
+      parameters:
+      - in: path
+        name: post_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - posts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedComment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedComment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedComment'
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+          description: ''
+    delete:
+      operationId: posts_comments_destroy
+      description: |-
+        Provide the post ID and comment ID as URL parameters.
+
+        Deletes a specific comment for a specific post.
+
+        Example: http://localhost:8000/posts/27/comments/2 Deletes comment with id 2 for post 27
+      parameters:
+      - in: path
+        name: post_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - posts
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /posts/{post_id}/comments/{comment_id}:
+    get:
+      operationId: posts_comments_retrieve_2
+      description: |-
+        Provide the post ID as a URL parameter.
+
+        Returns all comments for a specific post.
+
+        Example: http://localhost:8000/posts/1/comments Returns all comments for post 1
+      parameters:
+      - in: path
+        name: comment_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: post_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - posts
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+          description: ''
+    post:
+      operationId: posts_comments_create_2
+      description: |-
+        Provide the post ID as URL parameters and author ID in Request body.
+
+        Creates a new comment for a specific post.
+
+        Example: http://localhost:8000/posts/27/comments Creates a new comment for post 27
+
+        Request body: {"comment": "This is a comment",
+                        "author": 2}
+      parameters:
+      - in: path
+        name: comment_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: post_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - posts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Comment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Comment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Comment'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+          description: ''
+    patch:
+      operationId: posts_comments_partial_update_2
+      description: |-
+        Provide the post ID and comment ID as URL parameters and author ID in Request body.
+
+        Updates a specific comment for a specific post.
+
+        Example: http://localhost:8000/posts/27/comments/2 Updates comment with id 2 for post 27
+
+        Request body: {"comment": "This is a comment"}
+      parameters:
+      - in: path
+        name: comment_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: post_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - posts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedComment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedComment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedComment'
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+          description: ''
+    delete:
+      operationId: posts_comments_destroy_2
+      description: |-
+        Provide the post ID and comment ID as URL parameters.
+
+        Deletes a specific comment for a specific post.
+
+        Example: http://localhost:8000/posts/27/comments/2 Deletes comment with id 2 for post 27
+      parameters:
+      - in: path
+        name: comment_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: post_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - posts
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /posts/{post_id}/likes:
+    get:
+      operationId: posts_likes_retrieve_2
+      description: |-
+        Provide only post ID as a URL parameter.
+
+        Returns all likes for a specific post.
+
+        Example: http://localhost:8000/posts/27/likes Returns all likes for post with id 27
+
+
+        Provide only comment ID as a URL parameter.
+
+        Returns all likes for a specific comment.
+
+        Example: http://localhost:8000/posts/comments/2/likes Returns all likes for comment with id 2
+      parameters:
+      - in: path
+        name: post_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - posts
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Like'
+          description: ''
+    post:
+      operationId: posts_likes_create_2
+      description: |-
+        Provide only post ID as a URL parameter and author ID of the user who wants to like the comment in the request body.
+
+        Creates a new like for a specific post.
+
+        Example: http://localhost:8000/posts/27/likes Creates a new like for post with id
+
+        Request body: {"summary" : "Author 1 likes your post.",
+                       "author" : "1"}
+
+        Provide only comment ID as a URL parameter and author ID of the user who wants to like the comment in the request body.
+
+        Creates a new like for a specific comment.
+
+        Example: http://localhost:8000/posts/comments/2/likes Creates a new like for comment with id 2
+
+        Request body: {"summary" : "Author 1 likes your comment.",
+                        "author" : "1"}
+      parameters:
+      - in: path
+        name: post_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - posts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Like'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Like'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Like'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Like'
+          description: ''
+    delete:
+      operationId: posts_likes_destroy_2
+      description: |-
+        Provide the like ID as a URL parameter.
+
+        Deletes a specific like.
+
+        Example: http://localhost:8000/posts/likes/2 Deletes like with id 2
+      parameters:
+      - in: path
+        name: post_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - posts
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /posts/all/:
+    get:
+      operationId: posts_all_retrieve
+      description: |-
+        Returns all posts, can be used with pagination.
+
+        Example: This will return the second page of posts if there are 3 posts per page
+        http://localhost:8000/posts/all?page=2&size=3
+      tags:
+      - posts
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+          description: ''
+  /posts/all/count:
+    get:
+      operationId: posts_all_count_retrieve
+      tags:
+      - posts
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+          description: ''
+  /posts/author/{author_id}:
+    get:
+      operationId: posts_author_retrieve
+      description: |-
+        Returns all posts for a specific author, can be used with pagination.
+
+        Example: This will return the second page of posts belonging to author 39 if there are 3 posts per page
+        http://localhost:8000/posts/author/39?page=2&size=3
+      parameters:
+      - in: path
+        name: author_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - posts
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+          description: ''
+  /posts/comments/{comment_id}/likes:
+    get:
+      operationId: posts_comments_likes_retrieve
+      description: |-
+        Provide only post ID as a URL parameter.
+
+        Returns all likes for a specific post.
+
+        Example: http://localhost:8000/posts/27/likes Returns all likes for post with id 27
+
+
+        Provide only comment ID as a URL parameter.
+
+        Returns all likes for a specific comment.
+
+        Example: http://localhost:8000/posts/comments/2/likes Returns all likes for comment with id 2
+      parameters:
+      - in: path
+        name: comment_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - posts
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Like'
+          description: ''
+    post:
+      operationId: posts_comments_likes_create
+      description: |-
+        Provide only post ID as a URL parameter and author ID of the user who wants to like the comment in the request body.
+
+        Creates a new like for a specific post.
+
+        Example: http://localhost:8000/posts/27/likes Creates a new like for post with id
+
+        Request body: {"summary" : "Author 1 likes your post.",
+                       "author" : "1"}
+
+        Provide only comment ID as a URL parameter and author ID of the user who wants to like the comment in the request body.
+
+        Creates a new like for a specific comment.
+
+        Example: http://localhost:8000/posts/comments/2/likes Creates a new like for comment with id 2
+
+        Request body: {"summary" : "Author 1 likes your comment.",
+                        "author" : "1"}
+      parameters:
+      - in: path
+        name: comment_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - posts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Like'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Like'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Like'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Like'
+          description: ''
+    delete:
+      operationId: posts_comments_likes_destroy
+      description: |-
+        Provide the like ID as a URL parameter.
+
+        Deletes a specific like.
+
+        Example: http://localhost:8000/posts/likes/2 Deletes like with id 2
+      parameters:
+      - in: path
+        name: comment_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - posts
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /posts/create/{author_id}:
+    get:
+      operationId: posts_create_retrieve
+      description: Returns information for the author.
+      parameters:
+      - in: path
+        name: author_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - posts
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+          description: ''
+    post:
+      operationId: posts_create_create
+      parameters:
+      - in: path
+        name: author_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - posts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Post'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Post'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Post'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+          description: ''
+    delete:
+      operationId: posts_create_destroy
+      parameters:
+      - in: path
+        name: author_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - posts
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /posts/likes/{like_id}:
+    get:
+      operationId: posts_likes_retrieve
+      description: |-
+        Provide only post ID as a URL parameter.
+
+        Returns all likes for a specific post.
+
+        Example: http://localhost:8000/posts/27/likes Returns all likes for post with id 27
+
+
+        Provide only comment ID as a URL parameter.
+
+        Returns all likes for a specific comment.
+
+        Example: http://localhost:8000/posts/comments/2/likes Returns all likes for comment with id 2
+      parameters:
+      - in: path
+        name: like_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - posts
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Like'
+          description: ''
+    post:
+      operationId: posts_likes_create
+      description: |-
+        Provide only post ID as a URL parameter and author ID of the user who wants to like the comment in the request body.
+
+        Creates a new like for a specific post.
+
+        Example: http://localhost:8000/posts/27/likes Creates a new like for post with id
+
+        Request body: {"summary" : "Author 1 likes your post.",
+                       "author" : "1"}
+
+        Provide only comment ID as a URL parameter and author ID of the user who wants to like the comment in the request body.
+
+        Creates a new like for a specific comment.
+
+        Example: http://localhost:8000/posts/comments/2/likes Creates a new like for comment with id 2
+
+        Request body: {"summary" : "Author 1 likes your comment.",
+                        "author" : "1"}
+      parameters:
+      - in: path
+        name: like_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - posts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Like'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Like'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Like'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Like'
+          description: ''
+    delete:
+      operationId: posts_likes_destroy
+      description: |-
+        Provide the like ID as a URL parameter.
+
+        Deletes a specific like.
+
+        Example: http://localhost:8000/posts/likes/2 Deletes like with id 2
+      parameters:
+      - in: path
+        name: like_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - posts
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
   /request/{id}/:
     get:
       operationId: request_retrieve
@@ -667,11 +1511,70 @@ paths:
               schema:
                 $ref: '#/components/schemas/Request'
           description: ''
+  /service/authors/:
+    get:
+      operationId: service_authors_retrieve
+      description: Get all authors from remote server
+      tags:
+      - service
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: ' List of authors from remote server'
+        '401':
+          description: Unauthorized
+  /service/authors/{AUTHOR_ID}/:
+    get:
+      operationId: remote author detail
+      description: Get Author with a given id from remote server
+      parameters:
+      - in: path
+        name: AUTHOR_ID
+        schema:
+          type: string
+        required: true
+      tags:
+      - service
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/remoteAuthor'
+          description: ''
+  /service/authors/{AUTHOR_ID}/followers/:
+    get:
+      operationId: service_authors_followers_retrieve
+      description: Get all followers from remote server for a given author
+      parameters:
+      - in: path
+        name: AUTHOR_ID
+        schema:
+          type: string
+        required: true
+      tags:
+      - service
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: ' List of followers from remote server'
+        '401':
+          description: Unauthorized
 components:
   schemas:
     Author:
       type: object
       properties:
+        id:
+          type: integer
+          readOnly: true
         username:
           type: string
           description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
@@ -681,24 +1584,77 @@ components:
         password:
           type: string
           maxLength: 128
-        first_name:
-          type: string
-          maxLength: 200
-        last_name:
-          type: string
-          maxLength: 200
-        email:
-          type: string
-          format: email
-          maxLength: 200
         githubId:
           type: string
           maxLength: 200
+        profile_image_url:
+          type: string
+          format: uri
+          maxLength: 200
+        host:
+          type: string
+          format: uri
+          maxLength: 200
+        url:
+          type: string
+          format: uri
+          maxLength: 200
       required:
-      - first_name
-      - last_name
+      - id
       - password
       - username
+    AuthorPost:
+      type: object
+      description: New author serializer for get and post requests in the Post model.
+        Required to avoid password being returned in the response.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        githubId:
+          type: string
+          maxLength: 200
+        profile_image_url:
+          type: string
+          format: uri
+          maxLength: 200
+        host:
+          type: string
+          format: uri
+          maxLength: 200
+        url:
+          type: string
+          format: uri
+          maxLength: 200
+      required:
+      - id
+      - username
+    Comment:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        author:
+          $ref: '#/components/schemas/AuthorPost'
+        comment:
+          type: string
+        contentType:
+          type: string
+          maxLength: 200
+        post:
+          type: integer
+      required:
+      - author
+      - comment
+      - id
+      - post
     Follow:
       type: object
       properties:
@@ -764,6 +1720,27 @@ components:
       - follower
       - following
       - id
+    Like:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        summary:
+          type: string
+          maxLength: 200
+        author:
+          $ref: '#/components/schemas/AuthorPost'
+        post:
+          type: integer
+          nullable: true
+        comment:
+          type: integer
+          nullable: true
+      required:
+      - author
+      - id
+      - summary
     MyTokenObtainPair:
       type: object
       properties:
@@ -775,6 +1752,66 @@ components:
       required:
       - password
       - username
+    PatchedComment:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        author:
+          $ref: '#/components/schemas/AuthorPost'
+        comment:
+          type: string
+        contentType:
+          type: string
+          maxLength: 200
+        post:
+          type: integer
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        author_id:
+          type: integer
+        author_name:
+          type: string
+          maxLength: 200
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          maxLength: 200
+        body:
+          type: string
+          nullable: true
+        visibility:
+          type: string
+          maxLength: 200
+        datePublished:
+          type: string
+          format: date-time
+          readOnly: true
+        contentType:
+          type: string
+          maxLength: 200
+        image_file:
+          type: string
+          format: uri
+          nullable: true
+        image_url:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+      required:
+      - author_name
+      - datePublished
+      - description
+      - id
+      - title
     Request:
       type: object
       properties:
@@ -834,6 +1871,38 @@ components:
       required:
       - id
       - username
+    remoteAuthor:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        host:
+          type: string
+          format: uri
+          maxLength: 200
+        url:
+          type: string
+          format: uri
+          maxLength: 200
+        displayName:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        github:
+          type: string
+          default: ''
+          title: GithubId
+          maxLength: 200
+        profileImage:
+          type: string
+          format: uri
+          maxLength: 200
+      required:
+      - displayName
+      - id
   securitySchemes:
     jwtAuth:
       type: http
