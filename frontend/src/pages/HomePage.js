@@ -27,6 +27,7 @@ import ReactMarkdown from "react-markdown";
 function CreateArray() {
   var { user } = useContext(AuthContext);
   const userId = user.user_id;
+  const userName = user.username;
   const [expanded, setExpanded] = useState(false);
   const [offset, setOffset] = useState(0);
   const [currPage, setCurrPage] = useState(1);
@@ -245,6 +246,31 @@ function CreateArray() {
   //       setCommentSection(json)
   //     })
   // }
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.target.style.color = 'red'
+    console.log(event.target.style.color);
+    console.log(event.target.id)
+  };
+
+  useEffect(() => {
+    async function checkLike() {
+      if (postList.length > 0) {
+
+        for (let i = (postList.length-5); i < postList.length; i++) {
+          const res = await axios.get(BasePath+`/posts/${postList[i].id}/likes`)
+
+          for (let each in res.data) {
+            if (res.data[each].author.id === userId) {
+              document.getElementById(postList[i].id+'-like').style.color = 'red'
+            } 
+          }
+        }
+      }
+    }
+
+    checkLike()
+
+  }, [currPage, prevPage, wasLast, postList]);
 
   const listItems = postList.map((post) =>
     <Box
@@ -289,8 +315,30 @@ function CreateArray() {
        
       </CardContent>
       <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
-          <FavoriteIcon />
+        <IconButton aria-label="add to favorites" onClick=
+          {async () => {
+            var buttonColor = document.getElementById(post.id+'-like').style.color
+            if (buttonColor === 'red') {
+              return
+            } else {
+              await axios.post(BasePath+`/posts/${post.id}/likes`, 
+                {
+                  "summary":userName+ "liked your post.",
+                  "author":userId,
+                }, 
+                {
+                  "Content-Type":"application/json"
+                })
+
+
+                document.getElementById(post.id+'-like').style.color = 'red'
+
+              }
+            }
+          }
+          
+          >
+          <FavoriteIcon id={post.id+'-like'} color='default' />
         </IconButton>
         {/* <IconButton 
         aria-label="comments"

@@ -168,6 +168,9 @@ export const theme = createTheme({
       dark: '#0B815A',
       contrastText: '#FFFFFF'
     },
+    like: {
+      main: 'red',
+    },
     success: {
       main: '#14B8A6',
       light: '#43C6B7',
