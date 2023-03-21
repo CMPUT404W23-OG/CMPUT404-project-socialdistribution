@@ -19,6 +19,7 @@ from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from django.conf import settings
 from django.conf.urls.static import static
+from api.views import remoteUserView
 
 
 urlpatterns = [
@@ -27,6 +28,7 @@ urlpatterns = [
     path("posts/", include("post.urls")),
     path("api/", include("api.urls")),
     path("", include("follow.urls")),
+    path('service/authors/',remoteUserView.as_view() , name='authors'),
     # re_path(r'^$', schema_view)
     path("api/schema", SpectacularAPIView.as_view(), name="schema"),
     path("docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
