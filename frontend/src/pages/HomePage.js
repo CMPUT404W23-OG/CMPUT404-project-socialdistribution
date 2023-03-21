@@ -246,11 +246,7 @@ function CreateArray() {
   //       setCommentSection(json)
   //     })
   // }
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.target.style.color = 'red'
-    console.log(event.target.style.color);
-    console.log(event.target.id)
-  };
+ 
 
   useEffect(() => {
     async function checkLike() {
@@ -319,6 +315,7 @@ function CreateArray() {
           {async () => {
             var buttonColor = document.getElementById(post.id+'-like').style.color
             if (buttonColor === 'red') {
+              // implement unlike
               return
             } else {
               await axios.post(BasePath+`/posts/${post.id}/likes`, 
