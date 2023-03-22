@@ -11,9 +11,10 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import Incoming_Node, Outgoing_Node
-from .serializers import remoteAuthorsSerializer, remoteAuthorSerializer
+from .serializers import remoteAuthorsSerializer, remoteAuthorSerializer,  remotePostsSerializer
 from author.models import Author
 from follow.models import Follow, Request
+from post.models import Post
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @extend_schema(responses=TokenObtainPairSerializer)
@@ -189,3 +190,63 @@ class remoteFollowersDetailView(APIView):
 
         else:
             return Response({"error" : "Unauthorized"},  status=401)
+
+class remotePostsListView(APIView):
+
+    def authenticate_node(self,request):
+        if 'HTTP_AUTHORIZATION' in request.META:
+            auth = request.META['HTTP_AUTHORIZATION'].split()
+            if len(auth) == 2:
+                if auth[0].lower() == "basic":
+                    uname, passwd = base64.b64decode(auth[1]).decode().split(':')
+                    user = Incoming_Node.objects.filter(Username=uname, Password=passwd)
+                    logging.debug("found user *************" + str(user) + "*************")
+                    if user:
+                        return True
+        return False
+    
+    
+    @extend_schema(
+    responses={
+        200: OpenApiResponse(
+            
+            description=' List of posts from remote server'),
+        401: OpenApiResponse(
+            
+            description='Unauthorized',
+            )
+        }
+    )
+    def get(self, request, AUTHOR_ID, format=None):
+        '''Get all posts from remote server'''
+      
+        if self.authenticate_node(request):
+            posts = Post.objects.all().filter(author_id = AUTHOR_ID)
+            
+            serializer = remotePostsSerializer(posts, many=True)
+            return Response({"type" : "posts", "items" :serializer.data },  status=200)
+        else:
+            return Response({"error" : "Unauthorized"},  status=401)     
+
+
+
+# class remoteInboxView(APIView):
+    
+#     def authenticate_node(self,request):
+#         if 'HTTP_AUTHORIZATION' in request.META:
+#             auth = request.META['HTTP_AUTHORIZATION'].split()
+#             if len(auth) == 2:
+#                 if auth[0].lower() == "basic":
+#                     uname, passwd = base64.b64decode(auth[1]).decode().split(':')
+#                     user = Incoming_Node.objects.filter(Username=uname, Password=passwd)
+#                     logging.debug("found user *************" + str(user) + "*************")
+#                     if user:
+#                         return True
+#         return False
+    
+    
+   
+#     def get(self, request,  format=None):
+#         '''Get all posts from remote server'''
+      
+#         pass

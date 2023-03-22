@@ -19,7 +19,7 @@ from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from django.conf import settings
 from django.conf.urls.static import static
-from api.views import remoteUserListView, remoteUserDetailView, remoteFollowersListView, remoteFollowersDetailView
+from api.views import remoteUserListView, remoteUserDetailView, remoteFollowersListView, remoteFollowersDetailView, remotePostsListView
 
 
 
@@ -33,6 +33,7 @@ urlpatterns = [
     path('service/authors/',remoteUserListView.as_view() , name='authors'),
     path('service/authors/<str:AUTHOR_ID>/followers/', remoteFollowersListView.as_view() , name='followers-list'),
     path('service/authors/<str:AUTHOR_ID>/followers/<str:FOLLOWER_ID>', remoteFollowersDetailView.as_view() , name='followers-detail'),
+    path('service/authors/<str:AUTHOR_ID>/posts/', remotePostsListView.as_view() , name='posts-list'),
     # re_path(r'^$', schema_view)
     path("api/schema", SpectacularAPIView.as_view(), name="schema"),
     

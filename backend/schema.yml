@@ -1597,6 +1597,26 @@ paths:
               schema:
                 $ref: '#/components/schemas/remoteAuthor'
           description: ''
+  /service/authors/{AUTHOR_ID}/posts/:
+    get:
+      operationId: service_authors_posts_retrieve
+      description: Get all posts from remote server
+      parameters:
+      - in: path
+        name: AUTHOR_ID
+        schema:
+          type: string
+        required: true
+      tags:
+      - service
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: ' List of posts from remote server'
+        '401':
+          description: Unauthorized
 components:
   schemas:
     Author:
