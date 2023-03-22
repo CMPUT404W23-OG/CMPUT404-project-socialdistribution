@@ -39,9 +39,9 @@ function CreateArray() {
   // const [italic, setItalic] = useState(false);
   // const [fontWeight, setFontWeight] = useState('normal');
   // const [anchorEl, setAnchorEl] = useState(null);
-  const markdown = `**Just** a link: [https://reactjs.com](https://reactjs.com.)`
+  const markdown = `**Just** a link: [https://reactjs.com](https://reactjs.com.)`;
   // const [anchorComments, setAnchorComments] = useState(null);
-  const [menuId, setMenuId] = useState(0)
+  const [menuId, setMenuId] = useState(0);
   // const [commentSection, setCommentSection] = useState([]);
 
   const isMenuOpen = Boolean(anchorElMenu);
@@ -70,13 +70,13 @@ function CreateArray() {
   var location = useLocation();
 
   const imgLink =
-  "https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260";
+    "https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260";
 
-  let commentsId = "primary-comments-post"
+  let commentsId = "primary-comments-post";
   // const ExpandMore = styled((props) => {
   //   // anchorEl = {anchorComments}
   //   const { expand, ...other } = props;
-  //   return <IconButton {...other} 
+  //   return <IconButton {...other}
   //   anchorEl = {expanded}
   //   id = {commentsId}
   //   open = {isCommentsOpen}
@@ -91,21 +91,23 @@ function CreateArray() {
   // }));
 
   let renderComments = (
-    <Collapse 
-    in={expanded} 
-    id={commentsId}
-    // open={isCommentsOpen}
-    // onClose={handleCommentsClose}
-    timeout="auto" 
-    unmountOnExit>
-        <CardContent>
-          <Typography paragraph>
-              <div><h1>"THIS IS A TEST"</h1></div>
-          </Typography>
-        </CardContent>
-      </Collapse>
+    <Collapse
+      in={expanded}
+      id={commentsId}
+      // open={isCommentsOpen}
+      // onClose={handleCommentsClose}
+      timeout="auto"
+      unmountOnExit
+    >
+      <CardContent>
+        <Typography paragraph>
+          <div>
+            <h1>"THIS IS A TEST"</h1>
+          </div>
+        </Typography>
+      </CardContent>
+    </Collapse>
   );
-
 
   let menuIdPost = "primary-menu-post";
   const renderMenuPost = (
@@ -134,10 +136,9 @@ function CreateArray() {
     "Access-Control-Expose-Headers": "X-PAGINATION-SIZE",
   };
   useEffect(() => {
-    
     if (postList.length > 0) {
-      for (let i = (postList.length - 5); i < postList.length; i++) {
-        console.log(postList[i].id)
+      for (let i = postList.length - 5; i < postList.length; i++) {
+        console.log(postList[i].id);
         const getData = async () => {
           try {
             const res = await axios.get(
@@ -145,23 +146,20 @@ function CreateArray() {
               headers
             );
 
-            console.log('here', res.data[0]);
-          
+            console.log("here", res.data[0]);
+
             setNewComments([res.data]);
-            setComments([...comments, ...res.data])
+            setComments([...comments, ...res.data]);
           } catch (err) {
-            console.log(err.response.status)
+            console.log(err.response.status);
           }
-        
-          
         };
 
-        getData()
-        console.log(comments)
+        getData();
+        console.log(comments);
       }
-
     }
-  }, [postList])
+  }, [postList]);
 
   useEffect(() => {
     if (location.state) {
@@ -220,47 +218,73 @@ function CreateArray() {
 
   function getImg(post) {
     if (!post.image_url) {
-       return post.image_file ? 
-       <CardMedia
-          component="img"
-          height="194"
-          image={BasePath + post.image_file}
-          alt={post.description}
-        />
-        : null;
+      return post.image_file ? (
+        <Box
+          sx={{
+            width: "100%",
+            // height: "px",
+            border: "5px solid gold",
+          }}
+        >
+          <CardMedia
+            component="img"
+            sx={{
+              width: "100%",
+              height: "100%",
+              // height: "50vh",
+
+              // backgroundPosition: "center",
+              // backgroundRepeat: "no-repeat",
+              // backgroundSize: "cover",
+            }}
+            image={BasePath + post.image_file}
+            alt={post.description}
+          />
+        </Box>
+      ) : null;
     } else {
       return (
-        <CardMedia
-          component="img"
-          height="194"
+        <Box
+          sx={{
+            width: "100%",
+            // height: "px",
+          }}
+        >
+          <CardMedia
+            component="img"
+            sx={{
+              width: "100%",
+              height: "100%",
+              // height: "50vh",
+
+              // backgroundPosition: "center",
+              // backgroundRepeat: "no-repeat",
+              // backgroundSize: "cover",
+            }}
           image={post.image_url}
           alt={post.description}
         />
+        </Box>
       );
     }
   }
   function renderMarkdown(post) {
-    if(post.contentType === "text/markdown") {
+    if (post.contentType === "text/markdown") {
       // var test = "`" + post.body + "`";
       // console.log(test);
       // console.log(post.body === markdown)
       // const markdown = post.body;
-    return (
-      <ReactMarkdown>
-        {post.body}
-      </ReactMarkdown>
-    );
-  } else {
-    return (
-      <Typography variant="h5" color="black">
+      return <ReactMarkdown>{post.body}</ReactMarkdown>;
+    } else {
+      return (
+        <Typography variant="h5" color="black">
           {post.body}
-      </Typography>
-    )
+        </Typography>
+      );
+    }
   }
-}
 
-
-  const listItems = postList.map((post) =>
+  const listItems = postList.map((post) => (
     <Box
       key={post.id}
       sx={{
@@ -278,43 +302,41 @@ function CreateArray() {
               </Avatar>
             }
             action={
-              (userId === post.author_id ? (
-              <IconButton
-                aria-label="settings"
-                aria-controls={menuIdPost}
-                onClick={handleMenuOpen}
-              >
-               
-                   <MoreVertIcon /> 
-               
-              </IconButton> )
-                    : (null)
-              )
+              userId === post.author_id ? (
+                <IconButton
+                  aria-label="settings"
+                  aria-controls={menuIdPost}
+                  onClick={handleMenuOpen}
+                >
+                  <MoreVertIcon />
+                </IconButton>
+              ) : null
             }
             title={post.title + " - " + post.author_name}
             subheader={format(new Date(post.datePublished), "MMMM d, yyyy")}
           />
-      {getImg(post)}
-      <CardContent>
-      {getImg(post) === null ? (
-        renderMarkdown(post)
-      ): ( <Typography variant="h6" color="text.secondary">
-      {post.body}
-      </Typography>) }
-       
-      </CardContent>
-      <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
-          <FavoriteIcon />
-        </IconButton>
-        {/* <IconButton 
+          {getImg(post)}
+          <CardContent>
+            {getImg(post) === null ? (
+              renderMarkdown(post)
+            ) : (
+              <Typography variant="h6" color="text.secondary">
+                {post.body}
+              </Typography>
+            )}
+          </CardContent>
+          <CardActions disableSpacing>
+            <IconButton aria-label="add to favorites">
+              <FavoriteIcon />
+            </IconButton>
+            {/* <IconButton 
         aria-label="comments"
         aria-controls={commentsId}
         onClick={handleCommentsOpen}
         >
           <Comments />
           </IconButton> */}
-        {/* <ExpandMore
+            {/* <ExpandMore
           expand={expanded}
           onClick={handleCommentsOpen}
           aria-expanded={expanded}
@@ -323,98 +345,107 @@ function CreateArray() {
         >
           <Comments />
         </ExpandMore> */}
-      </CardActions>
-      {/* https://stackoverflow.com/questions/43788878/scrollable-list-component-from-material-ui-in-react */}
-      {/* https://codesandbox.io/s/comment-box-with-material-ui-10p3c?file=/src/index.js:153-285 */}
-      <div style={{ padding: 14 }}>
-      <h3 style={{padding: 10}}>Comments</h3>
-      {/* {() => {
+          </CardActions>
+          {/* https://stackoverflow.com/questions/43788878/scrollable-list-component-from-material-ui-in-react */}
+          {/* https://codesandbox.io/s/comment-box-with-material-ui-10p3c?file=/src/index.js:153-285 */}
+          <div style={{ padding: 14 }}>
+            <h3 style={{ padding: 10 }}>Comments</h3>
+            {/* {() => {
         for (let i = 0; i < comments.length; i++) {
           console.log(comments[i].id)
         }
       }} */}
-<Paper style={{ maxHeight: 200, overflow: 'auto'}}>
-      {(comments.filter(x => x.post === post.id)).map((comment) => {
-        {console.log('inside')}
-        {console.log(comment)}
-               
-        {/* <div> here {comment}</div> */}
-        return (<div
-          key={comment.id}
-        >
-        <Box
-        sx={{
-          padding: "10px",
-        }}
-        >
-        <Grid container wrap="nowrap" spacing={2}>
-          <Grid item>
-            <Avatar alt="Remy Sharp" src={comment.author.profile_image_url} />
-          </Grid>
-          <Grid justifyContent="left" item xs zeroMinWidth>
-            <h4 style={{ margin: 0, textAlign: "left" }}>{comment.author.username}</h4>
-            <p style={{ textAlign: "left" }}>
-            {comment.comment}
-            </p>
-            {/* <p style={{ textAlign: "left", color: "gray" }}>
+            <Paper style={{ maxHeight: 200, overflow: "auto" }}>
+              {comments
+                .filter((x) => x.post === post.id)
+                .map((comment) => {
+                  {
+                    console.log("inside");
+                  }
+                  {
+                    console.log(comment);
+                  }
+
+                  {
+                    /* <div> here {comment}</div> */
+                  }
+                  return (
+                    <div key={comment.id}>
+                      <Box
+                        sx={{
+                          padding: "10px",
+                        }}
+                      >
+                        <Grid container wrap="nowrap" spacing={2}>
+                          <Grid item>
+                            <Avatar
+                              alt="Remy Sharp"
+                              src={comment.author.profile_image_url}
+                            />
+                          </Grid>
+                          <Grid justifyContent="left" item xs zeroMinWidth>
+                            <h4 style={{ margin: 0, textAlign: "left" }}>
+                              {comment.author.username}
+                            </h4>
+                            <p style={{ textAlign: "left" }}>
+                              {comment.comment}
+                            </p>
+                            {/* <p style={{ textAlign: "left", color: "gray" }}>
             {comment.published}
             </p> */}
-          </Grid>
-          <IconButton aria-label="add to favorites">
-          <FavoriteIcon />
-        </IconButton>
-        {userId === comment.author.id ? (
-        <IconButton
-                aria-label="settings"
-                aria-controls={menuIdPost}
-                onClick={handleMenuOpen}
-              >
-                   <MoreVertIcon /> 
-              </IconButton> )  : (null)
-                  }
-        </Grid>
-        </Box>
-        <Divider variant="fullWidth" style={{ margin: "30px 0" }} />
-  
-      </div>
-        )
-        
-
-      })}
-      </Paper>
-    </div>
-    <div style={{ padding: 14 }}>
-    <TextField
-            margin="dense"
-            id="comment"
-            label="Write Comment"
-            placeholder="Comment goes here..."
-            type="text"
-            fullWidth
-            variant="outlined"
-            multiline
-            rows={2}
-            // value={postBody}
-            // onChange={(e) => setPostBody(e.target.value)}
-          />
-           <Box
-        sx={{
-          display: "flex",
-          flex: "1 1 auto",
-          flexDirection: "column",
-        }}
-      >
-          <Button 
-          >Add</Button>
-          </Box>
-    </div>
-    
-    </Card>
-  </Container>
-  {renderMenuPost}
-</Box>
-
-)
+                          </Grid>
+                          <IconButton aria-label="add to favorites">
+                            <FavoriteIcon />
+                          </IconButton>
+                          {userId === comment.author.id ? (
+                            <IconButton
+                              aria-label="settings"
+                              aria-controls={menuIdPost}
+                              onClick={handleMenuOpen}
+                            >
+                              <MoreVertIcon />
+                            </IconButton>
+                          ) : null}
+                        </Grid>
+                      </Box>
+                      <Divider
+                        variant="fullWidth"
+                        style={{ margin: "30px 0" }}
+                      />
+                    </div>
+                  );
+                })}
+            </Paper>
+          </div>
+          <div style={{ padding: 14 }}>
+            <TextField
+              margin="dense"
+              id="comment"
+              label="Write Comment"
+              placeholder="Comment goes here..."
+              type="text"
+              fullWidth
+              variant="outlined"
+              multiline
+              rows={2}
+              // value={postBody}
+              // onChange={(e) => setPostBody(e.target.value)}
+            />
+            <Box
+              sx={{
+                display: "flex",
+                flex: "1 1 auto",
+                flexDirection: "column",
+              }}
+            >
+              <Button>Add</Button>
+            </Box>
+          </div>
+        </Card>
+      </Container>
+      {renderMenuPost}
+    </Box>
+  ));
 
   return <div>{listItems}</div>;
 }
