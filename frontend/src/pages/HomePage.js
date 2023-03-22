@@ -359,6 +359,18 @@ function CreateArray() {
             {comment.published}
             </p> */}
           </Grid>
+          <IconButton aria-label="add to favorites">
+          <FavoriteIcon />
+        </IconButton>
+        {userId === comment.author.id ? (
+        <IconButton
+                aria-label="settings"
+                aria-controls={menuIdPost}
+                onClick={handleMenuOpen}
+              >
+                   <MoreVertIcon /> 
+              </IconButton> )  : (null)
+                  }
         </Grid>
         </Box>
         <Divider variant="fullWidth" style={{ margin: "30px 0" }} />
