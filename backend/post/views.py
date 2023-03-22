@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from drf_spectacular.utils import extend_schema
 from rest_framework.views import APIView
-from .serializers import PostSerializer, CommentSerializer, LikeSerializer
+from .serializers import PostSerializer, CommentSerializer, LikeSerializer, CommentPostSerializer, LikePostSerializer
 from django.core.paginator import Paginator
 import base64
 from django.core.files.base import ContentFile
@@ -158,7 +158,7 @@ class CommentView(APIView):
         """
         if  post_id:
             request.data['post'] = post_id
-            serializer = CommentSerializer(data=request.data)
+            serializer = CommentPostSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -268,7 +268,7 @@ class LikeView(APIView):
         else:
             return Response({'detail': 'Either POST ID or Comment ID required.'}, status=status.HTTP_400_BAD_REQUEST)
                 
-        serializer = LikeSerializer(data=request.data)
+        serializer = LikePostSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
