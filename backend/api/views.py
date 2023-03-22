@@ -164,7 +164,7 @@ class remoteFollowersDetailView(APIView):
     
     
     @extend_schema( operation_id= "remote following detail", responses= remoteAuthorSerializer )
-    def get(self, request,AUTHOR_ID, FOREIGN_AUTHOR_ID,  format=None):
+    def get(self, request,AUTHOR_ID, FOLLOWER_ID,  format=None):
         '''Check if FOREIGN_AUTHOR_ID is a follower of AUTHOR_ID 
         SUCCESS: 200 OK, {"type": "following", "items": [AUTHOR OBJECT]},
         FAILURE: 404 NOT FOUND, {"type": "following", "items": []}'''
@@ -175,7 +175,7 @@ class remoteFollowersDetailView(APIView):
 
             # check if the foreign author object exists in the database
             try:
-                foreign_author = Author.objects.get(pk = FOREIGN_AUTHOR_ID)
+                foreign_author = Author.objects.get(pk = FOLLOWER_ID)
             except Author.DoesNotExist:
                 return Response({"type" : "following", "items" : [] },  status=404)
 
