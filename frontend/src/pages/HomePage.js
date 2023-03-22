@@ -326,70 +326,48 @@ function CreateArray() {
       {/* https://stackoverflow.com/questions/43788878/scrollable-list-component-from-material-ui-in-react */}
       {/* https://codesandbox.io/s/comment-box-with-material-ui-10p3c?file=/src/index.js:153-285 */}
       <div style={{ padding: 14 }}>
-      <h3 style={{padding: 20}}>Comments</h3>
+      <h3 style={{padding: 10}}>Comments</h3>
       {/* {() => {
         for (let i = 0; i < comments.length; i++) {
           console.log(comments[i].id)
         }
       }} */}
-
+<Paper style={{ maxHeight: 200, overflow: 'auto'}}>
       {(comments.filter(x => x.post === post.id)).map((comment) => {
         {console.log('inside')}
         {console.log(comment)}
                
         {/* <div> here {comment}</div> */}
-        return (<div>{comment.comment}</div>)
+        return (<div
+          key={comment.id}
+        >
+        <Box
+        sx={{
+          padding: "10px",
+        }}
+        >
+        <Grid container wrap="nowrap" spacing={2}>
+          <Grid item>
+            <Avatar alt="Remy Sharp" src={comment.author.profile_image_url} />
+          </Grid>
+          <Grid justifyContent="left" item xs zeroMinWidth>
+            <h4 style={{ margin: 0, textAlign: "left" }}>{comment.author.username}</h4>
+            <p style={{ textAlign: "left" }}>
+            {comment.comment}
+            </p>
+            {/* <p style={{ textAlign: "left", color: "gray" }}>
+            {comment.published}
+            </p> */}
+          </Grid>
+        </Grid>
+        </Box>
+        <Divider variant="fullWidth" style={{ margin: "30px 0" }} />
+  
+      </div>
+        )
         
 
       })}
-      <h3 style={{padding: 20}}>here</h3>
-
-      <Paper style={{ maxHeight: 200, overflow: 'auto'}}>
-        <Grid container wrap="nowrap" spacing={2}>
-          <Grid item>
-            <Avatar alt="Remy Sharp" src={imgLink} />
-          </Grid>
-          <Grid justifyContent="left" item xs zeroMinWidth>
-            <h4 style={{ margin: 0, textAlign: "left" }}>Michel Michel</h4>
-            <p style={{ textAlign: "left" }}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean
-              luctus ut est sed faucibus. Duis bibendum ac ex vehicula laoreet.
-              Suspendisse congue vulputate lobortis. Pellentesque at interdum
-              tortor. Quisque arcu quam, malesuada vel mauris et, posuere
-              sagittis ipsum. Aliquam ultricies a ligula nec faucibus. In elit
-              metus, efficitur lobortis nisi quis, molestie porttitor metus.
-              Pellentesque et neque risus. Aliquam vulputate, mauris vitae
-              tincidunt interdum, mauris mi vehicula urna, nec feugiat quam
-              lectus vitae ex.{" "}
-            </p>
-            <p style={{ textAlign: "left", color: "gray" }}>
-              posted 1 minute ago
-            </p>
-          </Grid>
-        </Grid>
-        <Divider variant="fullWidth" style={{ margin: "30px 0" }} />
-        <Grid container wrap="nowrap" spacing={2}>
-          <Grid item>
-            <Avatar alt="Remy Sharp" src={imgLink} />
-          </Grid>
-          <Grid justifyContent="left" item xs zeroMinWidth>
-            <h4 style={{ margin: 0, textAlign: "left" }}>Michel Michel</h4>
-            <p style={{ textAlign: "left" }}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean
-              luctus ut est sed faucibus. Duis bibendum ac ex vehicula laoreet.
-              Suspendisse congue vulputate lobortis. Pellentesque at interdum
-              tortor. Quisque arcu quam, malesuada vel mauris et, posuere
-              sagittis ipsum. Aliquam ultricies a ligula nec faucibus. In elit
-              metus, efficitur lobortis nisi quis, molestie porttitor metus.
-              Pellentesque et neque risus. Aliquam vulputate, mauris vitae
-              tincidunt interdum, mauris mi vehicula urna, nec feugiat quam
-              lectus vitae ex.{" "}
-            </p>
-            <p style={{ textAlign: "left", color: "gray" }}>
-              posted 1 minute ago
-            </p>
-          </Grid>
-        </Grid>
       </Paper>
     </div>
     <div style={{ padding: 14 }}>
