@@ -399,7 +399,7 @@ function CreateArray() {
                       .innerHTML === "1"
                   ) {
                     document.getElementById(post.id + "-like-count").innerHTML =
-                      "No likes yet";
+                      <h6>No Likes yet</h6>;
                   } else {
                     let count = parseInt(
                       document.getElementById(post.id + "-like-count").innerHTML
@@ -449,7 +449,7 @@ function CreateArray() {
             </IconButton>
 
             {/* like counter */}
-            <h3 id={post.id + "-like-count"}>No likes yet</h3>
+            <body2 id={post.id + "-like-count"}>No likes yet</body2>
             {/* <IconButton 
         aria-label="comments"
         aria-controls={commentsId}
