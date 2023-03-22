@@ -172,6 +172,7 @@ function CreateArray() {
             sx={{
               flexGrow: 0.03,
               marginTop: "0.8em",
+              marginBottom: "1em",
             }}
             key={author.id}
           >
