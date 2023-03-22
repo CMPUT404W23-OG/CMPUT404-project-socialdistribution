@@ -11,10 +11,10 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import Incoming_Node, Outgoing_Node
-from .serializers import remoteAuthorsSerializer, remoteAuthorSerializer,  remotePostsSerializer
+from .serializers import remoteAuthorsSerializer, remoteAuthorSerializer,  remotePostsSerializer, remoteCommentsSerializer, remoteLikesSerializer
 from author.models import Author
 from follow.models import Follow, Request
-from post.models import Post
+from post.models import Post, Comment, Like
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @extend_schema(responses=TokenObtainPairSerializer)
@@ -258,6 +258,166 @@ class remotePostDetailView(APIView):
         else:
             return Response({"error" : "Unauthorized"},  status=401)
 
+class remoteCommentsListView(APIView):
+
+    def authenticate_node(self,request):
+        if 'HTTP_AUTHORIZATION' in request.META:
+            auth = request.META['HTTP_AUTHORIZATION'].split()
+            if len(auth) == 2:
+                if auth[0].lower() == "basic":
+                    uname, passwd = base64.b64decode(auth[1]).decode().split(':')
+                    user = Incoming_Node.objects.filter(Username=uname, Password=passwd)
+                    logging.debug("found user *************" + str(user) + "*************")
+                    if user:
+                        return True
+        return False
+    
+    
+    @extend_schema(
+    responses={
+        200: OpenApiResponse(
+            
+            description=' List of comments from remote server for a given post'),
+        401: OpenApiResponse(
+            
+            description='Unauthorized',
+            )
+        }
+    )
+    def get(self, request, AUTHOR_ID, POST_ID, format=None):
+        '''Get all comments from remote server for a given post'''
+      
+        if self.authenticate_node(request):
+            comments = Comment.objects.all().filter(post_id = POST_ID)
+            number = self.request.query_params.get('page', 1)
+            size = self.request.query_params.get('size', 5)
+            paginator = Paginator(comments, size)
+
+            serializer = remoteCommentsSerializer(paginator.page(number) , many=True)
+            return Response({"type" : "comments", "items" :serializer.data },  status=200)
+        else:
+            return Response({"error" : "Unauthorized"},  status=401)
+
+
+class remoteLikesListView(APIView):
+
+    def authenticate_node(self,request):
+        if 'HTTP_AUTHORIZATION' in request.META:
+            auth = request.META['HTTP_AUTHORIZATION'].split()
+            if len(auth) == 2:
+                if auth[0].lower() == "basic":
+                    uname, passwd = base64.b64decode(auth[1]).decode().split(':')
+                    user = Incoming_Node.objects.filter(Username=uname, Password=passwd)
+                    logging.debug("found user *************" + str(user) + "*************")
+                    if user:
+                        return True
+        return False
+    
+    
+    @extend_schema(
+    responses={
+        200: OpenApiResponse(
+            
+            description=' List of likes from remote server for a given post'),
+        401: OpenApiResponse(
+            
+            description='Unauthorized',
+            )
+        }
+    )
+    def get(self, request, AUTHOR_ID, POST_ID, format=None):
+        '''Get all likes from remote server for a given post'''
+      
+        if self.authenticate_node(request):
+            likes = Like.objects.all().filter(post_id = POST_ID)
+            number = self.request.query_params.get('page', 1)
+            size = self.request.query_params.get('size', 5)
+            paginator = Paginator(likes, size)
+
+            serializer = remoteLikesSerializer(paginator.page(number) , many=True)
+            return Response({"type" : "likes", "items" :serializer.data },  status=200)
+        else:
+            return Response({"error" : "Unauthorized"},  status=401)
+
+class remoteCommentLikesListView(APIView):
+
+    def authenticate_node(self,request):
+        if 'HTTP_AUTHORIZATION' in request.META:
+            auth = request.META['HTTP_AUTHORIZATION'].split()
+            if len(auth) == 2:
+                if auth[0].lower() == "basic":
+                    uname, passwd = base64.b64decode(auth[1]).decode().split(':')
+                    user = Incoming_Node.objects.filter(Username=uname, Password=passwd)
+                    logging.debug("found user *************" + str(user) + "*************")
+                    if user:
+                        return True
+        return False
+    
+    
+    @extend_schema(
+    responses={
+        200: OpenApiResponse(
+            
+            description=' List of likes from remote server for a given comment'),
+        401: OpenApiResponse(
+            
+            description='Unauthorized',
+            )
+        }
+    )
+    def get(self, request, AUTHOR_ID, POST_ID, COMMENT_ID, format=None):
+        '''Get all likes from remote server for a given comment'''
+      
+        if self.authenticate_node(request):
+            likes = Like.objects.all().filter(comment_id = COMMENT_ID)
+            number = self.request.query_params.get('page', 1)
+            size = self.request.query_params.get('size', 5)
+            paginator = Paginator(likes, size)
+
+            serializer = remoteLikesSerializer(paginator.page(number) , many=True)
+            return Response({"type" : "likes", "items" :serializer.data },  status=200)
+        else:
+            return Response({"error" : "Unauthorized"},  status=401)
+
+class remoteAuthorLikesListView(APIView):
+
+    def authenticate_node(self,request):
+        if 'HTTP_AUTHORIZATION' in request.META:
+            auth = request.META['HTTP_AUTHORIZATION'].split()
+            if len(auth) == 2:
+                if auth[0].lower() == "basic":
+                    uname, passwd = base64.b64decode(auth[1]).decode().split(':')
+                    user = Incoming_Node.objects.filter(Username=uname, Password=passwd)
+                    logging.debug("found user *************" + str(user) + "*************")
+                    if user:
+                        return True
+        return False
+    
+    
+    @extend_schema(
+    responses={
+        200: OpenApiResponse(
+            
+            description=' List of likes from remote server for a given author'),
+        401: OpenApiResponse(
+            
+            description='Unauthorized',
+            )
+        }
+    )
+    def get(self, request, AUTHOR_ID, format=None):
+        '''Get all likes from remote server for a given author'''
+      
+        if self.authenticate_node(request):
+            likes = Like.objects.all().filter(author_id = AUTHOR_ID)
+            number = self.request.query_params.get('page', 1)
+            size = self.request.query_params.get('size', 5)
+            paginator = Paginator(likes, size)
+
+            serializer = remoteLikesSerializer(paginator.page(number) , many=True)
+            return Response({"type" : "likes", "items" :serializer.data },  status=200)
+        else:
+            return Response({"error" : "Unauthorized"},  status=401)
 
 # class remoteInboxView(APIView):
     

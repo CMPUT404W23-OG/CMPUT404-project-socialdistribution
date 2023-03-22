@@ -144,8 +144,33 @@ class remotePostsSerializer(serializers.ModelSerializer):
         return instance
 
    
+class remoteCommentsSerializer(serializers.ModelSerializer):
+    source = serializers.CharField(default="http://31552.yeg.rac.sh")
+    origin = serializers.CharField(default="http://31552.yeg.rac.sh")
+
+    class Meta:
+        model = Comment
+        fields = ["id", "author", "comment", "contentType", "post", "source", "origin"]
 
 
+    def create(self, validated_data):
+        validated_data["source"] = "http://31552.yeg.rac.sh"
+        validated_data["origin"] = "http://31552.yeg.rac.sh"
 
+        instance = super().create(validated_data)
+        return instance
 
+class remoteLikesSerializer(serializers.ModelSerializer):
+    source = serializers.CharField(default="http://31552.yeg.rac.sh")
+    origin = serializers.CharField(default="http://31552.yeg.rac.sh")
 
+    class Meta:
+        model = Like
+        fields = ["id", "summary", "author", "post", "comment", "source", "origin"]
+
+    def create(self, validated_data):
+        validated_data["source"] = "http://31552.yeg.rac.sh"
+        validated_data["origin"] = "http://31552.yeg.rac.sh"
+
+        instance = super().create(validated_data)
+        return instance
