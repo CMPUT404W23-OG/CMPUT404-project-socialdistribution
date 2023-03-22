@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiParameter, OpenApiResponse
-
+from django.core.paginator import Paginator
 from rest_framework.views import APIView
 import base64
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -222,8 +222,11 @@ class remotePostsListView(APIView):
       
         if self.authenticate_node(request):
             posts = Post.objects.all().filter(author_id = AUTHOR_ID)
-            
-            serializer = remotePostsSerializer(posts, many=True)
+            number = self.request.query_params.get('page', 1)
+            size = self.request.query_params.get('size', 5)
+            paginator = Paginator(posts, size)
+
+            serializer = remotePostsSerializer(paginator.page(number) , many=True)
             return Response({"type" : "posts", "items" :serializer.data },  status=200)
         else:
             return Response({"error" : "Unauthorized"},  status=401)     
