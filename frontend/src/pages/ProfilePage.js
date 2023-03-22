@@ -193,7 +193,9 @@ function CreateArray() {
     } else {
       const getData = async () => {
         const res = await axios.get(
-          BasePath + `/posts/all/?page=${currPage}&size=5`,
+          BasePath +
+            `/posts/author/` +
+            user.user_id,
           headers
         );
 
