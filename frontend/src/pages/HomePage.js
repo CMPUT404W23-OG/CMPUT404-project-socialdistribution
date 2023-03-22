@@ -278,17 +278,18 @@ function CreateArray() {
               </Avatar>
             }
             action={
+              (userId === post.author_id ? (
               <IconButton
                 aria-label="settings"
                 aria-controls={menuIdPost}
                 onClick={handleMenuOpen}
               >
-                {userId === post.author_id ? (
-                   <MoreVertIcon /> )
-                    : (null)
-                  }
                
-              </IconButton>
+                   <MoreVertIcon /> 
+               
+              </IconButton> )
+                    : (null)
+              )
             }
             title={post.title + " - " + post.author_name}
             subheader={format(new Date(post.datePublished), "MMMM d, yyyy")}
