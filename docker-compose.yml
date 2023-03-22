@@ -58,7 +58,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    command: python manage.py migrate
+    command: python manage.py makemigrations && python manage.py migrate
 
     depends_on:
       - backend
