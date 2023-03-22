@@ -146,3 +146,46 @@ class remoteFollowersListView(APIView):
             return Response({"type" : "followers", "items" :serializer.data },  status=200)
         else:
             return Response({"error" : "Unauthorized"},  status=401)     
+        
+class remoteFollowersDetailView(APIView):
+    
+    def authenticate_node(self,request):
+        if 'HTTP_AUTHORIZATION' in request.META:
+            auth = request.META['HTTP_AUTHORIZATION'].split()
+            if len(auth) == 2:
+                if auth[0].lower() == "basic":
+                    uname, passwd = base64.b64decode(auth[1]).decode().split(':')
+                    user = Incoming_Node.objects.filter(Username=uname, Password=passwd)
+                    logging.debug("found user *************" + str(user) + "*************")
+                    if user:
+                        return True
+        return False
+    
+    
+    @extend_schema( operation_id= "remote following detail", responses= remoteAuthorSerializer )
+    def get(self, request,AUTHOR_ID, FOREIGN_AUTHOR_ID,  format=None):
+        '''Check if FOREIGN_AUTHOR_ID is a follower of AUTHOR_ID 
+        SUCCESS: 200 OK, {"type": "following", "items": [AUTHOR OBJECT]},
+        FAILURE: 404 NOT FOUND, {"type": "following", "items": []}'''
+      
+        if self.authenticate_node(request):
+            
+            author = Author.objects.get(pk = AUTHOR_ID)
+
+            # check if the foreign author object exists in the database
+            try:
+                foreign_author = Author.objects.get(pk = FOREIGN_AUTHOR_ID)
+            except Author.DoesNotExist:
+                return Response({"type" : "following", "items" : [] },  status=404)
+
+
+            # CHECK IF THE FOREIGN AUTHOR IS A FOLLOWER OF THE AUTHOR
+            following = Follow.objects.is_following(foreign_author, author)
+            if following:
+                serializer = remoteAuthorSerializer(foreign_author)
+                return Response({"type" : "followers", "items" : [serializer.data] },  status=200)
+            
+            return Response({"type" : "followers", "items" : [] },  status=404)
+
+        else:
+            return Response({"error" : "Unauthorized"},  status=401)

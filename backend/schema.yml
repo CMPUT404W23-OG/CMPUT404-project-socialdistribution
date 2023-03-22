@@ -1567,6 +1567,36 @@ paths:
           description: ' List of followers from remote server'
         '401':
           description: Unauthorized
+  /service/authors/{AUTHOR_ID}/followers/{FOLLOWER_ID}:
+    get:
+      operationId: remote following detail
+      description: |-
+        Check if FOREIGN_AUTHOR_ID is a follower of AUTHOR_ID
+        SUCCESS: 200 OK, {"type": "following", "items": [AUTHOR OBJECT]},
+        FAILURE: 404 NOT FOUND, {"type": "following", "items": []}
+      parameters:
+      - in: path
+        name: AUTHOR_ID
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: FOLLOWER_ID
+        schema:
+          type: string
+        required: true
+      tags:
+      - service
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/remoteAuthor'
+          description: ''
 components:
   schemas:
     Author:
