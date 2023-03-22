@@ -228,6 +228,32 @@ class remotePostsListView(APIView):
         else:
             return Response({"error" : "Unauthorized"},  status=401)     
 
+class remotePostDetailView(APIView):
+
+    def authenticate_node(self,request):
+        if 'HTTP_AUTHORIZATION' in request.META:
+            auth = request.META['HTTP_AUTHORIZATION'].split()
+            if len(auth) == 2:
+                if auth[0].lower() == "basic":
+                    uname, passwd = base64.b64decode(auth[1]).decode().split(':')
+                    user = Incoming_Node.objects.filter(Username=uname, Password=passwd)
+                    logging.debug("found user *************" + str(user) + "*************")
+                    if user:
+                        return True
+        return False
+    
+    
+    @extend_schema( operation_id= "remote post detail", responses= remotePostsSerializer )
+    def get(self, request, AUTHOR_ID, POST_ID, format=None):
+        '''Get a post with a given id from remote server'''
+      
+        if self.authenticate_node(request):
+            post = Post.objects.get(pk = POST_ID)
+            
+            serializer = remotePostsSerializer(post)
+            return Response({"type" : "post", "items" :serializer.data },  status=200)
+        else:
+            return Response({"error" : "Unauthorized"},  status=401)
 
 
 # class remoteInboxView(APIView):
