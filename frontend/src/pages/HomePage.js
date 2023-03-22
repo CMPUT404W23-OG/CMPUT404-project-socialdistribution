@@ -223,7 +223,6 @@ function CreateArray() {
           sx={{
             width: "100%",
             // height: "px",
-            border: "5px solid gold",
           }}
         >
           <CardMedia
@@ -261,9 +260,9 @@ function CreateArray() {
               // backgroundRepeat: "no-repeat",
               // backgroundSize: "cover",
             }}
-          image={post.image_url}
-          alt={post.description}
-        />
+            image={post.image_url}
+            alt={post.description}
+          />
         </Box>
       );
     }
