@@ -223,33 +223,6 @@ function CreateArray() {
     }
   }, [postList]);
 
-  // useEffect(() => {
-  //   if (postList.length > 0) {
-
-  //     for (let i = (postList.length - 5); i < postList.length; i++) {
-  //       const getData = () => {
-  //         Promise.all([
-  //             fetch(BasePath + `/posts/${postList[i].id}/comments`, {
-  //               method: "GET",
-  //               headers: {
-  //                 "Content-Type": "application/json",
-  //                 Accept: "application/json",
-  //               }
-  //             })
-  //         ])
-  //         .then(([commentsResponse]) =>
-  //           Promise.all([commentsResponse.json()]))
-  //           .then(([commentsData]) => {
-  //             console.log('data', commentsData);
-  //             setComments([...comments, commentsData])})
-
-  //       };
-
-  //       getData();
-  //       console.log("comments", comments)
-  //     }
-  //   }
-  // }, [postList]);
 
   useEffect(() => {
     if (location.state) {
@@ -373,21 +346,6 @@ function CreateArray() {
     }
   }
 
-  function renderMarkdown(post) {
-    if (post.contentType === "text/markdown") {
-      // var test = "`" + post.body + "`";
-      // console.log(test);
-      // console.log(post.body === markdown)
-      // const markdown = post.body;
-      return <ReactMarkdown>{post.body}</ReactMarkdown>;
-    } else {
-      return (
-        <Typography variant="h5" color="black">
-          {post.body}
-        </Typography>
-      );
-    }
-  }
 
   useEffect(() => {
     async function checkLike() {
