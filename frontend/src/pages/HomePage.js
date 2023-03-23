@@ -44,13 +44,17 @@ async function addComment(userId, postId, comment) {
     },
     header
   );
-  // document.location.reload(true);
+  // var paper = document.getElementById("post-comments-"+postId);
+  // paper.prependChild(document.createElement("div"))
+  document.location.reload(true);
+  
 }
+
 
 function CommentBox({ userId, pid }) {
   const [comment, setComment] = useState("");
   return (
-    <div style={{ padding: 14 }}>
+  <div style={{ padding: 14 }}>
       <TextField
         margin="dense"
         id="comment"
@@ -234,7 +238,19 @@ function CreateArray() {
   // edit/delete comment
   async function deleteComment(postID, commentID) {
     await axios.delete(`${BasePath}/posts/${postID}/comments/${commentID}`);
-    window.location.reload();
+    var elem = document.getElementById(commentID)
+
+    elem.remove()
+    handleCommentsMenuClose()
+  }
+
+  async function editComment(postID, commentID, updatedComment) {
+    await axios.patch(`${BasePath}/posts/${postID}/comments/${commentID}`, {
+      "comment":updatedComment,
+    });
+    document.getElementById("written-comment-"+commentID).innerHTML = updatedComment
+
+    handleCommentsMenuClose()
   }
   // await axios.delete(`${BasePath}/posts/${post.id}/comments/${comment.id}`);
   // await axios.patch(`${BasePath}/posts/${post.id}/comments/${comment.id}`, {"comment":${editedComment}});
@@ -595,12 +611,12 @@ function CreateArray() {
           console.log(comments[i].id)
         }
       }} */}
-            <Paper style={{ maxHeight: 400, overflow: "auto" }}>
+            <Paper style={{ maxHeight: 400, overflow: "auto" }} id={"post-comments-"+post.id}>
               {comments
                 .filter((x) => x.post === post.id)
                 .map((comment) => {
                   return (
-                    <div key={comment.id}>
+                    <div key={comment.id} id={comment.id}>
                       <Box
                         sx={{
                           padding: "10px",
@@ -617,7 +633,7 @@ function CreateArray() {
                             <h4 style={{ margin: 0, textAlign: "left" }}>
                               {comment.author.username}
                             </h4>
-                            <p style={{ textAlign: "left" }}>
+                            <p style={{ textAlign: "left" }} id={"written-comment-"+comment.id}>
                               {comment.comment}
                             </p>
                             {/* <p style={{ textAlign: "left", color: "gray" }}>
@@ -725,9 +741,12 @@ function CreateArray() {
                               onClick={handleCommentsMenuOpen}
                             >
                               <MoreVertIcon />
+                            {renderMenuComments(post.id, comment.id)}
+
                             </IconButton>
+                            
                           ) : null}
-                          {renderMenuComments(post.id, comment.id)}
+                          
                         </Grid>
                       </Box>
                       <Divider
