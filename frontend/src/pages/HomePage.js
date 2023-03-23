@@ -529,7 +529,7 @@ function CreateArray() {
                   await axios.post(
                     BasePath + `/posts/${post.id}/likes`,
                     {
-                      summary: userName + "liked your post.",
+                      summary: userName + " liked your post.",
                       author: userId,
                     },
                     {
