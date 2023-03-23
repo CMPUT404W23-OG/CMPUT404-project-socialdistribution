@@ -25,6 +25,8 @@ import { useLocation } from "react-router-dom";
 import { Divider, Grid, Paper, Button } from "@mui/material";
 import ReactMarkdown from "react-markdown";
 
+
+ 
 function CreateArray() {
   var { user } = useContext(AuthContext);
   const userId = user.user_id;
@@ -37,9 +39,8 @@ function CreateArray() {
   const [postList, setPostList] = useState([]);
   const [wasLast, setWasLast] = useState(false);
   const [anchorElMenu, setAnchorElMenu] = useState(null);
-  // const [italic, setItalic] = useState(false);
-  // const [fontWeight, setFontWeight] = useState('normal');
-  // const [anchorEl, setAnchorEl] = useState(null);
+  
+
   const markdown = `**Just** a link: [https://reactjs.com](https://reactjs.com.)`;
   // const [anchorComments, setAnchorComments] = useState(null);
   const [menuId, setMenuId] = useState(0);
@@ -109,6 +110,58 @@ function CreateArray() {
   //     </CardContent>
   //   </Collapse>
   // );
+
+  async function addComment(postId, comment) {
+    console.log(postId);
+    await axios.post(
+      BasePath + `/posts/` + postId + "/comments",
+      {
+        author: userId,
+        comment: comment,
+        contentType: "text/plain",
+      },
+      header
+    );
+  }
+
+  function CommentBox(pid) {
+    const [comment, setComment] = useState("");
+    return( <div style={{ padding: 14 }}>
+      <TextField
+        margin="dense"
+        id="comment"
+        label="Write Comment"
+        placeholder="Comment goes here..."
+        type="text"
+        fullWidth
+        variant="outlined"
+        multiline
+        rows={2}
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+        key={pid}
+      />
+      <Box
+        sx={{
+          display: "flex",
+          flex: "1 1 auto",
+          flexDirection: "column",
+        }}
+      >
+        <Button  key={pid} onClick={() => addComment(pid, comment)}>Add</Button>
+      </Box>
+    </div>)
+  }
+
+  const authTokens = JSON.parse(localStorage.getItem("authTokens"));
+  console.log(authTokens.access);
+
+  const header = {
+    "Content-Type": "application/json",
+    Authorization: "Bearer " + authTokens.access,
+  };
+
+
 
   let menuIdPost = "primary-menu-post";
   const renderMenuPost = (
@@ -675,30 +728,7 @@ function CreateArray() {
                 })}
             </Paper>
           </div>
-          <div style={{ padding: 14 }}>
-            <TextField
-              margin="dense"
-              id="comment"
-              label="Write Comment"
-              placeholder="Comment goes here..."
-              type="text"
-              fullWidth
-              variant="outlined"
-              multiline
-              rows={2}
-              // value={postBody}
-              // onChange={(e) => setPostBody(e.target.value)}
-            />
-            <Box
-              sx={{
-                display: "flex",
-                flex: "1 1 auto",
-                flexDirection: "column",
-              }}
-            >
-              <Button>Add</Button>
-            </Box>
-          </div>
+          {CommentBox(post.id)}
         </Card>
       </Container>
       {renderMenuPost}
