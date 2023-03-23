@@ -131,7 +131,7 @@ class remotePostsSerializer(serializers.ModelSerializer):
         extra_kwargs = {
            
             "published": {"source": "datePublished"},
-            "content" :{"source": "description"},
+            "content" :{"source": "body"},
 
        
         }
