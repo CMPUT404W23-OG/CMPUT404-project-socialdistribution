@@ -200,7 +200,7 @@ function CreateArray() {
       for (let i = postList.length - 5; i < postList.length; i++) {
         try {
           const res = await axios.get(
-            `${BasePath}/posts/${postList[i].id}/comments`
+            `${BasePath}/posts/${postList[i].id}/comments?page=1&size=1000`
           );
           setComments((prevComments) => {
             const newComments = res.data.filter(
