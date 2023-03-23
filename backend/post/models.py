@@ -9,9 +9,7 @@ from django.contrib.postgres.fields import ArrayField
 HOST = os.getenv('HOST')
 
 #posts are public by default (True)
-#unlisted field for images
-
-#for categories with ArrayField: https://docs.djangoproject.com/en/2.2/ref/contrib/postgres/fields/#arrayfield
+#unlisted are false by default
 
 class Post(models.Model):
     type = models.CharField(max_length=200, default='post')
