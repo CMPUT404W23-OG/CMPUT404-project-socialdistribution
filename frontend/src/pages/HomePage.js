@@ -44,9 +44,10 @@ async function addComment(userId, postId, comment) {
     },
     header
   );
-  // var paper = document.getElementById("post-comments-"+postId);
-  // paper.prependChild(document.createElement("div"))
-  document.location.reload(true);
+  var paper = document.getElementById("post-comments-"+postId);
+  document.createElement("div")
+  paper.prependChild(document.createTextNode("hello"))
+  //document.location.reload(true);
   
 }
 
@@ -207,6 +208,7 @@ function CreateArray() {
 
   let menuIdComments = "primary-menu-comments";
   function renderMenuComments(postId, commentId) {
+    console.log('here', commentId)
     return (
       <Menu
         anchorEl={anchorElComments}
@@ -238,6 +240,7 @@ function CreateArray() {
   // edit/delete comment
   async function deleteComment(postID, commentID) {
     await axios.delete(`${BasePath}/posts/${postID}/comments/${commentID}`);
+    console.log("comment", commentID)
     var elem = document.getElementById(commentID)
 
     elem.remove()
