@@ -191,6 +191,13 @@ function CreateArray() {
     </Menu>
   );
 
+  // deleting post
+  // await axios.delete(`${BasePath}/posts/${post.id}`);
+
+  // edit/delete comment
+  // await axios.delete(`${BasePath}/posts/${post.id}/comments/${comment.id}`);
+  // await axios.patch(`${BasePath}/posts/${post.id}/comments/${comment.id}`, {"comment":${editedComment}});
+
   const headers = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Expose-Headers": "X-PAGINATION-SIZE",
