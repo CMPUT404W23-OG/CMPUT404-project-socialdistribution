@@ -98,6 +98,7 @@ function CreateArray() {
   const [postList, setPostList] = useState([]);
   const [wasLast, setWasLast] = useState(false);
   const [anchorElMenu, setAnchorElMenu] = useState(null);
+  const [anchorElComments, setAnchorElComments] = useState(null);
 
   const markdown = `**Just** a link: [https://reactjs.com](https://reactjs.com.)`;
   // const [anchorComments, setAnchorComments] = useState(null);
@@ -105,14 +106,23 @@ function CreateArray() {
   // const [commentSection, setCommentSection] = useState([]);
 
   const isMenuOpen = Boolean(anchorElMenu);
+  const isCommentMenuOpen = Boolean(anchorElComments);
   // const isCommentsOpen = Boolean(expanded);
 
   const handleMenuOpen = (event) => {
     setAnchorElMenu(event.currentTarget);
   };
 
+  const handleCommentsMenuOpen = (event) => {
+    setAnchorElComments(event.currentTarget);
+  };
+
   const handleMenuClose = () => {
     setAnchorElMenu(null);
+  };
+
+  const handleCommentsMenuClose = () => {
+    setAnchorElComments(null);
   };
 
   // const handleCommentsOpen = (event) => {
@@ -191,10 +201,41 @@ function CreateArray() {
     </Menu>
   );
 
+  let menuIdComments = "primary-menu-comments";
+  function renderMenuComments(postId, commentId) {
+    return (
+      <Menu
+        anchorEl={anchorElComments}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        id={menuIdComments}
+        keepMounted
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        open={isCommentMenuOpen}
+        onClose={handleCommentsMenuClose}
+      >
+        <MenuItem> Edit</MenuItem>
+        <MenuItem onClick={() => deleteComment(postId, commentId)}>
+          {" "}
+          Delete
+        </MenuItem>
+      </Menu>
+    );
+  }
+
   // deleting post
   // await axios.delete(`${BasePath}/posts/${post.id}`);
 
   // edit/delete comment
+  async function deleteComment(postID, commentID) {
+    await axios.delete(`${BasePath}/posts/${postID}/comments/${commentID}`);
+    window.location.reload();
+  }
   // await axios.delete(`${BasePath}/posts/${post.id}/comments/${comment.id}`);
   // await axios.patch(`${BasePath}/posts/${post.id}/comments/${comment.id}`, {"comment":${editedComment}});
 
@@ -229,7 +270,6 @@ function CreateArray() {
       fetchComments();
     }
   }, [postList]);
-
 
   useEffect(() => {
     if (location.state) {
@@ -352,7 +392,6 @@ function CreateArray() {
       );
     }
   }
-
 
   useEffect(() => {
     async function checkLike() {
@@ -682,12 +721,13 @@ function CreateArray() {
                           {userId === comment.author.id ? (
                             <IconButton
                               aria-label="settings"
-                              aria-controls={menuIdPost}
-                              onClick={handleMenuOpen}
+                              aria-controls={menuIdComments}
+                              onClick={handleCommentsMenuOpen}
                             >
                               <MoreVertIcon />
                             </IconButton>
                           ) : null}
+                          {renderMenuComments(post.id, comment.id)}
                         </Grid>
                       </Box>
                       <Divider
