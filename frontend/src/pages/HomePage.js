@@ -137,35 +137,36 @@ function CreateArray() {
     "Access-Control-Expose-Headers": "X-PAGINATION-SIZE",
   };
   useEffect(() => {
-    if (postList.length > 0) {
-      for (let i = (postList.length - 5); i < postList.length; i++) {
-        const getData = async () => {
-          try {
-            const res = await axios.get(
-              BasePath + `/posts/${postList[i].id}/comments`,
-              
-            )
-            setComments([...comments, ...res.data]);
-           
-            
-          } catch (e) {
-            if (e.response.status === 404) {
-              console.log(`Post ${postList[i].id} has no comments`)
-            } else {
-              console.log(e.response.status)
-            };
+    const fetchComments = async () => {
+      for (let i = postList.length - 5; i < postList.length; i++) {
+        try {
+          const res = await axios.get(
+            `${BasePath}/posts/${postList[i].id}/comments`
+          );
+          setComments((prevComments) => {
+            const newComments = res.data.filter(
+              (comment) => !prevComments.find((c) => c.id === comment.id)
+            );
+            return [...prevComments, ...newComments];
+          });
+        } catch (e) {
+          if (e.response.status === 404) {
+            console.log(`Post ${postList[i].id} has no comments`);
+          } else {
+            console.log(e.response.status);
           }
-          
-        };
-        console.log('here', comments)
-        getData();
+        }
       }
+    };
+
+    if (postList.length > 0) {
+      fetchComments();
     }
   }, [postList]);
-  
+
   // useEffect(() => {
   //   if (postList.length > 0) {
-      
+
   //     for (let i = (postList.length - 5); i < postList.length; i++) {
   //       const getData = () => {
   //         Promise.all([
@@ -177,14 +178,14 @@ function CreateArray() {
   //               }
   //             })
   //         ])
-  //         .then(([commentsResponse]) => 
+  //         .then(([commentsResponse]) =>
   //           Promise.all([commentsResponse.json()]))
   //           .then(([commentsData]) => {
   //             console.log('data', commentsData);
   //             setComments([...comments, commentsData])})
-            
+
   //       };
-        
+
   //       getData();
   //       console.log("comments", comments)
   //     }
@@ -342,22 +343,21 @@ function CreateArray() {
               if (res.data[each].author.id === userId) {
                 document.getElementById(postList[i].id + "-like").style.color =
                   "red";
-              } 
+              }
             }
             document.getElementById(postList[i].id + "-like-count").innerText =
               res.data.length;
           } catch (e) {
             if (e.response.status === 404) {
-              console.log(`Post ${postList[i].id} has no likes`)
+              console.log(`Post ${postList[i].id} has no likes`);
             } else {
-              console.log(e.response.status)
-            };
+              console.log(e.response.status);
+            }
           }
         }
       }
 
       if (comments.length > 0) {
-
         for (let i = 0; i < comments.length; i++) {
           try {
             const res = await axios.get(
@@ -366,18 +366,20 @@ function CreateArray() {
 
             for (let each in res.data) {
               if (res.data[each].author.id === userId) {
-                document.getElementById(comments[i].id + "-like-comment").style.color =
-                  "red";
+                document.getElementById(
+                  comments[i].id + "-like-comment"
+                ).style.color = "red";
               }
             }
-            document.getElementById(comments[i].id + "-like-count-comment").innerText =
-              res.data.length;
+            document.getElementById(
+              comments[i].id + "-like-count-comment"
+            ).innerText = res.data.length;
           } catch (e) {
             if (e.response.status === 404) {
-              console.log(`Comment ${comments[i].id} has no likes`)
+              console.log(`Comment ${comments[i].id} has no likes`);
             } else {
-              console.log(e.response.status)
-            };
+              console.log(e.response.status);
+            }
           }
         }
       }
@@ -531,9 +533,9 @@ function CreateArray() {
         }
       }} */}
             <Paper style={{ maxHeight: 200, overflow: "auto" }}>
-              {comments.filter((x) => x.post === post.id)
+              {comments
+                .filter((x) => x.post === post.id)
                 .map((comment) => {
-                  
                   return (
                     <div key={comment.id}>
                       <Box
@@ -559,60 +561,99 @@ function CreateArray() {
             {comment.published}
             </p> */}
                           </Grid>
-                          <IconButton aria-label="add to favorites"
-                          onClick={async () => {
-                            //checks current color (liked or not)
-                            var buttonColor = document.getElementById(comment.id + "-like-comment").style.color;
-                            if (buttonColor === "red") {
-                              // if liked, get the likes for the post, find the users, and delete it
-                              const res = await axios.get(BasePath + `/posts/comments/${comment.id}/likes`);
-                              const likeId = res.data.filter(
-                                (x) => x.author.id === userId
-                              )[0].id;
-                              await axios.delete(BasePath + `/posts/likes/${likeId}`);
-            
-                              // get current likes and decrement (faster then pinging backend, no need for refresh), change icon to grey
-            
-                              if (document.getElementById(comment.id + "-like-count-comment").innerHTML === "1") {
-                                document.getElementById(comment.id + "-like-count-comment").innerHTML = " ";
-                              } else {
-                                let count = parseInt(document.getElementById(comment.id + "-like-count-comment").innerHTML);
-                                document.getElementById(comment.id + "-like-count-comment").innerHTML = count - 1;
-                              }
-            
-                              document.getElementById(comment.id + "-like-comment").style.color = "grey";
-                            } else {
-                              // create new like-post object
-                              await axios.post(
-                                BasePath + `/posts/comments/${comment.id}/likes`,
-                                {
-                                  summary: userName + " liked your comment.",
-                                  author: userId,
-                                },
-                                {
-                                  "Content-Type": "application/json",
+                          <IconButton
+                            aria-label="add to favorites"
+                            onClick={async () => {
+                              //checks current color (liked or not)
+                              var buttonColor = document.getElementById(
+                                comment.id + "-like-comment"
+                              ).style.color;
+                              if (buttonColor === "red") {
+                                // if liked, get the likes for the post, find the users, and delete it
+                                const res = await axios.get(
+                                  BasePath +
+                                    `/posts/comments/${comment.id}/likes`
+                                );
+                                const likeId = res.data.filter(
+                                  (x) => x.author.id === userId
+                                )[0].id;
+                                await axios.delete(
+                                  BasePath + `/posts/likes/${likeId}`
+                                );
+
+                                // get current likes and decrement (faster then pinging backend, no need for refresh), change icon to grey
+
+                                if (
+                                  document.getElementById(
+                                    comment.id + "-like-count-comment"
+                                  ).innerHTML === "1"
+                                ) {
+                                  document.getElementById(
+                                    comment.id + "-like-count-comment"
+                                  ).innerHTML = " ";
+                                } else {
+                                  let count = parseInt(
+                                    document.getElementById(
+                                      comment.id + "-like-count-comment"
+                                    ).innerHTML
+                                  );
+                                  document.getElementById(
+                                    comment.id + "-like-count-comment"
+                                  ).innerHTML = count - 1;
                                 }
-                              );
-            
-                              // get current likes and increment (faster then pinging backend, no need for refresh), change icon to red
-            
-                              if (document.getElementById(comment.id + "-like-count-comment").innerHTML === " ") {
-                                document.getElementById(comment.id + "-like-count-comment").innerHTML = 1;
+
+                                document.getElementById(
+                                  comment.id + "-like-comment"
+                                ).style.color = "grey";
                               } else {
-                                let count = parseInt(document.getElementById(comment.id + "-like-count-comment").innerHTML);
-                                document.getElementById(comment.id + "-like-count-comment").innerHTML = count + 1;
+                                // create new like-post object
+                                await axios.post(
+                                  BasePath +
+                                    `/posts/comments/${comment.id}/likes`,
+                                  {
+                                    summary: userName + " liked your comment.",
+                                    author: userId,
+                                  },
+                                  {
+                                    "Content-Type": "application/json",
+                                  }
+                                );
+
+                                // get current likes and increment (faster then pinging backend, no need for refresh), change icon to red
+
+                                if (
+                                  document.getElementById(
+                                    comment.id + "-like-count-comment"
+                                  ).innerHTML === " "
+                                ) {
+                                  document.getElementById(
+                                    comment.id + "-like-count-comment"
+                                  ).innerHTML = 1;
+                                } else {
+                                  let count = parseInt(
+                                    document.getElementById(
+                                      comment.id + "-like-count-comment"
+                                    ).innerHTML
+                                  );
+                                  document.getElementById(
+                                    comment.id + "-like-count-comment"
+                                  ).innerHTML = count + 1;
+                                }
+
+                                document.getElementById(
+                                  comment.id + "-like-comment"
+                                ).style.color = "red";
                               }
-            
-                              document.getElementById(comment.id + "-like-comment").style.color = "red";
-                            }
-                          }}
+                            }}
                           >
-                            <FavoriteIcon id={comment.id + "-like-comment"} color="grey" />
+                            <FavoriteIcon
+                              id={comment.id + "-like-comment"}
+                              color="grey"
+                            />
                             <h5 id={comment.id + "-like-count-comment"}> </h5>
                           </IconButton>
 
                           {/* like counter */}
-                          
 
                           {userId === comment.author.id ? (
                             <IconButton
@@ -630,11 +671,8 @@ function CreateArray() {
                         style={{ margin: "30px 0" }}
                       />
                     </div>
-                    
                   );
-                }
-              )}
-                
+                })}
             </Paper>
           </div>
           <div style={{ padding: 14 }}>
