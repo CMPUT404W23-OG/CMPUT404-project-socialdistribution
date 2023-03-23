@@ -1,24 +1,6 @@
 version: "3"
 
 services:
-  database:
-    image: postgres
-    restart: always
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    environment:
-      POSTGRES_PASSWORD: admin
-      POSTGRES_USER: admin
-      POSTGRES_DB: socialdistribution
-    ports:
-      - "5432:5432"
-
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
   frontend:
     build:
       context: ./frontend
@@ -26,43 +8,8 @@ services:
     ports:
       - "80:80"
 
-    depends_on:
-      - backend
-      - database
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
-
-  backend:
-    image: socialdistribution_backend
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-
-    ports:
-      - "8000:8000"
-
-    depends_on:
-      - database
-
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
-  migration:
-    image: socialdistribution_backend
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    command: python manage.py migrate
-
-    depends_on:
-      - backend
-      - database
-
-volumes:
-  pgdata:
