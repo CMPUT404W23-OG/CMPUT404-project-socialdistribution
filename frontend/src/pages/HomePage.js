@@ -138,7 +138,7 @@ function CreateArray() {
   };
   useEffect(() => {
     if (postList.length > 0) {
-      for (let i = postList.length - 5; i < postList.length; i++) {
+      for (let i = (postList.length - 5); i < postList.length; i++) {
         const getData = async () => {
           try {
             const res = await axios.get(
@@ -163,6 +163,34 @@ function CreateArray() {
     }
   }, [postList]);
   
+  // useEffect(() => {
+  //   if (postList.length > 0) {
+      
+  //     for (let i = (postList.length - 5); i < postList.length; i++) {
+  //       const getData = () => {
+  //         Promise.all([
+  //             fetch(BasePath + `/posts/${postList[i].id}/comments`, {
+  //               method: "GET",
+  //               headers: {
+  //                 "Content-Type": "application/json",
+  //                 Accept: "application/json",
+  //               }
+  //             })
+  //         ])
+  //         .then(([commentsResponse]) => 
+  //           Promise.all([commentsResponse.json()]))
+  //           .then(([commentsData]) => {
+  //             console.log('data', commentsData);
+  //             setComments([...comments, commentsData])})
+            
+  //       };
+        
+  //       getData();
+  //       console.log("comments", comments)
+  //     }
+  //   }
+  // }, [postList]);
+
   useEffect(() => {
     if (location.state) {
       console.log("location.state is", location.state);
