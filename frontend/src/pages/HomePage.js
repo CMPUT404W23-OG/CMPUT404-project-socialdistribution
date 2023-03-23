@@ -25,7 +25,6 @@ import { useLocation } from "react-router-dom";
 import { Divider, Grid, Paper, Button } from "@mui/material";
 import ReactMarkdown from "react-markdown";
 
-
 async function addComment(userId, postId, comment) {
   console.log(postId);
   const authTokens = JSON.parse(localStorage.getItem("authTokens"));
@@ -45,11 +44,12 @@ async function addComment(userId, postId, comment) {
     },
     header
   );
+  // document.location.reload(true);
 }
 
-function CommentBox({userId, pid}) {
+function CommentBox({ userId, pid }) {
   const [comment, setComment] = useState("");
-  return(
+  return (
     <div style={{ padding: 14 }}>
       <TextField
         margin="dense"
@@ -72,17 +72,20 @@ function CommentBox({userId, pid}) {
           flexDirection: "column",
         }}
       >
-        <Button key={pid} onClick={() => {
-          addComment(userId, pid, comment);
-          setComment("");
-        }}>Add</Button>
+        <Button
+          key={pid}
+          onClick={() => {
+            addComment(userId, pid, comment);
+            setComment("");
+          }}
+        >
+          Add
+        </Button>
       </Box>
     </div>
   );
 }
 
-
- 
 function CreateArray() {
   var { user } = useContext(AuthContext);
   const userId = user.user_id;
@@ -95,7 +98,6 @@ function CreateArray() {
   const [postList, setPostList] = useState([]);
   const [wasLast, setWasLast] = useState(false);
   const [anchorElMenu, setAnchorElMenu] = useState(null);
-  
 
   const markdown = `**Just** a link: [https://reactjs.com](https://reactjs.com.)`;
   // const [anchorComments, setAnchorComments] = useState(null);
@@ -589,7 +591,7 @@ function CreateArray() {
           console.log(comments[i].id)
         }
       }} */}
-            <Paper style={{ maxHeight: 200, overflow: "auto" }}>
+            <Paper style={{ maxHeight: 400, overflow: "auto" }}>
               {comments
                 .filter((x) => x.post === post.id)
                 .map((comment) => {
