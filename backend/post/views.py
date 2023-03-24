@@ -9,9 +9,12 @@ from .serializers import PostSerializer, CommentSerializer, LikeSerializer, Comm
 from django.core.paginator import Paginator
 import base64
 from django.core.files.base import ContentFile
-
-
+from api.models import Incoming_Node, Outgoing_Node
+import requests
+from requests.auth import HTTPBasicAuth
 from .models import Post, Comment, Like, Author
+import logging
+
 
 # Create your views here.
 # TODO NEED TO CONNECT TO FRONT END
@@ -101,6 +104,61 @@ class PostList(APIView):
         """
         posts = Post.objects.all().filter(visibility="PUBLIC").order_by('-datePublished')
         
+        outgoing = Outgoing_Node.objects.all()
+        for node in outgoing:
+            url = node.url + "/authors/"
+            username = node.Username
+            password = node.Password
+            auth = HTTPBasicAuth(username, password)
+
+            response = requests.get(url, auth=auth)
+
+            
+            author_json = response.json()
+            for author in author_json['items']:
+               
+                remote_post_url = node.url + "/authors/" + str(author['id']) + "/posts/"
+                posts_response = requests.get(remote_post_url, auth=auth)
+
+                remote_posts = posts_response.json()
+                for remote_post in remote_posts['items']:
+                
+                    try:
+                        remote_author = Author.objects.get(remote_id=remote_post['author']['id'])
+                    except:
+                        remote_author = Author.objects.createAuthor(
+                                                        username=remote_post["author"]["displayName"] + " - Remote User",
+                                                        password=None,
+                                                        host=remote_post["author"]["host"],
+                                                        url=remote_post["author"]["url"],
+                                                        githubId=remote_post["author"]["github"],
+                                                        profile_image_url=remote_post["author"]["profileImage"],
+                                                        api_user=True,
+                                                        remote_id = remote_post["author"]["id"],
+                                                        remote_name = remote_post["author"]["displayName"],
+                                                )
+                    # check if the post already exists
+                    post = Post.objects.get(remote_id=remote_post['id'])
+                  
+                    if post :
+                        continue
+
+                    else:
+                        post_author_id = remote_author.id
+                        post_author_name = remote_author.username
+                        post_description = remote_post['description']
+                        post_title = remote_post['title']
+                        post_body = remote_post['content']
+                        post_content_type = remote_post['contentType']
+                        post_remote_id = remote_post['id']
+
+                        serializer_post = PostSerializer(data={'author_id': post_author_id, 'author_name': post_author_name, 'description': post_description, 'title': post_title,'body': post_body, 'contentType': post_content_type, 'remote_id': post_remote_id })
+                        serializer_post.is_valid(raise_exception=True)
+                        serializer_post.save()
+
+                    
+
+        posts = Post.objects.all().filter(visibility="PUBLIC").order_by('-datePublished')
         if (request.query_params.get('page')):
             number = self.request.query_params.get('page', 1)
             size = self.request.query_params.get('size', 5)

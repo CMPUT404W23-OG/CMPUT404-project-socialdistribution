@@ -29,7 +29,7 @@ class Post(models.Model):
     dateEdited = models.DateTimeField( blank=True, null=True, default= timezone.now)
     unlisted = models.BooleanField(default=False)
     categories = ArrayField(models.CharField(max_length=200), blank=True, default=list)
-
+    remote_id = models.CharField(max_length=255, blank=True, null=True)
     #author field TODO
     #ID field TODO
     def __str__(self):
