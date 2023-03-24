@@ -74,6 +74,7 @@ class remotePostsSerializer(serializers.ModelSerializer):
 class remoteCommentsSerializer(serializers.ModelSerializer):
     source = serializers.CharField(default="http://31552.yeg.rac.sh")
     origin = serializers.CharField(default="http://31552.yeg.rac.sh")
+    author = remoteAuthorSerializer()
 
     class Meta:
         model = Comment
@@ -90,6 +91,7 @@ class remoteCommentsSerializer(serializers.ModelSerializer):
 class remoteLikesSerializer(serializers.ModelSerializer):
     source = serializers.CharField(default="http://31552.yeg.rac.sh")
     origin = serializers.CharField(default="http://31552.yeg.rac.sh")
+    author = remoteAuthorSerializer()
 
     class Meta:
         model = Like
