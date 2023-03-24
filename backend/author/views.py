@@ -36,11 +36,11 @@ class SignUpView(APIView):
         """
         Creates the author.
         """
-        
+        print(request.data)
         serializer = AuthorSerializer(data = request.data)
         serializer.is_valid(raise_exception = True)
         serializer.save()
-
+        print(serializer.data)
         return Response(serializer.data)
     
     @extend_schema(request=AuthorSerializer, responses=AuthorSerializer)

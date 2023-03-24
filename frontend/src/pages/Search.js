@@ -172,6 +172,7 @@ function CreateArray() {
             sx={{
               flexGrow: 0.03,
               marginTop: "0.8em",
+              marginBottom: "1em",
             }}
             key={author.id}
           >
@@ -388,25 +389,29 @@ export default function SearchPage() {
         <Container maxWidth="md">
           <CardContent
             sx={{
-              height: "fit-content",
+              height: "6em",
               bgcolor: "background.paper",
-              marginTop: "0.5em",
+              marginTop: "5em",
               borderRadius: "1em",
               border: "1px",
               boxShadow: 1,
+              width: "100%",
             }}
           >
             <Box
               sx={{
                 height: "fit-content",
+                width: "match-parent",
               }}
             >
               <form
                 style={{
-                  display: "inline",
+                  display: "flex",
                   alignItems: "center",
                   height: "2em",
                   position: "relative",
+                  marginTop: "0em",
+                  width: "match-parent",
                 }}
               >
                 <SearchIcon

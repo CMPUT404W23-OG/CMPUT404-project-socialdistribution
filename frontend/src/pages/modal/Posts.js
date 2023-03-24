@@ -1,5 +1,5 @@
 import {Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography, Container} from "@mui/material";
-import {useState, useContext} from "react";
+import {useState, useContext, useRef} from "react";
 import {useNavigate} from "react-router-dom";
 import AuthContext from "../../context/AuthContext";
 import BasePath from "../../config/BasePath";
@@ -11,17 +11,21 @@ import Checkbox from '@mui/material/Checkbox';
 export default function PostsDialog({postType, open, setOpen}) {
     const navigate = useNavigate();
 
-    var { user, logoutUser } = useContext(AuthContext);
-    const [postTitle, setTitle] = useState( "");
-    const [postText, setText] = useState( "");
+    var { user } = useContext(AuthContext);
+    const [postTitle, setTitle] = useState("");
+    const [postText, setText] = useState("");
     const [imageUrl, setUrl] = useState("");
-    const [submitted, setSubmitted] = useState(false);
+    const [fileSelected, setFileSelected] = useState(null);
+    // const [submitted, setSubmitted] = useState(false);
 
     var user_name = 'Author Not Found'
+    var userId = 0
     if (user) {
         user_name = user.username
+        userId = user.user_id
     }
-    const post_title = postTitle
+    // const post_title = postTitle
+    const fileInput = useRef(null)
 
     let cont_type = ""
     if (postType === "text") {
@@ -31,7 +35,7 @@ export default function PostsDialog({postType, open, setOpen}) {
     } else if (postType === "image") {
         cont_type = "image/png;base64"
     } else if (postType === "textImage") {
-        cont_type = "text/textImage"
+        cont_type = "image/png;base64"
     }
 
     const headers = {  
@@ -39,16 +43,19 @@ export default function PostsDialog({postType, open, setOpen}) {
         
     }   
     const payload = {
-        "title":post_title,
+        "title":postTitle,
         "description": "private description here",
+        "public": true,
         "body": postText,
-        "image_url":"",
+        "image_url":imageUrl,
         "contentType":cont_type,
-        "author_id":null,
+        "author_id":userId,
         "author_name":user_name,
         "visibility":"PUBLIC",
+        "type":"post",
+        "image_file":fileSelected
     };
-    console.log(payload)
+
     const handleClose = () => {
         setOpen(false);
     };
@@ -60,22 +67,50 @@ export default function PostsDialog({postType, open, setOpen}) {
             payload.visibility = "PUBLIC"
         }
     }
-
+    
     const SubmitContent = async () => {
         // setSubmitted(true);
-        await axios.post(`http://127.0.0.1:8000/posts/create/3`, payload, headers
+        await axios.post(BasePath+`/posts/create/`+userId, payload, headers
         )
-         //, headers, payload);
         navigate("/");
         window.location.reload();
         handleClose();
     };
 
 
-    if (submitted) {
-        // navigate("/");
-        handleClose();
+    // if (submitted) {
+    //     // navigate("/");
+    //     handleClose();
+    // }
+
+    const uploadImage = async (event) => {
+        
+        const image_file = event.target.files[0]
+        const base64 = await convertImage(image_file)
+        setFileSelected(base64)
+        
     }
+   
+    // https://medium.com/nerd-for-tech/how-to-store-an-image-to-a-database-with-react-using-base-64-9d53147f6c4f
+    const convertImage = (file) => {
+
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                resolve(reader.result)
+            }
+            reader.onerror = (error) => {
+                reject(error)
+            }
+
+        });
+
+    }
+
+    function handleClick () {
+        fileInput.current.focus();
+      }
 
     return (
         <div>
@@ -115,6 +150,8 @@ export default function PostsDialog({postType, open, setOpen}) {
                         fullWidth
                         variant="outlined"
                         sx={{width: "100%"}}
+                        multiline
+                        rows={5}
                         onChange={(e) => setText(e.target.value)}
                     />
                     ) : ""}
@@ -135,7 +172,9 @@ export default function PostsDialog({postType, open, setOpen}) {
                     <Typography variant="body2" sx={{color: "grey", marginTop: "10px", marginBottom: "10px"
                 }} align="center"
                 >Or</Typography>
-                    <Button variant="contained" sx={{width: "100%"}}>Upload Image</Button>
+                    <input type="file" name="Image" onChange={uploadImage} ref={fileInput}/>
+                    {/* <Button variant="contained" sx={{width: "100%"}} onClick={handleClick}>Upload Image</Button> */}
+                    
                     </>
                     ) : ""}
                 <FormGroup>

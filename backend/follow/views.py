@@ -1,15 +1,21 @@
+import datetime
+import pytz
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
 from django.contrib.auth import get_user_model
+from author.models import Author
+from post.models import Post
+import logging
 from .models import AlreadyExistError
 
 from .serializers import FollowSerializer, RequestSerializer, FriendSerializer, FollowPostSerializer, RequestPostSerializer
 from .models import Follow, Request
 from drf_spectacular.utils import extend_schema
-
+import threading
+import requests
 User = get_user_model()
 
 class FollowingList(APIView):
@@ -78,7 +84,170 @@ class FollowDetail(APIView):
         follow.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
+def getGithubActivity(self, author_id):
+# get the latest post (only one) with title = "Github Activity from the database with latest datePublished "
+    
+    try:
+        post = Post.objects.filter(title="Github Activity", author_id=author_id).latest('dateEdited')
+        logging.debug("Github Activity Post: " + str(post))
+    except Post.DoesNotExist:
+        post = None
+    # logging.debug(" getting post "+ post ) if post != "none" else logging.debug("no post found")
+    post_date = -1
+    if post :
+        
+        post_date = post.dateEdited
+        # logging.debug("Github Activity Post: " + post_date)
+        # logging.debug("Github Activity Post Date: " + post_date.isoformat())
+    # Make a github call to get the latest activity since post_date for a specific author
+    username = Author.objects.get(id=author_id).githubId
+    url = "https://api.github.com/users/" + username + "/events?per_page=10"
 
+    logging.debug("Github Activity URL: " + url)
+    response = requests.get(url)
+    author_model = Author.objects.get(pk=author_id)
+    if response.status_code == 200:
+        events = response.json()
+        # for each event, create a post with title = "Github Activity" and description = commit message
+        for event in events:
+            
+            if post_date != -1:
+                if datetime.datetime.strptime(event['created_at'],'%Y-%m-%dT%H:%M:%SZ' ).replace(tzinfo=pytz.UTC)    <= post_date:
+                    continue
+
+            if event['type'] == "PushEvent":
+                post = Post.objects.create (
+                    title="Github Activity",
+                    description= "Push Event",
+                    body= "Commit : " + event['payload']['commits'][0]['message'] + " to " + event['repo']['name'] ,
+                    author_id= author_model,
+                    author_name= author_model.username,
+                    contentType="text/plain",
+                    visibility="PUBLIC",
+                    dateEdited= event['created_at'] ,
+                    unlisted=False )
+                post.save()
+
+            elif event['type'] == "CreateEvent":
+                post = Post.objects.create(
+                    title="Github Activity",
+                    description= "CreateEvent",
+                    body="Created a " + event['payload']['ref_type'] + " named " + event['payload']['ref']   ,
+                    author_name= author_model.username,
+                    author_id= author_model,
+                    contentType="text/plain",
+                    visibility="PUBLIC",
+                    dateEdited= event['created_at'] ,
+                    unlisted=False)
+                post.save()
+            
+            elif event['type'] == "DeleteEvent":
+                post = Post.objects.create(
+                    title="Github Activity",
+                    description="DeleteEvent",
+                    body="Deleted a " + event['payload']['ref_type'] + " named " + event['payload']['ref']   , 
+                    author_id=author_model,
+                    author_name= author_model.username,
+                    contentType="text/plain",
+                    visibility="PUBLIC",
+                    dateEdited= event['created_at'] ,  
+                    unlisted=False)
+                post.save()
+
+            elif event['type'] == "ForkEvent":
+                post = Post.objects.create(
+                    title="Github Activity",
+                    description="ForkEvent",
+                    body="Forked a repository from " + event['repo']['name']   , 
+                    author_id=author_model,
+                    author_name= author_model.username,
+                    contentType="text/plain",
+                    visibility="PUBLIC",
+                    dateEdited= event['created_at'] ,   
+                    unlisted=False)
+                post.save()
+            
+            elif event['type'] == "IssuesEvent":
+                post = Post.objects.create(
+                    title="Github Activity",
+                    description="IssuesEvent",
+                    body="Created an issue for " + event['repo']['name']   , 
+                    author_id=author_model,
+                    author_name= author_model.username,
+                    contentType="text/plain",
+                    visibility="PUBLIC",
+                    dateEdited= event['created_at'] ,   
+                    unlisted=False)
+                post.save()
+            
+            elif event['type'] == "IssueCommentEvent":
+                post = Post.objects.create(
+                    title="Github Activity",
+                    description="IssueCommentEvent",
+                    body="Commented on an issue for " + event['repo']['name']   , 
+                    author_id=author_model,
+                    author_name= author_model.username,
+                    contentType="text/plain",
+                    visibility="PUBLIC",
+                    dateEdited= event['created_at'] ,   
+                    unlisted=False)
+                post.save()
+            
+            elif event['type'] == "PullRequestEvent":
+                post = Post.objects.create(
+                    title="Github Activity",
+                    description="PullRequestEvent",
+                    body="Created a pull request for " + event['repo']['name']   , 
+                    author_id=author_model,
+                    author_name= author_model.username,
+                    contentType="text/plain",
+                    visibility="PUBLIC",
+                    dateEdited= event['created_at'] , 
+                    unlisted=False)
+                post.save()
+            
+            elif event['type'] == "PullRequestReviewCommentEvent":
+                post = Post.objects.create(
+                    title="Github Activity",
+                    description="PullRequestReviewCommentEvent",
+                    body="Commented on a pull request for " + event['repo']['name']  , 
+                    author_id=author_model,
+                    author_name= author_model.username,
+                    contentType="text/plain",
+                    visibility="PUBLIC",
+                    dateEdited= event['created_at'] ,    
+                    unlisted=False)
+                post.save()
+
+            elif event['type'] == "WatchEvent":
+                post = Post.objects.create(
+                    title="Github Activity",
+                    description="WatchEvent",
+                    body="Starred a repository named " + event['repo']['name']  , 
+                    author_id=author_model,
+                    author_name= author_model.username,
+                    contentType="text/plain",
+                    visibility="PUBLIC",
+                    dateEdited= event['created_at'] ,  
+                    unlisted=False)
+                post.save()
+
+            elif event['type'] == "ReleaseEvent":
+                post = Post.objects.create(
+                    title="Github Activity",
+                    description="ReleaseEvent",
+                    body="Created a release for " + event['repo']['name'] , 
+                    author_id=author_model,
+                    author_name= author_model.username,
+                    contentType="text/plain",
+                    visibility="PUBLIC",
+                    dateEdited= event['created_at'] ,  
+                    unlisted=False)
+                post.save()
+            
+        
+
+        # logging.debug("Github Activity Events: " + str(events))
     
 class RequestListReceived(APIView):
     """
@@ -87,18 +256,22 @@ class RequestListReceived(APIView):
     @extend_schema(responses=RequestSerializer)
     def get(self, request,pk, format=None):
 
-        
         if pk:
+            
             try:
                 user = User.objects.get(pk=pk)
             except User.DoesNotExist:
                 return Response({'detail': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
             requests = Request.objects.filter(following=user)
             serializer = RequestSerializer(requests, many=True)
+            # this is a thread to get the github activity for the user, it will run in the background 
+            thread = threading.Thread(target=getGithubActivity, args=(self, pk))
+            thread.start()
             return Response(serializer.data)
 
         requests = Request.objects.all()
         serializer = RequestSerializer(requests, many=True)
+    
         return Response(serializer.data)
 
 

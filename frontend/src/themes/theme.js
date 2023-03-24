@@ -4,7 +4,7 @@ export const theme = createTheme({
   breakpoints: {
     values: {
       xs: 0,
-      sm: 600,
+      sm: 700,
       md: 1000,
       lg: 1200,
       xl: 1920
@@ -167,6 +167,9 @@ export const theme = createTheme({
       light: '#3FC79A',
       dark: '#0B815A',
       contrastText: '#FFFFFF'
+    },
+    like: {
+      main: 'red',
     },
     success: {
       main: '#14B8A6',

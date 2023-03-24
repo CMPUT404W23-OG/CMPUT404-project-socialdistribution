@@ -33,7 +33,7 @@ SECRET_KEY = "django-insecure-1^j#6rammu@84&e4fw(!5hmxbl=#(yi8zq3!=t0__)@475xdpu
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -190,6 +190,9 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "post_images")
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
@@ -202,4 +205,17 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "Social Distribution API",
     "DESCRIPTION": "API for Social Distribution",
     "VERSION": "1.0.0",
+}
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
 }
