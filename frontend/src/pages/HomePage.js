@@ -1,3 +1,4 @@
+/* eslint-disable no-lone-blocks */
 import { Card, Box, Container, Menu, MenuItem, TextField } from "@mui/material";
 import { useEffect, useState, useRef } from "react";
 import BasePath from "../config/BasePath";
@@ -24,36 +25,109 @@ import { useLocation } from "react-router-dom";
 import { Divider, Grid, Paper, Button } from "@mui/material";
 import ReactMarkdown from "react-markdown";
 
+async function addComment(userId, postId, comment) {
+  console.log(postId);
+  const authTokens = JSON.parse(localStorage.getItem("authTokens"));
+  console.log(authTokens.access);
+
+  const header = {
+    "Content-Type": "application/json",
+    Authorization: "Bearer " + authTokens.access,
+  };
+
+  await axios.post(
+    BasePath + `/posts/` + postId + "/comments",
+    {
+      author: userId,
+      comment: comment,
+      contentType: "text/plain",
+    },
+    header
+  );
+  var paper = document.getElementById("post-comments-"+postId);
+  document.createElement("div")
+  paper.prependChild(document.createTextNode("hello"))
+  //document.location.reload(true);
+  
+}
+
+
+function CommentBox({ userId, pid }) {
+  const [comment, setComment] = useState("");
+  return (
+  <div style={{ padding: 14 }}>
+      <TextField
+        margin="dense"
+        id="comment"
+        label="Write Comment"
+        placeholder="Comment goes here..."
+        type="text"
+        fullWidth
+        variant="outlined"
+        multiline
+        rows={2}
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+        key={pid}
+      />
+      <Box
+        sx={{
+          display: "flex",
+          flex: "1 1 auto",
+          flexDirection: "column",
+        }}
+      >
+        <Button
+          key={pid}
+          onClick={() => {
+            addComment(userId, pid, comment);
+            setComment("");
+          }}
+        >
+          Add
+        </Button>
+      </Box>
+    </div>
+  );
+}
+
 function CreateArray() {
   var { user } = useContext(AuthContext);
   const userId = user.user_id;
   const userName = user.username;
   const [expanded, setExpanded] = useState(false);
   const [comments, setComments] = useState([]);
-  const [newComments, setNewComments] = useState([]);
   const [offset, setOffset] = useState(0);
   const [currPage, setCurrPage] = useState(1);
   const [prevPage, setPrevPage] = useState(0);
   const [postList, setPostList] = useState([]);
   const [wasLast, setWasLast] = useState(false);
   const [anchorElMenu, setAnchorElMenu] = useState(null);
-  // const [italic, setItalic] = useState(false);
-  // const [fontWeight, setFontWeight] = useState('normal');
-  // const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorElComments, setAnchorElComments] = useState(null);
+
   const markdown = `**Just** a link: [https://reactjs.com](https://reactjs.com.)`;
   // const [anchorComments, setAnchorComments] = useState(null);
   const [menuId, setMenuId] = useState(0);
   // const [commentSection, setCommentSection] = useState([]);
 
   const isMenuOpen = Boolean(anchorElMenu);
+  const isCommentMenuOpen = Boolean(anchorElComments);
   // const isCommentsOpen = Boolean(expanded);
 
   const handleMenuOpen = (event) => {
     setAnchorElMenu(event.currentTarget);
   };
 
+  const handleCommentsMenuOpen = (event) => {
+    setAnchorElComments(event.currentTarget);
+  };
+
   const handleMenuClose = () => {
     setAnchorElMenu(null);
+  };
+
+  const handleCommentsMenuClose = () => {
+    setAnchorElComments(null);
   };
 
   // const handleCommentsOpen = (event) => {
@@ -91,24 +165,24 @@ function CreateArray() {
   //   }),
   // }));
 
-  let renderComments = (
-    <Collapse
-      in={expanded}
-      id={commentsId}
-      // open={isCommentsOpen}
-      // onClose={handleCommentsClose}
-      timeout="auto"
-      unmountOnExit
-    >
-      <CardContent>
-        <Typography paragraph>
-          <div>
-            <h1>"THIS IS A TEST"</h1>
-          </div>
-        </Typography>
-      </CardContent>
-    </Collapse>
-  );
+  // let renderComments = (
+  //   <Collapse
+  //     in={expanded}
+  //     id={commentsId}
+  //     // open={isCommentsOpen}
+  //     // onClose={handleCommentsClose}
+  //     timeout="auto"
+  //     unmountOnExit
+  //   >
+  //     <CardContent>
+  //       <Typography paragraph>
+  //         <div>
+  //           <h1>"THIS IS A TEST"</h1>
+  //         </div>
+  //       </Typography>
+  //     </CardContent>
+  //   </Collapse>
+  // );
 
   let menuIdPost = "primary-menu-post";
   const renderMenuPost = (
@@ -132,33 +206,87 @@ function CreateArray() {
     </Menu>
   );
 
+  let menuIdComments = "primary-menu-comments";
+  function renderMenuComments(postId, commentId) {
+    console.log('here', commentId)
+    return (
+      <Menu
+        anchorEl={anchorElComments}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        id={menuIdComments}
+        keepMounted
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        open={isCommentMenuOpen}
+        onClose={handleCommentsMenuClose}
+      >
+        <MenuItem> Edit</MenuItem>
+        <MenuItem onClick={() => deleteComment(postId, commentId)}>
+          {" "}
+          Delete
+        </MenuItem>
+      </Menu>
+    );
+  }
+
+  // deleting post
+  // await axios.delete(`${BasePath}/posts/${post.id}`);
+
+  // edit/delete comment
+  async function deleteComment(postID, commentID) {
+    await axios.delete(`${BasePath}/posts/${postID}/comments/${commentID}`);
+    console.log("comment", commentID)
+    var elem = document.getElementById(commentID)
+
+    elem.remove()
+    handleCommentsMenuClose()
+  }
+
+  async function editComment(postID, commentID, updatedComment) {
+    await axios.patch(`${BasePath}/posts/${postID}/comments/${commentID}`, {
+      "comment":updatedComment,
+    });
+    document.getElementById("written-comment-"+commentID).innerHTML = updatedComment
+
+    handleCommentsMenuClose()
+  }
+  // await axios.delete(`${BasePath}/posts/${post.id}/comments/${comment.id}`);
+  // await axios.patch(`${BasePath}/posts/${post.id}/comments/${comment.id}`, {"comment":${editedComment}});
+
   const headers = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Expose-Headers": "X-PAGINATION-SIZE",
   };
   useEffect(() => {
-    if (postList.length > 0) {
+    const fetchComments = async () => {
       for (let i = postList.length - 5; i < postList.length; i++) {
-        console.log(postList[i].id);
-        const getData = async () => {
-          try {
-            const res = await axios.get(
-              BasePath + `/posts/${postList[i].id}/comments`,
-              headers
+        try {
+          const res = await axios.get(
+            `${BasePath}/posts/${postList[i].id}/comments?page=1&size=1000`
+          );
+          setComments((prevComments) => {
+            const newComments = res.data.filter(
+              (comment) => !prevComments.find((c) => c.id === comment.id)
             );
-
-            console.log("here", res.data[0]);
-
-            setNewComments([res.data]);
-            setComments([...comments, ...res.data]);
-          } catch (err) {
-            console.log(err.response.status);
+            return [...prevComments, ...newComments];
+          });
+        } catch (e) {
+          if (e.response.status === 404) {
+            console.log(`Post ${postList[i].id} has no comments`);
+          } else {
+            console.log(e.response.status);
           }
-        };
-
-        getData();
-        console.log(comments);
+        }
       }
+    };
+
+    if (postList.length > 0) {
+      fetchComments();
     }
   }, [postList]);
 
@@ -284,29 +412,11 @@ function CreateArray() {
     }
   }
 
-  function renderMarkdown(post) {
-    if (post.contentType === "text/markdown") {
-      // var test = "`" + post.body + "`";
-      // console.log(test);
-      // console.log(post.body === markdown)
-      // const markdown = post.body;
-      return <ReactMarkdown>{post.body}</ReactMarkdown>;
-    } else {
-      return (
-        <Typography variant="h5" color="black">
-          {post.body}
-        </Typography>
-      );
-    }
-  }
-
   useEffect(() => {
     async function checkLike() {
       if (postList.length > 0) {
-        console.log("new");
         for (let i = postList.length - 5; i < postList.length; i++) {
           try {
-            console.log(postList[i].id);
             const res = await axios.get(
               BasePath + `/posts/${postList[i].id}/likes`
             );
@@ -315,23 +425,50 @@ function CreateArray() {
               if (res.data[each].author.id === userId) {
                 document.getElementById(postList[i].id + "-like").style.color =
                   "red";
-              } else {
-                document.getElementById(postList[i].id + "-like").style.color =
-                  "grey";
               }
             }
-            console.log();
             document.getElementById(postList[i].id + "-like-count").innerText =
               res.data.length;
           } catch (e) {
-            console.log(e.response.status);
+            if (e.response.status === 404) {
+              console.log(`Post ${postList[i].id} has no likes`);
+            } else {
+              console.log(e.response.status);
+            }
+          }
+        }
+      }
+
+      if (comments.length > 0) {
+        for (let i = 0; i < comments.length; i++) {
+          try {
+            const res = await axios.get(
+              BasePath + `/posts/comments/${comments[i].id}/likes`
+            );
+
+            for (let each in res.data) {
+              if (res.data[each].author.id === userId) {
+                document.getElementById(
+                  comments[i].id + "-like-comment"
+                ).style.color = "red";
+              }
+            }
+            document.getElementById(
+              comments[i].id + "-like-count-comment"
+            ).innerText = res.data.length;
+          } catch (e) {
+            if (e.response.status === 404) {
+              console.log(`Comment ${comments[i].id} has no likes`);
+            } else {
+              console.log(e.response.status);
+            }
           }
         }
       }
     }
 
     checkLike();
-  }, [currPage, prevPage, wasLast, postList, userId]);
+  }, [currPage, prevPage, wasLast, postList, userId, comments]);
 
   const listItems = postList.map((post) => (
     <Box
@@ -392,7 +529,7 @@ function CreateArray() {
                   )[0].id;
                   await axios.delete(BasePath + `/posts/likes/${likeId}`);
 
-                  // get current likes and decrement (faster then pinging backend, no need for refresh), change icon to grey
+                  // get current likes and decrement (no need for refresh or re-ping backend), change icon to grey
 
                   if (
                     document.getElementById(post.id + "-like-count")
@@ -415,7 +552,7 @@ function CreateArray() {
                   await axios.post(
                     BasePath + `/posts/${post.id}/likes`,
                     {
-                      summary: userName + "liked your post.",
+                      summary: userName + " liked your post.",
                       author: userId,
                     },
                     {
@@ -423,7 +560,7 @@ function CreateArray() {
                     }
                   );
 
-                  // get current likes and increment (faster then pinging backend, no need for refresh), change icon to red
+                  // get current likes and increment (no need for refresh or re-ping backend), change icon to red
 
                   if (
                     document.getElementById(post.id + "-like-count")
@@ -450,6 +587,7 @@ function CreateArray() {
 
             {/* like counter */}
             <h3 id={post.id + "-like-count"}>No likes yet</h3>
+
             {/* <IconButton 
         aria-label="comments"
         aria-controls={commentsId}
@@ -476,22 +614,12 @@ function CreateArray() {
           console.log(comments[i].id)
         }
       }} */}
-            <Paper style={{ maxHeight: 200, overflow: "auto" }}>
+            <Paper style={{ maxHeight: 400, overflow: "auto" }} id={"post-comments-"+post.id}>
               {comments
                 .filter((x) => x.post === post.id)
                 .map((comment) => {
-                  {
-                    console.log("inside");
-                  }
-                  {
-                    console.log(comment);
-                  }
-
-                  {
-                    /* <div> here {comment}</div> */
-                  }
                   return (
-                    <div key={comment.id}>
+                    <div key={comment.id} id={comment.id}>
                       <Box
                         sx={{
                           padding: "10px",
@@ -508,25 +636,120 @@ function CreateArray() {
                             <h4 style={{ margin: 0, textAlign: "left" }}>
                               {comment.author.username}
                             </h4>
-                            <p style={{ textAlign: "left" }}>
+                            <p style={{ textAlign: "left" }} id={"written-comment-"+comment.id}>
                               {comment.comment}
                             </p>
                             {/* <p style={{ textAlign: "left", color: "gray" }}>
             {comment.published}
             </p> */}
                           </Grid>
-                          <IconButton aria-label="add to favorites">
-                            <FavoriteIcon />
+                          <IconButton
+                            aria-label="add to favorites"
+                            onClick={async () => {
+                              //checks current color (liked or not)
+                              var buttonColor = document.getElementById(
+                                comment.id + "-like-comment"
+                              ).style.color;
+                              if (buttonColor === "red") {
+                                // if liked, get the likes for the post, find the users, and delete it
+                                const res = await axios.get(
+                                  BasePath +
+                                    `/posts/comments/${comment.id}/likes`
+                                );
+                                const likeId = res.data.filter(
+                                  (x) => x.author.id === userId
+                                )[0].id;
+                                await axios.delete(
+                                  BasePath + `/posts/likes/${likeId}`
+                                );
+
+                                // get current likes and decrement (faster then pinging backend, no need for refresh), change icon to grey
+
+                                if (
+                                  document.getElementById(
+                                    comment.id + "-like-count-comment"
+                                  ).innerHTML === "1"
+                                ) {
+                                  document.getElementById(
+                                    comment.id + "-like-count-comment"
+                                  ).innerHTML = " ";
+                                } else {
+                                  let count = parseInt(
+                                    document.getElementById(
+                                      comment.id + "-like-count-comment"
+                                    ).innerHTML
+                                  );
+                                  document.getElementById(
+                                    comment.id + "-like-count-comment"
+                                  ).innerHTML = count - 1;
+                                }
+
+                                document.getElementById(
+                                  comment.id + "-like-comment"
+                                ).style.color = "grey";
+                              } else {
+                                // create new like-post object
+                                await axios.post(
+                                  BasePath +
+                                    `/posts/comments/${comment.id}/likes`,
+                                  {
+                                    summary: userName + " liked your comment.",
+                                    author: userId,
+                                  },
+                                  {
+                                    "Content-Type": "application/json",
+                                  }
+                                );
+
+                                // get current likes and increment (faster then pinging backend, no need for refresh), change icon to red
+
+                                if (
+                                  document.getElementById(
+                                    comment.id + "-like-count-comment"
+                                  ).innerHTML === " "
+                                ) {
+                                  document.getElementById(
+                                    comment.id + "-like-count-comment"
+                                  ).innerHTML = 1;
+                                } else {
+                                  let count = parseInt(
+                                    document.getElementById(
+                                      comment.id + "-like-count-comment"
+                                    ).innerHTML
+                                  );
+                                  document.getElementById(
+                                    comment.id + "-like-count-comment"
+                                  ).innerHTML = count + 1;
+                                }
+
+                                document.getElementById(
+                                  comment.id + "-like-comment"
+                                ).style.color = "red";
+                              }
+                            }}
+                          >
+                            <FavoriteIcon
+                              id={comment.id + "-like-comment"}
+                              color="grey"
+                            />
+                            <h5 id={comment.id + "-like-count-comment"}> </h5>
                           </IconButton>
+
+                          {/* like counter */}
+
                           {userId === comment.author.id ? (
                             <IconButton
                               aria-label="settings"
-                              aria-controls={menuIdPost}
-                              onClick={handleMenuOpen}
+                              aria-controls={menuIdComments}
+                              onClick={handleCommentsMenuOpen}
                             >
                               <MoreVertIcon />
+                            {renderMenuComments(post.id, comment.id)}
+
                             </IconButton>
+                            
                           ) : null}
+                          
                         </Grid>
                       </Box>
                       <Divider
@@ -538,30 +761,7 @@ function CreateArray() {
                 })}
             </Paper>
           </div>
-          <div style={{ padding: 14 }}>
-            <TextField
-              margin="dense"
-              id="comment"
-              label="Write Comment"
-              placeholder="Comment goes here..."
-              type="text"
-              fullWidth
-              variant="outlined"
-              multiline
-              rows={2}
-              // value={postBody}
-              // onChange={(e) => setPostBody(e.target.value)}
-            />
-            <Box
-              sx={{
-                display: "flex",
-                flex: "1 1 auto",
-                flexDirection: "column",
-              }}
-            >
-              <Button>Add</Button>
-            </Box>
-          </div>
+          <CommentBox pid={post.id} userId={userId} />
         </Card>
       </Container>
       {renderMenuPost}
