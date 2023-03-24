@@ -419,21 +419,160 @@ class remoteAuthorLikesListView(APIView):
         else:
             return Response({"error" : "Unauthorized"},  status=401)
 
-# class remoteInboxView(APIView):
+class remoteInboxView(APIView):
     
-#     def authenticate_node(self,request):
-#         if 'HTTP_AUTHORIZATION' in request.META:
-#             auth = request.META['HTTP_AUTHORIZATION'].split()
-#             if len(auth) == 2:
-#                 if auth[0].lower() == "basic":
-#                     uname, passwd = base64.b64decode(auth[1]).decode().split(':')
-#                     user = Incoming_Node.objects.filter(Username=uname, Password=passwd)
-#                     logging.debug("found user *************" + str(user) + "*************")
-#                     if user:
-#                         return True
-#         return False
+    def authenticate_node(self,request):
+        if 'HTTP_AUTHORIZATION' in request.META:
+            auth = request.META['HTTP_AUTHORIZATION'].split()
+            if len(auth) == 2:
+                if auth[0].lower() == "basic":
+                    uname, passwd = base64.b64decode(auth[1]).decode().split(':')
+                    user = Incoming_Node.objects.filter(Username=uname, Password=passwd)
+                    logging.debug("found user *************" + str(user) + "*************")
+                    if user:
+                        return True
+        return False
     
+    @extend_schema(request= remotePostDetailView,
+                   examples=[OpenApiExample(
+                    
+                    name='Post follow request, Post, comment, like to remote server',
+                    summary='Post follow request, Post, comment, like to remote server',
+                    value={
+                        
+                    },
+                    description='Post follow request, Post, comment, like to remote server, Use same body as what you would GET from post, comment, like, follow request' ,
+                    )],
+    responses={
+        200: OpenApiResponse(
+            
+            description=' Success Inbox received'),
+        401: OpenApiResponse(
+            
+            description='Unauthorized',
+            )
+        })
     
+    def post(self, request,AUTHOR_ID, format=None):
+        '''Post follow request, Post, comment, like to remote server'''
+        if self.authenticate_node(request):
+    
+            data = request.data
+            # if data["type"] == "post":
+            #     logging.debug("post received")
+            #     try:
+            #         logging.debug("trying to get post data")
+
+            #         title = data["title"]
+            #         id = data["id"]
+            #         source = data["source"]
+            #         origin = data["origin"]
+            #         description = data["description"]
+            #         contentType = data["contentType"]
+            #         content = data["content"]
+            #         author = data["author"]
+            #         categories = data["categories"]
+      
+            #         logging.debug("got post data ******")
+
+            #         # create a post from the remote author
+
+            #         try:
+            #             remote_author = Author.objects.get(remote_id = author["id"])
+
+            #         except:
+            #             remote_author = []
+                    
+            #         if remote_author == []:
+            #             logging.debug("creating remote author")
+            #             remote_author = Author.objects.createAuthor(
+            #                                             username=author["displayName"] + " - Remote User",
+            #                                             password=None,
+            #                                             host=author["host"],
+            #                                             url=author["url"],
+            #                                             githubId=author["github"],
+            #                                             profile_image_url=author["profileImage"],
+            #                                             api_user=True,
+            #                                             remote_id = author["id"],
+            #                                             remote_name = author["displayName"]
+            #                                     )
+            #         post = Post.objects.create(
+            #             title=title,
+            #             author_name=remote_author.username,
+            #             author_id = remote_author,
+            #             description=description,
+            #             content=content,
+            #             contentType=contentType,
+            #             categories=categories,
+            #         )
+
+            #         post.save()
+            #         return Response({"success" : "post received"},  status=200)
+
+            #     except:
+            #         return Response({"error" : "invalid post"},  status=400)
+            if data["type"] == "Follow":
+                try:
+                    summary = data["summary"]
+                    actor = data["actor"]
+                    object = data["object"]
+
+                    # create a follow request from the remote author
+                    local_author = Author.objects.get(id = AUTHOR_ID)
+                    try:
+                        remote_author = Author.objects.get(remote_id = actor["id"])
+                    except:
+                        remote_author = []
+                    if remote_author == []:
+                        remote_author = Author.objects.createAuthor(
+                                                        username=actor["displayName"] + " - Remote User",
+                                                        password=None,
+                                                        host=actor["host"],
+                                                        url=actor["url"],
+                                                        githubId=actor["github"],
+                                                        profile_image_url=actor["profileImage"],
+                                                        api_user=True,
+                                                        remote_id = actor["id"],
+                                                        remote_name = actor["displayName"]
+                                                )
+
+                    follow_request = Request.objects.create(follower=remote_author, following=local_author)
+                    follow_request.save()
+
+
+                    return Response({"success" : "follow received"},  status=200)
+                except:
+                    return Response({"error" : "invalid follow"},  status=400)
+                
+            # elif data["type"] == "comment":
+            #     try:
+              
+            #         author = data["author"]
+            #         comment = data["comment"]
+            #         contentType = data["contentType"]
+            #         published = data["published"]
+            #         id = data["id"]
+
+            #     except:
+            #         return Response({"error" : "invalid comment"},  status=400)
+                
+            # elif data["type"] == "Like":
+            #     try:
+            #         summary = data["summary"]
+            #         author = data["author"]
+            #         object = data["object"]
+
+            #         logging.debug("data is " + str(data))
+            #         return Response({"success" : "like received"},  status=200)
+            #     except:
+            #         return Response({"error" : "invalid like"},  status=400)
+            
+            # return Response({"Invalid data"},  status=400)
+        else:
+            return Response({"error" : "Unauthorized"},  status=401)
+    
+        
+
    
 #     def get(self, request,  format=None):
 #         '''Get all posts from remote server'''
