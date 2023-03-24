@@ -14,6 +14,12 @@ class remoteAuthorsSerializer(serializers.ModelSerializer):
            
         }   
 
+        def get_id(self, obj):
+            if obj.remote_id:
+                return obj.remote_id
+            else:
+                return obj.id
+
     def to_representation(self, instance):
         data = super().to_representation(instance)
         data['github'] =  f"https://github.com/{data['github']}"
@@ -39,85 +45,6 @@ class remoteAuthorSerializer(serializers.ModelSerializer):
         type_data = {'type': 'author'}
         return {**type_data, **data}
  
-# class remoteInboxSerializer(serializers.Serializer):
-#     type = serializers.CharField()
-#     if type == 'Follow':
-#         summary = serializers.CharField()
-#         actor = {
-#             "type": "author",
-#             "id": serializers.CharField(),
-#             "url": serializers.CharField(),
-#             "host": serializers.CharField(),
-#             "displayName": serializers.CharField(),
-#             "github": serializers.CharField(),
-#             "profileImage": serializers.CharField(),
-#         },
-#         object = {
-#             "type": "author",
-#             "id": serializers.CharField(),
-#             "url": serializers.CharField(),
-#             "host": serializers.CharField(),
-#             "displayName": serializers.CharField(),
-#             "github": serializers.CharField(),
-#             "profileImage": serializers.CharField(),
-#         }
-    
-#     elif type == 'Post':    
-#         title = serializers.charField()
-#         source = serializers.charField()
-#         origin = serializers.charField()
-#         description = serializers.charField()
-#         contentType = serializers.charField()
-#         content = serializers.charField()
-#         author = {
-#             "type": "author",
-#             "id": serializers.CharField(),
-#             "url": serializers.CharField(),
-#             "host": serializers.CharField(),
-#             "displayName": serializers.CharField(),
-#             "github": serializers.CharField(),
-#             "profileImage": serializers.CharField(),
-#         },
-        
-#         categories = serializers.ListField()
-#         published = serializers.DateTimeField()
-#         visibility = serializers.CharField()
-#         unlisted = serializers.BooleanField()
-
-#     elif type == 'Comment':
-#         author = {
-#             "type": "author",
-#             "id": serializers.CharField(),
-#             "url": serializers.CharField(),
-#             "host": serializers.CharField(),
-#             "displayName": serializers.CharField(),
-#             "github": serializers.CharField(),
-#             "profileImage": serializers.CharField(),
-#         },
-#         comment = serializers.CharField()
-#         contentType = serializers.CharField()
-#         published = serializers.DateTimeField()
-#         id = serializers.CharField()
-
-#     elif type == 'liked':
-#         items = [
-#             {
-#             "@context": serializers.CharField(),
-#             "summary": serializers.CharField(),
-#             "type": "Like",
-#             "author": {
-                
-#                 "type": "author",
-#                 "id": serializers.CharField(),
-#                 "url": serializers.CharField(),
-#                 "host": serializers.CharField(),
-#                 "displayName": serializers.CharField(),
-#                 "github": serializers.CharField(),
-#                 "profileImage": serializers.CharField(),
-#             },
-#             "object": serializers.CharField()
-#             }
-#         ]
 
 class remotePostsSerializer(serializers.ModelSerializer):
     source = serializers.CharField(default="http://31552.yeg.rac.sh")
@@ -131,7 +58,7 @@ class remotePostsSerializer(serializers.ModelSerializer):
         extra_kwargs = {
            
             "published": {"source": "datePublished"},
-            "content" :{"source": "description"},
+            "content" :{"source": "body"},
 
        
         }
@@ -144,8 +71,35 @@ class remotePostsSerializer(serializers.ModelSerializer):
         return instance
 
    
+class remoteCommentsSerializer(serializers.ModelSerializer):
+    source = serializers.CharField(default="http://31552.yeg.rac.sh")
+    origin = serializers.CharField(default="http://31552.yeg.rac.sh")
+    author = remoteAuthorSerializer()
+
+    class Meta:
+        model = Comment
+        fields = ["id", "author", "comment", "contentType", "post", "source", "origin"]
 
 
+    def create(self, validated_data):
+        validated_data["source"] = "http://31552.yeg.rac.sh"
+        validated_data["origin"] = "http://31552.yeg.rac.sh"
 
+        instance = super().create(validated_data)
+        return instance
 
+class remoteLikesSerializer(serializers.ModelSerializer):
+    source = serializers.CharField(default="http://31552.yeg.rac.sh")
+    origin = serializers.CharField(default="http://31552.yeg.rac.sh")
+    author = remoteAuthorSerializer()
 
+    class Meta:
+        model = Like
+        fields = ["id", "summary", "author", "post", "comment", "source", "origin"]
+
+    def create(self, validated_data):
+        validated_data["source"] = "http://31552.yeg.rac.sh"
+        validated_data["origin"] = "http://31552.yeg.rac.sh"
+
+        instance = super().create(validated_data)
+        return instance

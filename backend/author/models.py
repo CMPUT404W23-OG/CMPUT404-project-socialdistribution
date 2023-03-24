@@ -51,6 +51,8 @@ class Author(AbstractUser):
     githubId = models.CharField(max_length=200, blank=True)
     api_user = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
+    remote_id = models.CharField(max_length=250, blank=True)
+    remote_name = models.CharField(max_length=250, blank=True)
     
     objects = AuthorManager()
     USERNAME_FIELD = 'username'
