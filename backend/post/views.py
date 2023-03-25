@@ -102,7 +102,7 @@ class PostList(APIView):
         http://localhost:8000/posts/all?page=2&size=3 
         
         """
-        posts = Post.objects.all().filter(visibility="PUBLIC").order_by('-datePublished')
+        # posts = Post.objects.all().filter(visibility="PUBLIC").order_by('-datePublished')
         
         outgoing = Outgoing_Node.objects.all()
         for node in outgoing:
@@ -138,12 +138,12 @@ class PostList(APIView):
                                                         remote_name = remote_post["author"]["displayName"],
                                                 )
                     # check if the post already exists
-                    post = Post.objects.get(remote_id=remote_post['id'])
+                    try:
+                        post = Post.objects.get(remote_id=remote_post['id'])
                   
-                    if post :
-                        continue
+                    except:
 
-                    else:
+                  
                         post_author_id = remote_author.id
                         post_author_name = remote_author.username
                         post_description = remote_post['description']
