@@ -70,8 +70,11 @@ class remoteUserListView(APIView):
         '''Get all authors from remote server'''
       
         if self.authenticate_node(request):
-            authors = Author.objects.all()
-            serializer = remoteAuthorsSerializer(authors, many=True)
+            authors = Author.objects.filter(api_user = False)
+            number = self.request.query_params.get('page', 1)
+            size = self.request.query_params.get('size', 5)
+            paginator = Paginator(authors, size)
+            serializer = remoteAuthorsSerializer( paginator.page(number), many=True)
             return Response({"type" : "authors", "items" :serializer.data },  status=200)
         else:
             return Response({"error" : "Unauthorized"},  status=401)

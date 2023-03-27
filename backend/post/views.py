@@ -109,7 +109,7 @@ class PostList(APIView):
 
             outgoing = Outgoing_Node.objects.all()
             for node in outgoing:
-                url = node.url + "/authors/"
+                url = node.url + "/authors/?page=1&size=1000"
                 username = node.Username
                 password = node.Password
                 auth = HTTPBasicAuth(username, password)
