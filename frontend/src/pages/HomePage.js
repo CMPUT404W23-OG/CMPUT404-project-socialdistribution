@@ -630,131 +630,137 @@ function CreateArray() {
   };
 
   const listItems = postList.map((post) => (
-    <Box
-      key={post.id}
-      sx={{
-        paddingTop: "10px",
-        paddingBottom: "10px",
-      }}
-      className={post.id}
-    >
-      <Container maxWidth="sm">
-        <Card sx={{ maxWidth: 700 }} className={post.author}>
-          <CardHeader
-            avatar={
-              <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-                R
-              </Avatar>
-            }
-            action={
-              userId === post.author_id ? (
-                <IconButton
-                  aria-label="settings"
-                  aria-controls={menuIdPost}
-                  onClick={handleMenuOpen}
-                >
-                  <MoreVertIcon />
-                </IconButton>
-              ) : null
-            }
-            title={post.title + " - " + post.author_name}
-            subheader={format(new Date(post.datePublished), "MMMM d, yyyy")}
-          />
-          {getImg(post)}
-          <CardContent>
-            {getImg(post) === null ? (
-              renderMarkdown(post)
-            ) : (
-              <Typography variant="h6" color="text.secondary">
-                {post.body}
-              </Typography>
-            )}
-          </CardContent>
-          <CardActions disableSpacing>
-            {/* button for liking posts */}
-            <IconButton
-              aria-label="add to favorites"
-              onClick={async () => {
-                //checks current color (liked or not)
-                var buttonColor = document.getElementById(post.id + "-like")
-                  .style.color;
-                if (buttonColor === "red") {
-                  // if liked, get the likes for the post, find the users, and delete it
-                  const res = await axios.get(
-                    BasePath + `/posts/${post.id}/likes`
-                  );
-                  const likeId = res.data.filter(
-                    (x) => x.author.id === userId
-                  )[0].id;
-                  await axios.delete(BasePath + `/posts/likes/${likeId}`);
-
-                  // get current likes and decrement (no need for refresh or re-ping backend), change icon to grey
-
-                  if (
-                    document.getElementById(post.id + "-like-count")
-                      .innerHTML === "1"
-                  ) {
-                    document.getElementById(post.id + "-like-count").innerHTML =
-                      "No likes yet";
-                  } else {
-                    let count = parseInt(
-                      document.getElementById(post.id + "-like-count").innerHTML
+    <div key={post.id}>
+      <Box
+       
+        sx={{
+          paddingTop: "10px",
+          paddingBottom: "10px",
+        }}
+        className={post.id}
+      >
+        <Container maxWidth="sm">
+          <Card sx={{ maxWidth: 700 }} className={post.author}>
+            <CardHeader
+              avatar={
+                <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
+                  R
+                </Avatar>
+              }
+              action={
+                userId === post.author_id ? (
+                  <IconButton
+                    aria-label="settings"
+                    aria-controls={menuIdPost}
+                    onClick={handleMenuOpen}
+                  >
+                    <MoreVertIcon />
+                  </IconButton>
+                ) : null
+              }
+              title={post.title + " - " + post.author_name}
+              subheader={format(new Date(post.datePublished), "MMMM d, yyyy")}
+            />
+            {getImg(post)}
+            <CardContent>
+              {getImg(post) === null ? (
+                renderMarkdown(post)
+              ) : (
+                <Typography variant="h6" color="text.secondary">
+                  {post.body}
+                </Typography>
+              )}
+            </CardContent>
+            <CardActions disableSpacing>
+              {/* button for liking posts */}
+              <IconButton
+                aria-label="add to favorites"
+                onClick={async () => {
+                  //checks current color (liked or not)
+                  var buttonColor = document.getElementById(post.id + "-like")
+                    .style.color;
+                  if (buttonColor === "red") {
+                    // if liked, get the likes for the post, find the users, and delete it
+                    const res = await axios.get(
+                      BasePath + `/posts/${post.id}/likes`
                     );
-                    document.getElementById(post.id + "-like-count").innerHTML =
-                      count - 1;
-                  }
+                    const likeId = res.data.filter(
+                      (x) => x.author.id === userId
+                    )[0].id;
+                    await axios.delete(BasePath + `/posts/likes/${likeId}`);
 
-                  document.getElementById(post.id + "-like").style.color =
-                    "grey";
-                } else {
-                  // create new like-post object
-                  await axios.post(
-                    BasePath + `/posts/${post.id}/likes`,
-                    {
-                      summary: userName + " liked your post.",
-                      author: userId,
-                    },
-                    {
-                      "Content-Type": "application/json",
+                    // get current likes and decrement (no need for refresh or re-ping backend), change icon to grey
+
+                    if (
+                      document.getElementById(post.id + "-like-count")
+                        .innerHTML === "1"
+                    ) {
+                      document.getElementById(
+                        post.id + "-like-count"
+                      ).innerHTML = "No likes yet";
+                    } else {
+                      let count = parseInt(
+                        document.getElementById(post.id + "-like-count")
+                          .innerHTML
+                      );
+                      document.getElementById(
+                        post.id + "-like-count"
+                      ).innerHTML = count - 1;
                     }
-                  );
 
-                  // get current likes and increment (no need for refresh or re-ping backend), change icon to red
-
-                  if (
-                    document.getElementById(post.id + "-like-count")
-                      .innerHTML === "No likes yet"
-                  ) {
-                    document.getElementById(
-                      post.id + "-like-count"
-                    ).innerHTML = 1;
+                    document.getElementById(post.id + "-like").style.color =
+                      "grey";
                   } else {
-                    let count = parseInt(
-                      document.getElementById(post.id + "-like-count").innerHTML
+                    // create new like-post object
+                    await axios.post(
+                      BasePath + `/posts/${post.id}/likes`,
+                      {
+                        summary: userName + " liked your post.",
+                        author: userId,
+                      },
+                      {
+                        "Content-Type": "application/json",
+                      }
                     );
-                    document.getElementById(post.id + "-like-count").innerHTML =
-                      count + 1;
+
+                    // get current likes and increment (no need for refresh or re-ping backend), change icon to red
+
+                    if (
+                      document.getElementById(post.id + "-like-count")
+                        .innerHTML === "No likes yet"
+                    ) {
+                      document.getElementById(
+                        post.id + "-like-count"
+                      ).innerHTML = 1;
+                    } else {
+                      let count = parseInt(
+                        document.getElementById(post.id + "-like-count")
+                          .innerHTML
+                      );
+                      document.getElementById(
+                        post.id + "-like-count"
+                      ).innerHTML = count + 1;
+                    }
+
+                    document.getElementById(post.id + "-like").style.color =
+                      "red";
                   }
+                }}
+              >
+                <FavoriteIcon id={post.id + "-like"} color="grey" />
+              </IconButton>
 
-                  document.getElementById(post.id + "-like").style.color =
-                    "red";
-                }
-              }}
-            >
-              <FavoriteIcon id={post.id + "-like"} color="grey" />
-            </IconButton>
+              {/* like counter */}
+              <h3 id={post.id + "-like-count"}>No likes yet</h3>
 
-            {/* like counter */}
-            <h3 id={post.id + "-like-count"}>No likes yet</h3>
-
-            {/* <IconButton 
+              {/* <IconButton 
         aria-label="comments"
         aria-controls={commentsId}
         onClick={handleCommentsOpen}
         >
           <Comments />
           </IconButton> */}
-            {/* <ExpandMore
+              {/* <ExpandMore
           expand={expanded}
           onClick={handleCommentsOpen}
           aria-expanded={expanded}
@@ -763,41 +769,45 @@ function CreateArray() {
         >
           <Comments />
         </ExpandMore> */}
-          </CardActions>
-          {/* https://stackoverflow.com/questions/43788878/scrollable-list-component-from-material-ui-in-react */}
-          {/* https://codesandbox.io/s/comment-box-with-material-ui-10p3c?file=/src/index.js:153-285 */}
-          <div style={{ padding: 14 }}>
-            <h3 style={{ padding: 10 }}>Comments</h3>
-            {/* {() => {
+            </CardActions>
+            {/* https://stackoverflow.com/questions/43788878/scrollable-list-component-from-material-ui-in-react */}
+            {/* https://codesandbox.io/s/comment-box-with-material-ui-10p3c?file=/src/index.js:153-285 */}
+            <div style={{ padding: 14 }}>
+              <h3 style={{ padding: 10 }}>Comments</h3>
+              {/* {() => {
         for (let i = 0; i < comments.length; i++) {
           console.log(comments[i].id)
         }
       }} */}
-            <Paper
-              style={{ maxHeight: 400, overflow: "auto" }}
-              id={"post-comments-" + post.id}
-            >
-              {comments
-                .filter((x) => x.post === post.id)
-                .map((comment) => (
-                  <Comment
-                    post={post}
-                    comment={comment}
-                    userId={userId}
-                    userName={userName}
-                  />
-                ))}
-            </Paper>
-          </div>
-          <CommentBox
-            pid={post.id}
-            userId={userId}
-            onAddComment={onAddComment}
-          />
-        </Card>
-      </Container>
-      {renderMenuPost}
-    </Box>
+              <Paper
+                style={{ maxHeight: 400, overflow: "auto" }}
+                id={"post-comments-" + post.id}
+                key={post.id}
+              >
+                {comments
+                  .filter((x) => x.post === post.id)
+                  .map((comment) => (
+                    <div key={comment.id}>
+                      <Comment
+                        post={post}
+                        comment={comment}
+                        userId={userId}
+                        userName={userName}
+                      />
+                    </div>
+                  ))}
+              </Paper>
+            </div>
+            <CommentBox
+              pid={post.id}
+              userId={userId}
+              onAddComment={onAddComment}
+            />
+          </Card>
+        </Container>
+        {renderMenuPost}
+      </Box>
+    </div>
   ));
 
   return <div>{listItems}</div>;
