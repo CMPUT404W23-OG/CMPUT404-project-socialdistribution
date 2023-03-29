@@ -321,7 +321,7 @@ function Comment({ post, comment, userId, userName }) {
             }}
           >
             <FavoriteIcon id={comment.id + "-like-comment"} color="grey" />
-            <h5 id={comment.id + "-like-count-comment"}> </h5>
+            <h6 id={comment.id + "-like-count-comment"}> </h6>
           </IconButton>
 
           {/* like counter */}
@@ -822,7 +822,7 @@ function CreateArray() {
               </IconButton>
 
               {/* like counter */}
-              <h3 id={post.id + "-like-count"}>No likes yet</h3>
+              <body1 id={post.id + "-like-count"}>No likes yet</body1>
 
               {/* <IconButton 
         aria-label="comments"

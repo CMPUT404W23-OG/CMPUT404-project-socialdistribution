@@ -216,6 +216,7 @@ function CreateArray() {
                           width: "auto",
                           height: "1.7em",
                           marginLeft: "auto",
+                        
                         }}
                       />
                     ) : (
