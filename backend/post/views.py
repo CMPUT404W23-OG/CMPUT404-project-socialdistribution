@@ -14,6 +14,7 @@ import requests
 from requests.auth import HTTPBasicAuth
 from .models import Post, Comment, Like, Author
 import logging
+import threading
 
 
 # Create your views here.
@@ -104,57 +105,59 @@ class PostList(APIView):
         """
         # posts = Post.objects.all().filter(visibility="PUBLIC").order_by('-datePublished')
         
-        outgoing = Outgoing_Node.objects.all()
-        for node in outgoing:
-            url = node.url + "/authors/"
-            username = node.Username
-            password = node.Password
-            auth = HTTPBasicAuth(username, password)
+        def getRemotePosts():
 
-            response = requests.get(url, auth=auth)
+            outgoing = Outgoing_Node.objects.all()
+            for node in outgoing:
+                url = node.url + "/authors/?page=1&size=1000"
+                username = node.Username
+                password = node.Password
+                auth = HTTPBasicAuth(username, password)
 
-            
-            author_json = response.json()
-            for author in author_json['items']:
-               
-                remote_post_url = node.url + "/authors/" + str(author['id']) + "/posts/"
-                posts_response = requests.get(remote_post_url, auth=auth)
+                response = requests.get(url, auth=auth)
 
-                remote_posts = posts_response.json()
-                for remote_post in remote_posts['items']:
                 
-                    try:
-                        remote_author = Author.objects.get(remote_id=remote_post['author']['id'])
-                    except:
-                        remote_author = Author.objects.createAuthor(
-                                                        username=remote_post["author"]["displayName"] + " - Remote User",
-                                                        password=None,
-                                                        host=remote_post["author"]["host"],
-                                                        url=remote_post["author"]["url"],
-                                                        githubId=remote_post["author"]["github"],
-                                                        profile_image_url=remote_post["author"]["profileImage"],
-                                                        api_user=True,
-                                                        remote_id = remote_post["author"]["id"],
-                                                        remote_name = remote_post["author"]["displayName"],
-                                                )
-                    # check if the post already exists
-                    try:
-                        post = Post.objects.get(remote_id=remote_post['id'])
-                  
-                    except:
+                author_json = response.json()
+                for author in author_json['items']:
+                
+                    remote_post_url = node.url + "/authors/" + str(author['id']) + "/posts/"
+                    posts_response = requests.get(remote_post_url, auth=auth)
 
-                  
-                        post_author_id = remote_author.id
-                        post_author_name = remote_author.username
-                        post_description = remote_post['description']
-                        post_title = remote_post['title']
-                        post_body = remote_post['content']
-                        post_content_type = remote_post['contentType']
-                        post_remote_id = remote_post['id']
+                    remote_posts = posts_response.json()
+                    for remote_post in remote_posts['items']:
+                    
+                        try:
+                            remote_author = Author.objects.get(remote_id=remote_post['author']['id'])
+                        except:
+                            remote_author = Author.objects.createAuthor(
+                                                            username=remote_post["author"]["displayName"] + " - Remote User",
+                                                            password=None,
+                                                            host=remote_post["author"]["host"],
+                                                            url=remote_post["author"]["url"],
+                                                            githubId=remote_post["author"]["github"],
+                                                            profile_image_url=remote_post["author"]["profileImage"],
+                                                            api_user=True,
+                                                            remote_id = remote_post["author"]["id"],
+                                                            remote_name = remote_post["author"]["displayName"],
+                                                    )
+                        # check if the post already exists
+                        try:
+                            post = Post.objects.get(remote_id=remote_post['id'])
+                    
+                        except:
 
-                        serializer_post = PostSerializer(data={'author_id': post_author_id, 'author_name': post_author_name, 'description': post_description, 'title': post_title,'body': post_body, 'contentType': post_content_type, 'remote_id': post_remote_id })
-                        serializer_post.is_valid(raise_exception=True)
-                        serializer_post.save()
+                    
+                            post_author_id = remote_author.id
+                            post_author_name = remote_author.username
+                            post_description = remote_post['description']
+                            post_title = remote_post['title']
+                            post_body = remote_post['content']
+                            post_content_type = remote_post['contentType']
+                            post_remote_id = remote_post['id']
+
+                            serializer_post = PostSerializer(data={'author_id': post_author_id, 'author_name': post_author_name, 'description': post_description, 'title': post_title,'body': post_body, 'contentType': post_content_type, 'remote_id': post_remote_id })
+                            serializer_post.is_valid(raise_exception=True)
+                            serializer_post.save()
 
                     
 
@@ -163,6 +166,9 @@ class PostList(APIView):
             number = self.request.query_params.get('page', 1)
             size = self.request.query_params.get('size', 5)
             paginator = Paginator(posts, size)
+            thread = threading.Thread(target=getRemotePosts)
+            thread.start()
+
             if ((paginator.num_pages + 1) > int(number)):
                 serializer = PostSerializer(paginator.page(number), many=True)
             else:
@@ -366,3 +372,4 @@ class AuthorLikesView(APIView):
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response({'detail': 'No likes found.'}, status=status.HTTP_404_NOT_FOUND)
         return Response({'detail': 'Author not found.'}, status=status.HTTP_404_NOT_FOUND)
+    
