@@ -195,7 +195,7 @@ function CreateArray() {
         const res = await axios.get(
           BasePath +
             `/posts/author/` +
-            user.user_id,
+            user.user_id + `?page=${currPage}&size=5`,
           headers
         );
 
