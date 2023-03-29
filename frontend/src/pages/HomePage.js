@@ -115,6 +115,7 @@ function CreateArray() {
   // const isCommentsOpen = Boolean(expanded);
 
   const handleMenuOpen = (event) => {
+    
     setAnchorElMenu(event.currentTarget);
   };
 
@@ -185,26 +186,31 @@ function CreateArray() {
   // );
 
   let menuIdPost = "primary-menu-post";
-  const renderMenuPost = (
-    <Menu
-      anchorEl={anchorElMenu}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      id={menuIdPost}
-      keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem> Edit</MenuItem>
-      <MenuItem> Delete</MenuItem>
-    </Menu>
-  );
+  function renderMenuPost(postId)  {
+    return (
+      <Menu
+        anchorEl={anchorElMenu}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        id={menuIdPost}
+        keepMounted
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        open={isMenuOpen}
+        onClose={handleMenuClose}
+      >
+        <MenuItem> Edit</MenuItem>
+        <MenuItem onClick={() => deletePost(postId)}>
+            {" "}
+            Delete
+        </MenuItem>
+      </Menu>
+    )
+  };
 
   let menuIdComments = "primary-menu-comments";
   function renderMenuComments(postId, commentId) {
@@ -236,11 +242,18 @@ function CreateArray() {
 
   // deleting post
   // await axios.delete(`${BasePath}/posts/${post.id}`);
+  async function deletePost(postID) {
+    await axios.delete(`${BasePath}/posts/${postID}/`);
+    var elem = document.getElementById(postID)
+
+    elem.remove()
+    handleMenuClose()
+  }
 
   // edit/delete comment
   async function deleteComment(postID, commentID) {
     await axios.delete(`${BasePath}/posts/${postID}/comments/${commentID}`);
-    console.log("comment", commentID)
+    
     var elem = document.getElementById(commentID)
 
     elem.remove()
@@ -473,6 +486,7 @@ function CreateArray() {
   const listItems = postList.map((post) => (
     <Box
       key={post.id}
+      id={post.id}
       sx={{
         paddingTop: "10px",
         paddingBottom: "10px",
@@ -495,6 +509,7 @@ function CreateArray() {
                   onClick={handleMenuOpen}
                 >
                   <MoreVertIcon />
+                  {renderMenuPost(post.id)}
                 </IconButton>
               ) : null
             }
@@ -764,7 +779,6 @@ function CreateArray() {
           <CommentBox pid={post.id} userId={userId} />
         </Card>
       </Container>
-      {renderMenuPost}
     </Box>
   ));
 
