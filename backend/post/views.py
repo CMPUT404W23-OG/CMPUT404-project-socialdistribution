@@ -371,3 +371,4 @@ class AuthorLikesView(APIView):
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response({'detail': 'No likes found.'}, status=status.HTTP_404_NOT_FOUND)
         return Response({'detail': 'Author not found.'}, status=status.HTTP_404_NOT_FOUND)
+    
