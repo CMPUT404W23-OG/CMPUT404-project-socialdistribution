@@ -219,7 +219,8 @@ class CommentView(APIView):
             serializer = CommentPostSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            serializer2 = CommentSerializer(serializer.instance)
+            return Response(serializer2.data, status=status.HTTP_201_CREATED)
         return Response({'detail': 'POST ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
     
     @extend_schema(request=CommentSerializer, responses=CommentSerializer)
