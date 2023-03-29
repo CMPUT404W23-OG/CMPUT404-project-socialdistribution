@@ -185,26 +185,39 @@ function CreateArray() {
   // );
 
   let menuIdPost = "primary-menu-post";
-  const renderMenuPost = (
-    <Menu
-      anchorEl={anchorElMenu}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      id={menuIdPost}
-      keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem> Edit</MenuItem>
-      <MenuItem> Delete</MenuItem>
-    </Menu>
-  );
+  function renderMenuPost(postId)  {
+    return (
+      <Menu
+        anchorEl={anchorElMenu}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        id={menuIdPost}
+        keepMounted
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        open={isMenuOpen}
+        onClose={handleMenuClose}
+      >
+        <MenuItem> Edit</MenuItem>
+        <MenuItem onClick={() => deletePost(postId)}>
+            {" "}
+            Delete
+        </MenuItem>
+      </Menu>
+    )
+  };
+
+  async function deletePost(postID) {
+    await axios.delete(`${BasePath}/posts/${postID}/`);
+    var elem = document.getElementById(postID)
+
+    elem.remove()
+    handleMenuClose()
+  }
 
   let menuIdComments = "primary-menu-comments";
   function renderMenuComments(postId, commentId) {
@@ -473,6 +486,7 @@ function CreateArray() {
   const listItems = postList.map((post) => (
     <Box
       key={post.id}
+      id={post.id}
       sx={{
         paddingTop: "10px",
         paddingBottom: "10px",
@@ -495,6 +509,8 @@ function CreateArray() {
                   onClick={handleMenuOpen}
                 >
                   <MoreVertIcon />
+                  {renderMenuPost(post.id)}
+
                 </IconButton>
               ) : null
             }
@@ -764,7 +780,7 @@ function CreateArray() {
           <CommentBox pid={post.id} userId={userId} />
         </Card>
       </Container>
-      {renderMenuPost}
+      
     </Box>
   ));
 
