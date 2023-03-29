@@ -177,7 +177,10 @@ function Comment({ post, comment, userId, userName }) {
             //onClose={handleCommentsMenuClose}
           >
             
-            <MenuItem onClick={() => handleEdit(popupState)}> Edit</MenuItem>
+            <MenuItem onClick={() => handleEdit(popupState)}> 
+              {" "}
+              Edit
+            </MenuItem>
             <MenuItem onClick={() => handleDelete(popupState)}>
               {" "}
               Delete
