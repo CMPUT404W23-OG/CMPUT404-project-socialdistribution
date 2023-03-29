@@ -40,7 +40,7 @@ urlpatterns = [
     path('service/authors/<str:AUTHOR_ID>/posts/<str:POST_ID>/comments/', remoteCommentsListView.as_view() , name='comments-list'),
     path('service/authors/<str:AUTHOR_ID>/posts/<str:POST_ID>/likes/', remoteLikesListView.as_view() , name='likes-list'),
     path('service/authors/<str:AUTHOR_ID>/posts/<str:POST_ID>/comments/<str:COMMENT_ID>/likes/', remoteCommentLikesListView.as_view() , name='comments-likes-list'),
-    path('service/authors/<str:AUTHOR_ID>/likes/', remoteAuthorLikesListView.as_view() , name='author-likes-list'),
+    path('service/authors/<str:AUTHOR_ID>/liked/', remoteAuthorLikesListView.as_view() , name='author-likes-list'),
     path('service/authors/<str:AUTHOR_ID>/inbox', remoteInboxView.as_view() , name='inbox'),
     # re_path(r'^$', schema_view)
     path("api/schema", SpectacularAPIView.as_view(), name="schema"),
