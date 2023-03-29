@@ -33,6 +33,8 @@ import { format, set } from "date-fns";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
 import { useLocation } from "react-router-dom";
+import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
+
 
 function CreateArray() {
   var { user } = useContext(AuthContext);
@@ -120,28 +122,69 @@ function CreateArray() {
     </Collapse>
   );
 
+  // deleting post
+  async function deletePost(postID) {
+    await axios.delete(`${BasePath}/posts/${postID}/`);
+    var elem = document.getElementById(postID)
+    handleMenuClose()
+  }
   let menuIdPost = "primary-menu-post";
-  const renderMenuPost = (
-    <Menu
-      anchorEl={anchorElMenu}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      id={menuIdPost}
-      keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem> Edit</MenuItem>
-      <MenuItem> Delete</MenuItem>
-    </Menu>
-  );
+  function renderMenuPost(postId)  {
 
+    const handleDelete = (popupState) => {
+      deletePost(postId)
+      popupState.close();
+    }
+
+    const handleEdit = (popupState) => {
+
+      // add edit post function here 
+
+      popupState.close();
+    }
+
+    return (
+      <PopupState variant="popover">
+        {(popupState) => (
+          <React.Fragment>
+          <IconButton variant="contained" {...bindTrigger(popupState)}
+
+          aria-label="settings"
+          //aria-controls={menuIdPost}
+          //onClick={handleMenuOpen}
+        >
+        <MoreVertIcon />
+      </IconButton>
+
+      <Menu {...bindMenu(popupState)}
+        // anchorEl={anchorElMenu}
+        // anchorOrigin={{
+        //   vertical: "top",
+        //   horizontal: "right",
+        // }}
+        // id={menuIdPost}
+        // keepMounted
+        // transformOrigin={{
+        //   vertical: "top",
+        //   horizontal: "right",
+        // }}
+        // open={isMenuOpen}
+        // onClose={handleMenuClose}
+      >
+        <MenuItem onClick={() => handleEdit(popupState)}> 
+            {" "}
+            Edit
+        </MenuItem>
+        <MenuItem onClick={() => handleDelete(popupState)}>
+          {" "}
+          Delete
+        </MenuItem>
+      </Menu>
+       </React.Fragment>
+        )}
+        </PopupState>
+    )
+  }
   const headers = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Expose-Headers": "X-PAGINATION-SIZE",
@@ -364,13 +407,7 @@ function CreateArray() {
             }
             action={
               userId === post.author_id ? (
-                <IconButton
-                  aria-label="settings"
-                  aria-controls={menuIdPost}
-                  onClick={handleMenuOpen}
-                >
-                  <MoreVertIcon />
-                </IconButton>
+                renderMenuPost(post.id)
               ) : null
             }
             title={post.title + " - " + post.author_name}
@@ -492,16 +529,7 @@ function CreateArray() {
               {comments
                 .filter((x) => x.post === post.id)
                 .map((comment) => {
-                  {
-                    console.log("inside");
-                  }
-                  {
-                    console.log(comment);
-                  }
-
-                  {
-                    /* <div> here {comment}</div> */
-                  }
+                   
                   return (
                     <div key={comment.id}>
                       <Box
@@ -576,7 +604,6 @@ function CreateArray() {
           </div>
         </Card>
       </Container>
-      {renderMenuPost}
     </Box>
   ));
 
