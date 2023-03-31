@@ -166,11 +166,11 @@ export default function Inbox() {
               }}
             >
               <ListItemAvatar>
-                <Avatar alt="Profile Picture" sx={{ marginLeft: "0.5em" }}>
-                  {request.follower.username.charAt(0).toUpperCase()
-                    ? request.follower.username.charAt(0).toUpperCase()
-                    : "Unkonwn"}
-                </Avatar>
+                <Avatar
+                  src={request.follower.profile_image_url}
+                  alt="Profile Picture"
+                  sx={{ marginLeft: "0.5em" }}
+                ></Avatar>
               </ListItemAvatar>
               <ListItemText
                 secondary={
@@ -222,11 +222,10 @@ export default function Inbox() {
                 }}
               >
                 <ListItemAvatar>
-                  <Avatar alt="Profile Picture">
-                    {post.author_name
-                      ? post.author_name.charAt(0).toUpperCase()
-                      : "Unkonwn"}
-                  </Avatar>
+                  <Avatar
+                    src={post.author_image_url}
+                    alt="Profile Picture"
+                  ></Avatar>
                   <ListItemText primary={post.author_name} />
                 </ListItemAvatar>
 
