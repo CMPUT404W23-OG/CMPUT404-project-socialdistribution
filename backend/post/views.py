@@ -149,25 +149,7 @@ class PostList(APIView):
                         # check if the post already exists
                         try:
                             post = Post.objects.get(remote_id=remote_post['id'])
-                            # if it exists, update the post
-                         
-                            if post.description != remote_post['description']:
-                                post.description = remote_post['description']
-                            
-                            if post.title != remote_post['title']:
-                                post.title = remote_post['title']
-                            
-                            if post.body != remote_post['content']:
-                                post.body = remote_post['content']
-                            
-                            if post.contentType != remote_post['contentType']:
-                                post.contentType = remote_post['contentType']
-
-                            
-            
-                            post.save()
-
-                    
+                        
                         except:
 
                     
@@ -250,6 +232,8 @@ class CommentView(APIView):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             serializer2 = CommentSerializer(serializer.instance)
+
+            
             return Response(serializer2.data, status=status.HTTP_201_CREATED)
         return Response({'detail': 'POST ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
     
