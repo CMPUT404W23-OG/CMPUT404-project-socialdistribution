@@ -24,7 +24,7 @@ import { useContext } from "react";
 import { useLocation } from "react-router-dom";
 import { Divider, Grid, Paper, Button } from "@mui/material";
 import ReactMarkdown from "react-markdown";
-import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
+import PopupState, { bindTrigger, bindMenu } from "material-ui-popup-state";
 
 // async function addComment(userId, postId, comment) {
 //   console.log(postId);
@@ -126,7 +126,6 @@ function Comment({ post, comment, userId, userName }) {
 
   const handleCommentsMenuOpen = (event) => {
     setAnchorElComments(event.currentTarget);
-    
   };
 
   const handleCommentsMenuClose = () => {
@@ -135,69 +134,63 @@ function Comment({ post, comment, userId, userName }) {
 
   let menuIdComments = "primary-menu-comments";
   function renderMenuComments(postId, commentId) {
-
     const handleDelete = (popupState) => {
-      deleteComment(postId, commentId)
+      deleteComment(postId, commentId);
       popupState.close();
-    }
+    };
 
     const handleEdit = (popupState) => {
-      
-      // add edit comment function here 
+      // add edit comment function here
 
       popupState.close();
-    }
-
+    };
 
     return (
       <PopupState variant="popover">
         {(popupState) => (
           <React.Fragment>
-          <IconButton variant="contained" {...bindTrigger(popupState)}
-            
-            aria-label="settings"
-            //aria-controls={menuIdComments}
-            //onClick={handleCommentsMenuOpen}
-          >
-            <MoreVertIcon />
+            <IconButton
+              variant="contained"
+              {...bindTrigger(popupState)}
+              aria-label="settings"
+              //aria-controls={menuIdComments}
+              //onClick={handleCommentsMenuOpen}
+            >
+              <MoreVertIcon />
             </IconButton>
-          <Menu {...bindMenu(popupState)}
-            // anchorEl={anchorElComments}
-            // anchorOrigin={{
-            //   vertical: "top",
-            //   horizontal: "right",
-            // }}
-            // id={menuIdComments}
-            // keepMounted
-            // transformOrigin={{
-            //   vertical: "top",
-            //   horizontal: "right",
-            // }}
-            //open={isCommentMenuOpen}
-            //onClose={handleCommentsMenuClose}
-          >
-            
-            <MenuItem onClick={() => handleEdit(popupState)}> 
-              {" "}
-              Edit
-            </MenuItem>
-            <MenuItem onClick={() => handleDelete(popupState)}>
-              {" "}
-              Delete
-            </MenuItem>
-          </Menu>
+            <Menu
+              {...bindMenu(popupState)}
+              // anchorEl={anchorElComments}
+              // anchorOrigin={{
+              //   vertical: "top",
+              //   horizontal: "right",
+              // }}
+              // id={menuIdComments}
+              // keepMounted
+              // transformOrigin={{
+              //   vertical: "top",
+              //   horizontal: "right",
+              // }}
+              //open={isCommentMenuOpen}
+              //onClose={handleCommentsMenuClose}
+            >
+              <MenuItem onClick={() => handleEdit(popupState)}> Edit</MenuItem>
+              <MenuItem onClick={() => handleDelete(popupState)}>
+                {" "}
+                Delete
+              </MenuItem>
+            </Menu>
           </React.Fragment>
         )}
-        </PopupState>  
+      </PopupState>
     );
-    
   }
-  
+
   function close() {
-    console.log("1", anchorElComments)
+    console.log("1", anchorElComments);
     handleCommentsMenuClose();
     setAnchorElComments(null);
-    console.log("2", anchorElComments)
+    console.log("2", anchorElComments);
   }
   // edit/delete comment
   async function deleteComment(postID, commentID) {
@@ -218,7 +211,7 @@ function Comment({ post, comment, userId, userName }) {
 
     handleCommentsMenuClose();
   }
-  
+
   return (
     <div key={comment.id} id={comment.id}>
       <Box
@@ -326,9 +319,9 @@ function Comment({ post, comment, userId, userName }) {
 
           {/* like counter */}
 
-          {userId === comment.author.id ? (
-            renderMenuComments(post.id, comment.id)
-          ) : null}
+          {userId === comment.author.id
+            ? renderMenuComments(post.id, comment.id)
+            : null}
         </Grid>
       </Box>
       <Divider variant="fullWidth" style={{ margin: "30px 0" }} />
@@ -417,74 +410,69 @@ function CreateArray() {
   // );
 
   let menuIdPost = "primary-menu-post";
-  function renderMenuPost(postId)  {
-
+  function renderMenuPost(postId) {
     const handleDelete = (popupState) => {
-      deletePost(postId)
+      deletePost(postId);
       popupState.close();
-    }
+    };
 
     const handleEdit = (popupState) => {
-      
-      // add edit post function here 
-      
+      // add edit post function here
+
       popupState.close();
-    }
+    };
 
     return (
       <PopupState variant="popover">
         {(popupState) => (
           <React.Fragment>
-          <IconButton variant="contained" {...bindTrigger(popupState)}
-            
-          aria-label="settings"
-          //aria-controls={menuIdPost}
-          //onClick={handleMenuOpen}
-        >
-        <MoreVertIcon />
-      </IconButton>
-       
-      <Menu {...bindMenu(popupState)}
-        // anchorEl={anchorElMenu}
-        // anchorOrigin={{
-        //   vertical: "top",
-        //   horizontal: "right",
-        // }}
-        // id={menuIdPost}
-        // keepMounted
-        // transformOrigin={{
-        //   vertical: "top",
-        //   horizontal: "right",
-        // }}
-        // open={isMenuOpen}
-        // onClose={handleMenuClose}
-      >
-        <MenuItem onClick={() => handleEdit(popupState)}> 
-            {" "}
-            Edit
-        </MenuItem>
-        <MenuItem onClick={() => handleDelete(popupState)}>
-            {" "}
-            Delete
-        </MenuItem>
-        </Menu>
+            <IconButton
+              variant="contained"
+              {...bindTrigger(popupState)}
+              aria-label="settings"
+              //aria-controls={menuIdPost}
+              //onClick={handleMenuOpen}
+            >
+              <MoreVertIcon />
+            </IconButton>
+
+            <Menu
+              {...bindMenu(popupState)}
+              // anchorEl={anchorElMenu}
+              // anchorOrigin={{
+              //   vertical: "top",
+              //   horizontal: "right",
+              // }}
+              // id={menuIdPost}
+              // keepMounted
+              // transformOrigin={{
+              //   vertical: "top",
+              //   horizontal: "right",
+              // }}
+              // open={isMenuOpen}
+              // onClose={handleMenuClose}
+            >
+              <MenuItem onClick={() => handleEdit(popupState)}> Edit</MenuItem>
+              <MenuItem onClick={() => handleDelete(popupState)}>
+                {" "}
+                Delete
+              </MenuItem>
+            </Menu>
           </React.Fragment>
         )}
-        </PopupState>  
-    )
-  };
-
+      </PopupState>
+    );
+  }
 
   // deleting post
   async function deletePost(postID) {
     await axios.delete(`${BasePath}/posts/${postID}/`);
-    var elem = document.getElementById(postID)
+    var elem = document.getElementById(postID);
 
-    elem.remove()
-    handleMenuClose()
+    elem.remove();
+    handleMenuClose();
   }
 
-  
   // await axios.delete(`${BasePath}/posts/${post.id}/comments/${comment.id}`);
   // await axios.patch(`${BasePath}/posts/${post.id}/comments/${comment.id}`, {"comment":${editedComment}});
 
@@ -709,7 +697,6 @@ function CreateArray() {
   const listItems = postList.map((post) => (
     <div key={post.id} id={post.id}>
       <Box
-       
         sx={{
           paddingTop: "10px",
           paddingBottom: "10px",
@@ -720,14 +707,14 @@ function CreateArray() {
           <Card sx={{ maxWidth: 700 }} className={post.author}>
             <CardHeader
               avatar={
-                <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-                  R
-                </Avatar>
+                <Avatar
+                  src={post.author_image_url}
+                  sx={{}}
+                  aria-label="recipe"
+                ></Avatar>
               }
               action={
-                userId === post.author_id ? (
-                  renderMenuPost(post.id)
-                ) : null
+                userId === post.author_id ? renderMenuPost(post.id) : null
               }
               title={post.title + " - " + post.author_name}
               subheader={format(new Date(post.datePublished), "MMMM d, yyyy")}

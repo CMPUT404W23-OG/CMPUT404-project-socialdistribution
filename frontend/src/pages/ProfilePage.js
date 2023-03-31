@@ -399,9 +399,11 @@ function CreateArray() {
         <Card sx={{ maxWidth: 700 }} className={post.author}>
           <CardHeader
             avatar={
-              <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-                R
-              </Avatar>
+              <Avatar
+                src={post.author_image_url}
+                sx={{}}
+                aria-label="recipe"
+              ></Avatar>
             }
             action={userId === post.author_id ? renderMenuPost(post.id) : null}
             title={post.title + " - " + post.author_name}
@@ -759,7 +761,7 @@ const ProfilePage = () => {
           flexDirection: "column",
           width: "100%",
           paddingTop: "100px",
-          paddingBottom: "30px",
+          // paddingBottom: "30px",
         }}
       >
         <CreateArray />
