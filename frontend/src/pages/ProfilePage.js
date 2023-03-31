@@ -33,8 +33,8 @@ import { format, set } from "date-fns";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
 import { useLocation } from "react-router-dom";
-import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
-
+import PopupState, { bindTrigger, bindMenu } from "material-ui-popup-state";
+import { fontSize } from "@mui/system";
 
 function CreateArray() {
   var { user } = useContext(AuthContext);
@@ -125,65 +125,62 @@ function CreateArray() {
   // deleting post
   async function deletePost(postID) {
     await axios.delete(`${BasePath}/posts/${postID}/`);
-    var elem = document.getElementById(postID)
-    handleMenuClose()
+    var elem = document.getElementById(postID);
+    handleMenuClose();
   }
   let menuIdPost = "primary-menu-post";
-  function renderMenuPost(postId)  {
-
+  function renderMenuPost(postId) {
     const handleDelete = (popupState) => {
-      deletePost(postId)
+      deletePost(postId);
       popupState.close();
-    }
+    };
 
     const handleEdit = (popupState) => {
-
-      // add edit post function here 
+      // add edit post function here
 
       popupState.close();
-    }
+    };
 
     return (
       <PopupState variant="popover">
         {(popupState) => (
           <React.Fragment>
-          <IconButton variant="contained" {...bindTrigger(popupState)}
+            <IconButton
+              variant="contained"
+              {...bindTrigger(popupState)}
+              aria-label="settings"
+              //aria-controls={menuIdPost}
+              //onClick={handleMenuOpen}
+            >
+              <MoreVertIcon />
+            </IconButton>
 
-          aria-label="settings"
-          //aria-controls={menuIdPost}
-          //onClick={handleMenuOpen}
-        >
-        <MoreVertIcon />
-      </IconButton>
-
-      <Menu {...bindMenu(popupState)}
-        // anchorEl={anchorElMenu}
-        // anchorOrigin={{
-        //   vertical: "top",
-        //   horizontal: "right",
-        // }}
-        // id={menuIdPost}
-        // keepMounted
-        // transformOrigin={{
-        //   vertical: "top",
-        //   horizontal: "right",
-        // }}
-        // open={isMenuOpen}
-        // onClose={handleMenuClose}
-      >
-        <MenuItem onClick={() => handleEdit(popupState)}> 
-            {" "}
-            Edit
-        </MenuItem>
-        <MenuItem onClick={() => handleDelete(popupState)}>
-          {" "}
-          Delete
-        </MenuItem>
-      </Menu>
-       </React.Fragment>
+            <Menu
+              {...bindMenu(popupState)}
+              // anchorEl={anchorElMenu}
+              // anchorOrigin={{
+              //   vertical: "top",
+              //   horizontal: "right",
+              // }}
+              // id={menuIdPost}
+              // keepMounted
+              // transformOrigin={{
+              //   vertical: "top",
+              //   horizontal: "right",
+              // }}
+              // open={isMenuOpen}
+              // onClose={handleMenuClose}
+            >
+              <MenuItem onClick={() => handleEdit(popupState)}> Edit</MenuItem>
+              <MenuItem onClick={() => handleDelete(popupState)}>
+                {" "}
+                Delete
+              </MenuItem>
+            </Menu>
+          </React.Fragment>
         )}
-        </PopupState>
-    )
+      </PopupState>
+    );
   }
   const headers = {
     "Access-Control-Allow-Origin": "*",
@@ -238,7 +235,8 @@ function CreateArray() {
         const res = await axios.get(
           BasePath +
             `/posts/author/` +
-            user.user_id + `?page=${currPage}&size=5`,
+            user.user_id +
+            `?page=${currPage}&size=5`,
           headers
         );
 
@@ -405,11 +403,7 @@ function CreateArray() {
                 R
               </Avatar>
             }
-            action={
-              userId === post.author_id ? (
-                renderMenuPost(post.id)
-              ) : null
-            }
+            action={userId === post.author_id ? renderMenuPost(post.id) : null}
             title={post.title + " - " + post.author_name}
             subheader={format(new Date(post.datePublished), "MMMM d, yyyy")}
           />
@@ -529,7 +523,6 @@ function CreateArray() {
               {comments
                 .filter((x) => x.post === post.id)
                 .map((comment) => {
-                   
                   return (
                     <div key={comment.id}>
                       <Box
@@ -682,13 +675,70 @@ const ProfilePage = () => {
               >
                 <Grid container spacing={4}>
                   <Grid item lg={4} md={6} xs={12}>
-                    <a href="/Followers">Followers</a>
+                    <a
+                      style={{
+                        color: "black",
+                        fontSize: "16px",
+                        textDecoration: "none",
+                        fontWeight: "bold",
+                      }}
+                      onMouseOver={(e) => (
+                        (e.target.style.color = "blue"),
+                        (e.target.style.cursor = "pointer"),
+                        (e.target.style.textDecoration = "underline")
+                      )}
+                      onMouseOut={(e) => (
+                        (e.target.style.color = "black"),
+                        (e.target.style.textDecoration = "none")
+                      )}
+                      href="/Followers"
+                    >
+                      Followers
+                    </a>
                   </Grid>
                   <Grid item lg={4} md={6} xs={12}>
-                    <a href="/Following">Following</a>
+                    <a
+                      style={{
+                        color: "black",
+                        fontSize: "16px",
+                        textDecoration: "none",
+                        fontWeight: "bold",
+                      }}
+                      onMouseOver={(e) => (
+                        (e.target.style.color = "blue"),
+                        (e.target.style.cursor = "pointer"),
+                        (e.target.style.textDecoration = "underline")
+                      )}
+                      onMouseOut={(e) => (
+                        (e.target.style.color = "black"),
+                        (e.target.style.textDecoration = "none")
+                      )}
+                      href="/Following"
+                    >
+                      Following
+                    </a>
                   </Grid>
                   <Grid item lg={4} md={6} xs={12}>
-                    <a href="/TrueFriends">True Friends</a>
+                    <a
+                      style={{
+                        color: "black",
+                        fontSize: "16px",
+                        textDecoration: "none",
+                        fontWeight: "bold",
+                      }}
+                      onMouseOver={(e) => (
+                        (e.target.style.color = "blue"),
+                        (e.target.style.cursor = "pointer"),
+                        (e.target.style.textDecoration = "underline")
+                      )}
+                      onMouseOut={(e) => (
+                        (e.target.style.color = "black"),
+                        (e.target.style.textDecoration = "none")
+                      )}
+                      href="/TrueFriends"
+                    >
+                      True Friends
+                    </a>
                   </Grid>
                 </Grid>
               </Container>
