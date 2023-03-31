@@ -112,6 +112,7 @@ class PostList(APIView):
                 url = node.url + "/authors/?page=1&size=1000"
                 username = node.Username
                 password = node.Password
+                connection_name = node.Connection_Name
                 auth = HTTPBasicAuth(username, password)
 
                 response = requests.get(url, auth=auth)
@@ -119,8 +120,13 @@ class PostList(APIView):
                 
                 author_json = response.json()
                 for author in author_json['items']:
-                
-                    remote_post_url = node.url + "/authors/" + str(author['id']) + "/posts/"
+                    
+                    if connection_name == "gurvir":
+                        gurvir_team_author_id = author['id']
+                        gurvir_team_author_id = gurvir_team_author_id.split("/")[-1]
+                        remote_post_url = node.url + "/authors/" + str(gurvir_team_author_id) + "/posts/"
+                    else:
+                        remote_post_url = node.url + "/authors/" + str(author['id']) + "/posts/"
                     posts_response = requests.get(remote_post_url, auth=auth)
 
                     remote_posts = posts_response.json()
