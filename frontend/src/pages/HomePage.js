@@ -522,6 +522,28 @@ function CreateArray() {
         }
 
         setPostList([res.data]);
+
+        const res2 = await axios.get(
+          `${BasePath}/posts/${location.state}/comments?page=1&size=1000`
+        );
+        setComments((prevComments) => {
+          const newComments = res2.data.filter(
+            (comment) => !prevComments.find((c) => c.id === comment.id)
+          );
+          return [...prevComments, ...newComments];
+        });
+
+        // const res3 = await axios.get(
+        //   `${BasePath}/posts/${location.state}/likes`
+        // );
+        // TODO - Update likes here for the post from notification page
+        // setLikes((prevLikes) => {
+        //   const newLikes = res3.data.filter(
+        //     (like) => !prevLikes.find((l) => l.id === like.id)
+        //   );
+        //   return [...prevLikes, ...newLikes];
+        // });
+
         location.state = null;
       };
       getData();
