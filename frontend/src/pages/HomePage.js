@@ -522,16 +522,23 @@ function CreateArray() {
         }
 
         setPostList([res.data]);
-
-        const res2 = await axios.get(
-          `${BasePath}/posts/${location.state}/comments?page=1&size=1000`
-        );
-        setComments((prevComments) => {
-          const newComments = res2.data.filter(
-            (comment) => !prevComments.find((c) => c.id === comment.id)
+        try {
+          const res2 = await axios.get(
+            `${BasePath}/posts/${location.state}/comments?page=1&size=1000`
           );
-          return [...prevComments, ...newComments];
-        });
+          setComments((prevComments) => {
+            const newComments = res2.data.filter(
+              (comment) => !prevComments.find((c) => c.id === comment.id)
+            );
+            return [...prevComments, ...newComments];
+          });
+        } catch (e) {
+          if (e.response.status === 404) {
+            console.log(`Post ${location.state} has no comments`);
+          } else {
+            console.log(e.response.status);
+          }
+        }
 
         // const res3 = await axios.get(
         //   `${BasePath}/posts/${location.state}/likes`
