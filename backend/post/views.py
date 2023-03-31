@@ -149,6 +149,16 @@ class PostList(APIView):
                         # check if the post already exists
                         try:
                             post = Post.objects.get(remote_id=remote_post['id'])
+                            # if it exists, update the post
+                         
+                     
+                            post.description = remote_post['description']
+                            post.title = remote_post['title']
+                            post.body = remote_post['content']
+                            post.contentType = remote_post['contentType']
+                        
+                            post.save()
+
                     
                         except:
 
