@@ -124,9 +124,9 @@ class PostList(APIView):
                     if connection_name == "gurvir":
                         gurvir_team_author_id = author['id']
                         gurvir_team_author_id = gurvir_team_author_id.split("/")[-1]
-                        remote_post_url = node.url + "/authors/" + str(gurvir_team_author_id) + "/posts/"
+                        remote_post_url = node.url + "/authors/" + str(gurvir_team_author_id) + "/posts/?page=1&size=1000"
                     else:
-                        remote_post_url = node.url + "/authors/" + str(author['id']) + "/posts/"
+                        remote_post_url = node.url + "/authors/" + str(author['id']) + "/posts/?page=1&size=1000"
                     posts_response = requests.get(remote_post_url, auth=auth)
 
                     remote_posts = posts_response.json()
@@ -148,9 +148,9 @@ class PostList(APIView):
                                                     )
                         # check if the post already exists
                         try:
-                            post = Post.objects.filter(remote_id=remote_post['id'])
+                            post = Post.objects.get(remote_id=remote_post['id'])
                         
-                        except Post.DoesNotExist:
+                        except :
 
                     
                             post_author_id = remote_author.id
