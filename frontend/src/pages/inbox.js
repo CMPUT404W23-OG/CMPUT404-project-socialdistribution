@@ -195,7 +195,7 @@ export default function Inbox() {
     // fetch data and update state every 10 seconds
     const interval = setInterval(() => {
       fetchData();
-    }, 1000000);
+    }, 10000);
     return () => {
       clearInterval(interval);
     };
