@@ -327,17 +327,22 @@ class LikeView(APIView):
         Request body: {"summary" : "Author 1 likes your comment.",
                         "author" : "1"}
         """
+
         if post_id and not comment_id:
+            logging.debug("I am here 1 ******************")
             request.data['post'] = post_id
+            logging.debug(post_id)
             like_author = request.data.get('author')
+            logging.debug(like_author)
             if like_author:
+                thread = threading.Thread(target=self.sendRemoteLike, args=(post_id, like_author))
+                thread.start()
                 if Like.objects.filter(author=like_author, post=post_id, comment__isnull=True).exists():
 
-                    thread = threading.Thread(target=self.sendRemoteLike, args=(post_id, like_author))
-                    thread.start()
-
+              
                     return Response({'detail': 'You have already liked this post.'}, status=status.HTTP_400_BAD_REQUEST)
         elif comment_id and not post_id:
+ 
             request.data['comment'] = comment_id
             like_author = request.data.get('author')
             if like_author:
@@ -353,10 +358,16 @@ class LikeView(APIView):
     
     def sendRemoteLike(self, post_id, author_id):
 
+        logging.debug("sending remote like")
         # get the post
         post = Post.objects.get(id=post_id)
 
+        logging.debug("post id: " + str(post.id))
+        
+
         liked_by_author = Author.objects.get(id=author_id)
+
+        logging.debug("liked by author id: " + str(liked_by_author.id))
 
         # check if it is a remote post
         if post.remote_id:
@@ -368,7 +379,7 @@ class LikeView(APIView):
                 url = post_author.remote_id + "/inbox/"
 
                 post_body = {
-                    "type": "Liked",
+                    "type": "liked",
                     "items": [
                         {
                             "@context": "https://www.w3.org/ns/activitystreams",
@@ -396,15 +407,15 @@ class LikeView(APIView):
                 for node in remote_nodes:
                     if post_author.host == node.url:
                         node_url = node.url
-                        node_username = node.username
-                        node_password = node.password
+                        node_username = node.Username
+                        node_password = node.Password
                         referer = node.url + "/"
                         break
                         
                     elif post_author.host + "/api" == node.url:
                         node_url = node.url
-                        node_username = node.username
-                        node_password = node.password
+                        node_username = node.Username
+                        node_password = node.Password
                         referer = node.url 
                         break
                 
