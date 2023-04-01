@@ -172,7 +172,8 @@ function CreateArray() {
             sx={{
               flexGrow: 0.03,
               marginTop: "0.8em",
-              marginBottom: "1em",
+              marginLeft: "auto",
+              marginRight: "auto",
             }}
             key={author.id}
           >
@@ -206,9 +207,11 @@ function CreateArray() {
                       marginLeft: "auto",
                       marginRight: "auto",
                       textAlign: "center",
+                      width: "11em",
+                      height: "6em",
                     }}
                   >
-                    <h3>{author.username}</h3>
+                    <h3 style={{}}>{author.username}</h3>
                     {sentList.includes(author.id) ? (
                       <DoneIcon
                         sx={{
@@ -216,7 +219,7 @@ function CreateArray() {
                           width: "auto",
                           height: "1.7em",
                           marginLeft: "auto",
-                        
+                          marginRight: "auto",
                         }}
                       />
                     ) : (
@@ -246,7 +249,11 @@ function CreateArray() {
                   ) : (
                     <Button
                       variant="contained"
-                      sx={{ bgcolor: "green" }}
+                      sx={{
+                        bgcolor: "green",
+                        marginLeft: "auto",
+                        marginRight: "auto",
+                      }}
                       onClick={() => sendFollowRequest(author.id)}
                     >
                       Send Follow Request
@@ -269,6 +276,8 @@ function CreateArray() {
             sx={{
               flexGrow: 0.03,
               marginTop: "0.8em",
+              marginLeft: "auto",
+              marginRight: "auto",
             }}
           >
             <Grid container spacing={2} wrap="wrap">
@@ -301,14 +310,16 @@ function CreateArray() {
                       marginLeft: "auto",
                       marginRight: "auto",
                       textAlign: "center",
+                      maxWidth: "11em",
+                      height: "6em",
                     }}
                   >
-                    <h3>{author.username}</h3>
+                    <h3 style={{}}>{author.username}</h3>
                     {sentList.includes(author.id) ? (
                       <DoneIcon
                         sx={{
                           color: "green",
-                          width: "7.9em",
+                          width: "auto",
                           height: "1.7em",
                           marginLeft: "auto",
                         }}
@@ -344,7 +355,11 @@ function CreateArray() {
                   ) : (
                     <Button
                       variant="contained"
-                      sx={{ bgcolor: "green" }}
+                      sx={{
+                        bgcolor: "green",
+                        marginLeft: "auto",
+                        marginRight: "auto",
+                      }}
                       onClick={() => sendFollowRequest(author.id)}
                     >
                       Send Follow Request
