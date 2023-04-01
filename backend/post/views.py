@@ -126,7 +126,7 @@ class PostList(APIView):
                         gurvir_team_author_id = gurvir_team_author_id.split("/")[-1]
                         remote_post_url = node.url + "/authors/" + str(gurvir_team_author_id) + "/posts/?page=1&size=1000"
                     else:
-                        remote_post_url = node.url + "/authors/" + str(author['id']) + "/posts/?page=1&size=1000"
+                        remote_post_url = node.url + "/authors/" + str(author['id']) + "/posts/"
                     posts_response = requests.get(remote_post_url, auth=auth)
 
                     remote_posts = posts_response.json()
