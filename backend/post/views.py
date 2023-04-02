@@ -56,6 +56,7 @@ class PostView(APIView):
         updated = request.data.copy()
         updated['author_id'] = author_id
         
+        #https://stackoverflow.com/questions/39576174/save-base64-image-in-django-file-field
         if updated['contentType'][:5] == "image" and 'image_file' in updated and updated['image_file'] != None:
             ext = updated['contentType'][6:]
             

@@ -9,7 +9,7 @@ from django.contrib.postgres.fields import ArrayField
 HOST = os.getenv('HOST')
 
 #posts are public by default (True)
-#unlisted field for images
+#unlisted are false by default
 
 #for categories with ArrayField: https://docs.djangoproject.com/en/2.2/ref/contrib/postgres/fields/#arrayfield
 
@@ -29,9 +29,9 @@ class Post(models.Model):
     dateEdited = models.DateTimeField( blank=True, null=True, default= timezone.now)
     unlisted = models.BooleanField(default=False)
     categories = ArrayField(models.CharField(max_length=200), blank=True, default=list)
+    source = models.CharField(max_length=250, blank=True)
+    origin = models.CharField(max_length=250, blank=True)
 
-    #author field TODO
-    #ID field TODO
     def __str__(self):
         return self.title
 

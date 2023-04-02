@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 import base64
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from django.core.files.base import ContentFile
 
 from .models import Incoming_Node, Outgoing_Node
 from .serializers import remoteAuthorsSerializer, remoteAuthorSerializer,  remotePostsSerializer, remoteCommentsSerializer, remoteLikesSerializer
@@ -458,59 +459,104 @@ class remoteInboxView(APIView):
         if self.authenticate_node(request):
     
             data = request.data
-            # if data["type"] == "post":
-            #     logging.debug("post received")
-            #     try:
-            #         logging.debug("trying to get post data")
 
-            #         title = data["title"]
-            #         id = data["id"]
-            #         source = data["source"]
-            #         origin = data["origin"]
-            #         description = data["description"]
-            #         contentType = data["contentType"]
-            #         content = data["content"]
-            #         author = data["author"]
-            #         categories = data["categories"]
-      
-            #         logging.debug("got post data ******")
+            if data["type"] == "post":
+                try:
+                    type = data["type"]
+                    title = data["title"]
+                    id = data["id"]
+                    source = data["source"]
+                    origin = data["origin"]
+                    description = data["description"]
+                    contentType = data["contentType"]
+                    content = data["content"]  
+                    author = data["author"]
+                    categories = data["categories"]
+                    visibility = data["visibility"]
+                    unlisted = data["unlisted"]
 
-            #         # create a post from the remote author
+                    if contentType[:5] == "image" and content[:11] == "data:image/":
+                        file = True
+                    elif contentType[:5] == "image":
+                        url = True
 
-            #         try:
-            #             remote_author = Author.objects.get(remote_id = author["id"])
+                    if file:
+                        ext = contentType[6:9]
+            
+                        format, imageDecoded = content.split(';base64,') 
+                        imageFile = ContentFile(base64.b64decode(imageDecoded), name="postImage." + ext)
+                        content = imageFile
 
-            #         except:
-            #             remote_author = []
+                    try:
+                        remote_author = Author.objects.get(remote_id = author["id"])
+                    except:
+                        remote_author = []
+
+                    if remote_author == []:
+                        remote_author = Author.objects.createAuthor(
+                                                        username=actor["displayName"] + " - Remote User",
+                                                        password=None,
+                                                        host=actor["host"],
+                                                        url=actor["url"],
+                                                        githubId=actor["github"],
+                                                        profile_image_url=actor["profileImage"],
+                                                        api_user=True,
+                                                        remote_id = actor["id"],
+                                                        remote_name = actor["displayName"]
+                                                )          
                     
-            #         if remote_author == []:
-            #             logging.debug("creating remote author")
-            #             remote_author = Author.objects.createAuthor(
-            #                                             username=author["displayName"] + " - Remote User",
-            #                                             password=None,
-            #                                             host=author["host"],
-            #                                             url=author["url"],
-            #                                             githubId=author["github"],
-            #                                             profile_image_url=author["profileImage"],
-            #                                             api_user=True,
-            #                                             remote_id = author["id"],
-            #                                             remote_name = author["displayName"]
-            #                                     )
-            #         post = Post.objects.create(
-            #             title=title,
-            #             author_name=remote_author.username,
-            #             author_id = remote_author,
-            #             description=description,
-            #             content=content,
-            #             contentType=contentType,
-            #             categories=categories,
-            #         )
+                    if file:
+                        post = Post.objects.create(
+                            type = type,
+                            title = title,
+                            author_name = remote_author.username,
+                            author_id = remote_author,
+                            description = description,
+                            image_file = content,
+                            contentType = contentType,
+                            source = source,
+                            origin = origin,
+                            categories = categories,
+                            visibility = visibility,
+                            unlisted = unlisted
+                        )
+                    elif url:
+                        post = Post.objects.create(
+                            type = type,
+                            title = title,
+                            author_name = remote_author.username,
+                            author_id = remote_author,
+                            description = description,
+                            image_url = content,
+                            contentType = contentType,
+                            source = source,
+                            origin = origin,
+                            categories = categories,
+                            visibility = visibility,
+                            unlisted = unlisted
+                        )
+                    else:
+                        post = Post.objects.create(
+                            type = type,
+                            title = title,
+                            author_name = remote_author.username,
+                            author_id = remote_author,
+                            description = description,
+                            body = content,
+                            contentType = contentType,
+                            source = source,
+                            origin = origin,
+                            categories = categories,
+                            visibility = visibility,
+                            unlisted = unlisted
+                        )
 
-            #         post.save()
-            #         return Response({"success" : "post received"},  status=200)
+                    post.save()
+                    return Response({"success" : "post received"},  status=200)
+                    
+                except:
+                    return Response({"error" : "invalid post"}, status=400)
 
-            #     except:
-            #         return Response({"error" : "invalid post"},  status=400)
             if data["type"] == "Follow":
                 try:
                     summary = data["summary"]
