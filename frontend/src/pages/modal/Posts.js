@@ -20,7 +20,6 @@ import Checkbox from "@mui/material/Checkbox";
 
 export default function PostsDialog({ postType, open, setOpen }) {
   const navigate = useNavigate();
-
   var { user } = useContext(AuthContext);
   const [postTitle, setTitle] = useState("");
   const [postText, setText] = useState("");
