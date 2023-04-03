@@ -186,12 +186,7 @@ function Comment({ post, comment, userId, userName }) {
     );
   }
 
-  function close() {
-    console.log("1", anchorElComments);
-    handleCommentsMenuClose();
-    setAnchorElComments(null);
-    console.log("2", anchorElComments);
-  }
+  
   // edit/delete comment
   async function deleteComment(postID, commentID) {
     await axios.delete(`${BasePath}/posts/${postID}/comments/${commentID}`);
@@ -241,6 +236,7 @@ function Comment({ post, comment, userId, userName }) {
             aria-label="add to favorites"
             onClick={async () => {
               //checks current color (liked or not)
+              console.log("in")
               var buttonColor = document.getElementById(
                 comment.id + "-like-comment"
               ).style.color;
@@ -503,7 +499,7 @@ function CreateArray() {
       }
     };
 
-    if (postList.length > 0) {
+    if (postList.length > 0 && !location.state) {
       fetchComments();
     }
   }, [postList]);
@@ -523,15 +519,17 @@ function CreateArray() {
 
         setPostList([res.data]);
         try {
-          const res2 = await axios.get(
+          const commentsRes = await axios.get(
             `${BasePath}/posts/${location.state}/comments?page=1&size=1000`
           );
           setComments((prevComments) => {
-            const newComments = res2.data.filter(
+            const newComments = commentsRes.data.filter(
               (comment) => !prevComments.find((c) => c.id === comment.id)
             );
             return [...prevComments, ...newComments];
           });
+          
+
         } catch (e) {
           if (e.response.status === 404) {
             console.log(`Post ${location.state} has no comments`);
@@ -540,20 +538,53 @@ function CreateArray() {
           }
         }
 
-        // const res3 = await axios.get(
-        //   `${BasePath}/posts/${location.state}/likes`
-        // );
-        // TODO - Update likes here for the post from notification page
-        // setLikes((prevLikes) => {
-        //   const newLikes = res3.data.filter(
-        //     (like) => !prevLikes.find((l) => l.id === like.id)
-        //   );
-        //   return [...prevLikes, ...newLikes];
-        // });
-
+        const likesRes = await axios.get(
+          `${BasePath}/posts/${location.state}/likes`
+        );
+        
+        for (let each in likesRes.data) {
+          if (likesRes.data[each].author.id === userId) {
+            document.getElementById(location.state + "-like").style.color = "red";
+          }
+        }
+        document.getElementById(location.state + "-like-count").innerText = likesRes.data.length;
+        
         location.state = null;
       };
+      
+      async function commLikes() {
+        if (comments.length > 0) {
+          for (let i = 0; i < comments.length; i++) {
+            try {
+              
+              const likesRes = await axios.get(
+                BasePath + `/posts/comments/${comments[i].id}/likes`
+              );
+  
+              for (let each in likesRes.data) {
+                if (likesRes.data[each].author.id === userId) {
+                  document.getElementById(
+                    comments[i].id + "-like-comment"
+                  ).style.color = "red";
+                }
+              }
+              document.getElementById(
+                comments[i].id + "-like-count-comment"
+              ).innerText = likesRes.data.length;
+            } catch (e) {
+              if (e.response.status === 404) {
+                console.log(`Comment ${comments[i].id} has no likes`);
+              } else {
+                console.log(e.response.status);
+              }
+            }
+          }
+        }
+      }
+
       getData();
+      commLikes()
+
       window.history.replaceState({}, document.title);
     } else {
       const getData = async () => {
@@ -569,7 +600,7 @@ function CreateArray() {
         setPostList([...postList, ...res.data]);
       };
 
-      if (!wasLast && prevPage !== currPage) {
+      if (!wasLast && prevPage !== currPage && !location.state) {
         getData();
       }
     }
@@ -713,8 +744,10 @@ function CreateArray() {
         }
       }
     }
-
-    checkLike();
+    if (!location.state) {
+      checkLike();
+    }
+    
   }, [currPage, prevPage, wasLast, postList, userId, comments]);
 
   const onAddComment = (newComment) => {
