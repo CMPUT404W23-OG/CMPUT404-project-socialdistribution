@@ -25,31 +25,8 @@ import { useLocation } from "react-router-dom";
 import { Divider, Grid, Paper, Button } from "@mui/material";
 import ReactMarkdown from "react-markdown";
 import PopupState, { bindTrigger, bindMenu } from "material-ui-popup-state";
-
-// async function addComment(userId, postId, comment) {
-//   console.log(postId);
-//   const authTokens = JSON.parse(localStorage.getItem("authTokens"));
-//   console.log(authTokens.access);
-
-//   const header = {
-//     "Content-Type": "application/json",
-//     Authorization: "Bearer " + authTokens.access,
-//   };
-
-//   await axios.post(
-//     BasePath + `/posts/` + postId + "/comments",
-//     {
-//       author: userId,
-//       comment: comment,
-//       contentType: "text/plain",
-//     },
-//     header
-//   );
-//   var paper = document.getElementById("post-comments-" + postId);
-//   document.createElement("div");
-//   paper.prependChild(document.createTextNode("hello"));
-//   //document.location.reload(true);
-// }
+import Posts from "../pages/modal/Posts";
+import EditComment from "../pages/modal/EditComment";
 
 async function addComment(userId, postId, comment) {
   console.log(postId);
@@ -120,6 +97,7 @@ function Comment({ post, comment, userId, userName }) {
   const [anchorElComments, setAnchorElComments] = useState(null);
   // const [anchorComments, setAnchorComments] = useState(null);
   // const [commentSection, setCommentSection] = useState([]);
+  const [open, setCommentEditOpen] = useState(false);
 
   const isCommentMenuOpen = Boolean(anchorElComments);
   // const isCommentsOpen = Boolean(expanded);
@@ -140,12 +118,13 @@ function Comment({ post, comment, userId, userName }) {
     };
 
     const handleEdit = (popupState) => {
-      // add edit comment function here
-
+      console.log("I am here how many times I have")
       popupState.close();
+      setCommentEditOpen(true);
     };
 
     return (
+      <>
       <PopupState variant="popover">
         {(popupState) => (
           <React.Fragment>
@@ -183,6 +162,8 @@ function Comment({ post, comment, userId, userName }) {
           </React.Fragment>
         )}
       </PopupState>
+      <EditComment open={open} setCommentEditOpen={setCommentEditOpen} />
+      </>
     );
   }
 
@@ -341,7 +322,10 @@ function CreateArray() {
   const [postList, setPostList] = useState([]);
   const [wasLast, setWasLast] = useState(false);
 
-  const markdown = `**Just** a link: [https://reactjs.com](https://reactjs.com.)`;
+  const [open, setOpen] = useState(false);
+  const [PostType, setType] = useState("");
+
+ 
 
   const [anchorElMenu, setAnchorElMenu] = useState(null);
   const [menuId, setMenuId] = useState(0);
@@ -409,17 +393,20 @@ function CreateArray() {
   //   </Collapse>
   // );
 
+
   let menuIdPost = "primary-menu-post";
-  function renderMenuPost(postId) {
+  function renderMenuPost(post) {
     const handleDelete = (popupState) => {
-      deletePost(postId);
+      deletePost(post.id);
       popupState.close();
     };
 
-    const handleEdit = (popupState) => {
+    const handleEdit = (popupState, postType) => {
       // add edit post function here
-
+      console.log("I am here how many times I have")
       popupState.close();
+      setType(postType);
+      setOpen(true);
     };
 
     return (
@@ -452,7 +439,7 @@ function CreateArray() {
               // open={isMenuOpen}
               // onClose={handleMenuClose}
             >
-              <MenuItem onClick={() => handleEdit(popupState)}> Edit</MenuItem>
+              <MenuItem onClick={() => handleEdit(popupState, post.contentType)}> Edit</MenuItem>
               <MenuItem onClick={() => handleDelete(popupState)}>
                 {" "}
                 Delete
@@ -743,7 +730,7 @@ function CreateArray() {
                 ></Avatar>
               }
               action={
-                userId === post.author_id ? renderMenuPost(post.id) : null
+                userId === post.author_id ? renderMenuPost(post) : null
               }
               title={post.title + " - " + post.author_name}
               subheader={format(new Date(post.datePublished), "MMMM d, yyyy")}
@@ -893,6 +880,7 @@ function CreateArray() {
           </Card>
         </Container>
       </Box>
+      <Posts postType={PostType} open={open} setOpen={setOpen} />
     </div>
   ));
 
@@ -900,6 +888,7 @@ function CreateArray() {
 }
 
 const HomePage = (props) => {
+ 
   return (
     <div>
       <Box
@@ -914,6 +903,7 @@ const HomePage = (props) => {
       >
         <CreateArray />
       </Box>
+      
     </div>
   );
 };
