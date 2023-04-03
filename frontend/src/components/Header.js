@@ -116,13 +116,19 @@ export default function Header() {
       open={isPostOpen}
       onClose={handlePostMenuClose}
     >
-      <MenuItem onClick={() => handlePost("text")}> Post thoughts</MenuItem>
-      <MenuItem onClick={() => handlePost("markdown")}> Markdown Post</MenuItem>
+      <MenuItem onClick={() => handlePost("text/plain")}>
+        {" "}
+        Post thoughts
+      </MenuItem>
+      <MenuItem onClick={() => handlePost("text/markdown")}>
+        {" "}
+        Markdown Post
+      </MenuItem>
       {/* <MenuItem onClick={() => handlePost("image")}>
         {" "}
         Post an image
       </MenuItem> */}
-      <MenuItem onClick={() => handlePost("textImage")}>
+      <MenuItem onClick={() => handlePost("image/png;base64")}>
         {" "}
         Post Image with caption
       </MenuItem>
@@ -334,25 +340,6 @@ export default function Header() {
         </Box>
         <Posts postType={PostType} open={open} setOpen={setOpen} />
       </>
-      {/* // ) : (
-      //   <div className="header">
-      //     <nav className="navbar">
-      //       <ul>
-      //         <li>
-      //           <Link href="/">
-      //             <button>Home</button>
-      //           </Link>
-      //         </li>
-      //         <li>
-      //           <Link href="/login">
-      //             <Button>Login</Button>
-      //           </Link>
-      //         </li>
-      //         {user && <p>Hello {user.username}</p>}
-      //       </ul>
-      //     </nav>
-      //   </div>
-      // )} */}
     </>
   );
 }
