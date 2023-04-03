@@ -69,23 +69,24 @@ class PostView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     @extend_schema(request=PostSerializer, responses=PostSerializer)
-    def patch(self, request, post_id, format=None):
-        if Post.objects.filter(pk = post_id).exists():
-            updated = request.data.copy()
+    def patch(self, request, pk, format=None):
+        
+        if (Post.objects.get(pk=pk)):
+           
 
-            if updated['contentType'][:5] == "image" and 'image_file' in updated and updated['image_file'] != None:
-                ext = updated['contentType'][6:]
+            # if updated['contentType'][:5] == "image" and 'image_file' in updated and updated['image_file'] != None:
+            #     ext = updated['contentType'][6:]
                 
-                format, imageDecoded = (updated['image_file']).split(';base64,') 
-                data = ContentFile(base64.b64decode(imageDecoded), name="postImage." + ext)
-                updated['image_file'] = data
+            #     format, imageDecoded = (updated['image_file']).split(';base64,') 
+            #     data = ContentFile(base64.b64decode(imageDecoded), name="postImage." + ext)
+            #     updated['image_file'] = data
 
-            originalPost = self.get_object(post_id)
-            serializer = PostSerializer(originalPost, data=updated)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            originalPost = self.get_object(pk)
+            serializer = PostSerializer(originalPost, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            
         return Response({'detail': 'Post not found.'}, status=status.HTTP_404_NOT_FOUND)
     
 class AuthorPostList(APIView):
