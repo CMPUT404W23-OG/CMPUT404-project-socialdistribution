@@ -1597,6 +1597,69 @@ paths:
               schema:
                 $ref: '#/components/schemas/remoteAuthor'
           description: ''
+  /service/authors/{AUTHOR_ID}/inbox:
+    post:
+      operationId: service_authors_inbox_create
+      description: Post follow request, Post, comment, like to remote server
+      parameters:
+      - in: path
+        name: AUTHOR_ID
+        schema:
+          type: string
+        required: true
+      tags:
+      - service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+              description: Unspecified request body
+            examples:
+              PostFollowRequest,Post,Comment,LikeToRemoteServer:
+                summary: Post follow request, Post, comment, like to remote server
+                description: Post follow request, Post, comment, like to remote server,
+                  Use same body as what you would GET from post, comment, like, follow
+                  request
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              additionalProperties: {}
+              description: Unspecified request body
+          multipart/form-data:
+            schema:
+              type: object
+              additionalProperties: {}
+              description: Unspecified request body
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: ' Post follow request, Post, comment, like to remote server'
+        '401':
+          description: Unauthorized
+  /service/authors/{AUTHOR_ID}/likes/:
+    get:
+      operationId: service_authors_likes_retrieve
+      description: Get all likes from remote server for a given author
+      parameters:
+      - in: path
+        name: AUTHOR_ID
+        schema:
+          type: string
+        required: true
+      tags:
+      - service
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: ' List of likes from remote server for a given author'
+        '401':
+          description: Unauthorized
   /service/authors/{AUTHOR_ID}/posts/:
     get:
       operationId: service_authors_posts_retrieve
@@ -1615,6 +1678,113 @@ paths:
       responses:
         '200':
           description: ' List of posts from remote server'
+        '401':
+          description: Unauthorized
+  /service/authors/{AUTHOR_ID}/posts/{POST_ID}:
+    get:
+      operationId: remote post detail
+      description: Get a post with a given id from remote server
+      parameters:
+      - in: path
+        name: AUTHOR_ID
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: POST_ID
+        schema:
+          type: string
+        required: true
+      tags:
+      - service
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/remotePosts'
+          description: ''
+  /service/authors/{AUTHOR_ID}/posts/{POST_ID}/comments/:
+    get:
+      operationId: service_authors_posts_comments_retrieve
+      description: Get all comments from remote server for a given post
+      parameters:
+      - in: path
+        name: AUTHOR_ID
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: POST_ID
+        schema:
+          type: string
+        required: true
+      tags:
+      - service
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: ' List of comments from remote server for a given post'
+        '401':
+          description: Unauthorized
+  /service/authors/{AUTHOR_ID}/posts/{POST_ID}/comments/{COMMENT_ID}/likes/:
+    get:
+      operationId: service_authors_posts_comments_likes_retrieve
+      description: Get all likes from remote server for a given comment
+      parameters:
+      - in: path
+        name: AUTHOR_ID
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: COMMENT_ID
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: POST_ID
+        schema:
+          type: string
+        required: true
+      tags:
+      - service
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: ' List of likes from remote server for a given comment'
+        '401':
+          description: Unauthorized
+  /service/authors/{AUTHOR_ID}/posts/{POST_ID}/likes/:
+    get:
+      operationId: service_authors_posts_likes_retrieve
+      description: Get all likes from remote server for a given post
+      parameters:
+      - in: path
+        name: AUTHOR_ID
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: POST_ID
+        schema:
+          type: string
+        required: true
+      tags:
+      - service
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: ' List of likes from remote server for a given post'
         '401':
           description: Unauthorized
 components:
@@ -1953,6 +2123,53 @@ components:
       required:
       - displayName
       - id
+    remotePosts:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        id:
+          type: integer
+          readOnly: true
+        source:
+          type: string
+          default: http://31552.yeg.rac.sh
+        origin:
+          type: string
+          default: http://31552.yeg.rac.sh
+        description:
+          type: string
+          maxLength: 200
+        contentType:
+          type: string
+          maxLength: 200
+        content:
+          type: string
+          nullable: true
+        author:
+          $ref: '#/components/schemas/remoteAuthor'
+        categories:
+          type: array
+          items:
+            type: string
+            maxLength: 200
+        published:
+          type: string
+          format: date-time
+          readOnly: true
+          title: DatePublished
+        visibility:
+          type: string
+          maxLength: 200
+        unlisted:
+          type: boolean
+      required:
+      - author
+      - description
+      - id
+      - published
+      - title
   securitySchemes:
     jwtAuth:
       type: http

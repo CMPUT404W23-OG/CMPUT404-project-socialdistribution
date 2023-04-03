@@ -61,8 +61,6 @@ const Followers = () => {
       <h3
         style={{
           textAlign: "center",
-          fontStyle: "italic",
-          fontFamily: "serif",
           marginTop: "4em",
         }}
       >
@@ -87,13 +85,14 @@ const Followers = () => {
                 bgcolor: "grey.200",
               },
               border: "1px solid grey",
-              borderRadius: "2px",
-              marginBottom: "0.2em",
+              borderRadius: "1em",
+              marginBottom: "0.5em",
               bgcolor: "background.paper",
+              height: "5em",
             }}
             secondaryAction={
               <IconButton
-                sx={{ "&:hover": { color: "red" } }}
+                sx={{ "&:hover": { color: "red", width: "2em" } }}
                 aria-label="comment"
                 onClick={() => handleDelete(follower.id)}
               >
@@ -102,15 +101,16 @@ const Followers = () => {
             }
           >
             <Avatar
+              src={follower.follower.profile_image_url}
               sx={{
                 bgcolor: "blue",
                 marginLeft: "0.5em",
                 marginRight: "0.5em",
+                height: "3em",
+                width: "3em",
               }}
               alt={follower.follower.username}
-            >
-              {follower.follower.username.charAt(0).toUpperCase()}
-            </Avatar>
+            ></Avatar>
             <ListItemText primary={follower.follower.username} />
           </ListItem>
         ))}

@@ -2,8 +2,8 @@ import { useContext } from "react";
 import AuthContext from "../context/AuthContext";
 import "../themes/header.css";
 import * as React from "react";
-import {useState} from "react";
-import { Link} from "@mui/material";
+import { useState } from "react";
+import { Link } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -52,8 +52,7 @@ export default function Header() {
     handlePostMenuClose();
     setType(postType);
     setOpen(true);
-   
-  };
+  }
 
   const handleLogout = () => {
     logoutUser();
@@ -95,15 +94,8 @@ export default function Header() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleProfile}>
-        {" "}
-        Profile
-      </MenuItem>
-      <MenuItem onClick={handleLogout}>
-        {" "}
-        Logout
-      </MenuItem>
-      
+      <MenuItem onClick={handleProfile}> Profile</MenuItem>
+      <MenuItem onClick={handleLogout}> Logout</MenuItem>
     </Menu>
   );
 
@@ -124,21 +116,15 @@ export default function Header() {
       open={isPostOpen}
       onClose={handlePostMenuClose}
     >
-      <MenuItem onClick={() => handlePost("text")}>
-        {" "}
-       Post thoughts
-      </MenuItem>
-      <MenuItem onClick={() => handlePost("markdown")}>
-        {" "}
-        Markdown Post
-      </MenuItem>
+      <MenuItem onClick={() => handlePost("text")}> Post thoughts</MenuItem>
+      <MenuItem onClick={() => handlePost("markdown")}> Markdown Post</MenuItem>
       {/* <MenuItem onClick={() => handlePost("image")}>
         {" "}
         Post an image
       </MenuItem> */}
       <MenuItem onClick={() => handlePost("textImage")}>
         {" "}
-        Post Image with caption 
+        Post Image with caption
       </MenuItem>
     </Menu>
   );
@@ -195,12 +181,12 @@ export default function Header() {
       <MenuItem>
         <IconButton
           size="large"
-          aria-label="show 17 new notifications"
+          // aria-label="show 17 new notifications"
           color="inherit"
         >
-          <Badge badgeContent={17} color="error">
-            <NotificationsIcon />
-          </Badge>
+          {/* <Badge badgeContent={17} color="error"> */}
+          <NotificationsIcon />
+          {/* </Badge> */}
         </IconButton>
         <Link href="/inbox" color="inherit">
           Notifications
@@ -224,8 +210,8 @@ export default function Header() {
   return (
     <>
       {/* {user ? ( */}
-        <>
-        <Box sx={{ flexGrow: 1}}>
+      <>
+        <Box sx={{ flexGrow: 1 }}>
           <AppBar position="fixed">
             <Toolbar>
               {/* <IconButton
@@ -238,116 +224,116 @@ export default function Header() {
                 <MenuIcon />
               </IconButton> */}
               <Link href="/" color="inherit" sx={{ textDecoration: "none" }}>
-              <Typography
-                variant="h6"
-                noWrap
-                component="div"
-                sx={{ display: { xs: "none", sm: "block" } }}
-              >
-                Social Distrubution
-              </Typography>
+                <Typography
+                  variant="h6"
+                  noWrap
+                  component="div"
+                  sx={{ display: { xs: "none", sm: "block" } }}
+                >
+                  Social Distrubution
+                </Typography>
               </Link>
               {user ? (
                 <>
-              <Box sx={{ flexGrow: 1 }} />
-              <Box sx={{ display: { xs: "none", md: "flex" } }}>
-                <IconButton
-                    size="large"
-                    // edge="end"
-                    aria-label="posts menu"
-                    aria-controls={menuIdPost}
-                    aria-haspopup="true"
-                    onClick={handlePostMenuOpen}
-                    color="inherit"
-                  >
-                    <Add />
-                  </IconButton>
+                  <Box sx={{ flexGrow: 1 }} />
+                  <Box sx={{ display: { xs: "none", md: "flex" } }}>
+                    <IconButton
+                      size="large"
+                      // edge="end"
+                      aria-label="posts menu"
+                      aria-controls={menuIdPost}
+                      aria-haspopup="true"
+                      onClick={handlePostMenuOpen}
+                      color="inherit"
+                    >
+                      <Add />
+                    </IconButton>
 
-                <IconButton size="large" color="inherit">
-                  <Link href="/" color="inherit">
-                    {" "}
-                    <Home />
-                  </Link>
-                </IconButton>
+                    <IconButton size="large" color="inherit">
+                      <Link href="/" color="inherit">
+                        {" "}
+                        <Home />
+                      </Link>
+                    </IconButton>
 
-                <IconButton 
-                size="large" color="inherit">
-                  <Link href="/search" color="inherit">
-                    {" "}
-                    <People />
-                  </Link>
-                </IconButton>
+                    <IconButton size="large" color="inherit">
+                      <Link href="/search" color="inherit">
+                        {" "}
+                        <People />
+                      </Link>
+                    </IconButton>
 
-                  {/* <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+                    {/* <IconButton size="large" aria-label="show 4 new mails" color="inherit">
                 <Badge badgeContent={4} color="error">
                   <MailIcon />
                 </Badge>
                </IconButton> */}
 
-                <IconButton
-                  size="large"
-                  aria-label="show 17 new notifications"
-                  color="inherit"
-                >
-                  <Badge badgeContent={17} color="error">
-                    <Link href="/inbox" color="inherit">
-                      <NotificationsIcon />
-                    </Link>
-                  </Badge>
-                </IconButton>
+                    <IconButton
+                      size="large"
+                      // aria-label="show 17 new notifications"
+                      color="inherit"
+                    >
+                      {/* <Badge badgeContent={17} color="error"> */}
+                      <Link href="/inbox" color="inherit">
+                        <NotificationsIcon />
+                      </Link>
+                      {/* </Badge> */}
+                    </IconButton>
 
-                <IconButton
-                  size="large"
-                  edge="end"
-                  aria-label="account of current user"
-                  aria-controls={menuId}
-                  aria-haspopup="true"
-                  onClick={handleProfileMenuOpen}
-                  color="inherit"
-                >
-                  <AccountCircle />
-                </IconButton>
-              </Box>
-              <Box sx={{ display: { xs: "flex", md: "none" } }}>
-                <IconButton
-                  size="large"
-                  aria-label="show more"
-                  aria-controls={mobileMenuId}
-                  aria-haspopup="true"
-                  onClick={handleMobileMenuOpen}
-                  color="inherit"
-                >
-                  <MoreIcon />
-                </IconButton>
-              </Box>
-              </>
+                    <IconButton
+                      size="large"
+                      edge="end"
+                      aria-label="account of current user"
+                      aria-controls={menuId}
+                      aria-haspopup="true"
+                      onClick={handleProfileMenuOpen}
+                      color="inherit"
+                    >
+                      <AccountCircle />
+                    </IconButton>
+                  </Box>
+                  <Box sx={{ display: { xs: "flex", md: "none" } }}>
+                    <IconButton
+                      size="large"
+                      aria-label="show more"
+                      aria-controls={mobileMenuId}
+                      aria-haspopup="true"
+                      onClick={handleMobileMenuOpen}
+                      color="inherit"
+                    >
+                      <MoreIcon />
+                    </IconButton>
+                  </Box>
+                </>
               ) : (
                 <>
-                <Box sx={{ flexGrow: 1 }} />
-              <Box sx={{ display: { xs: "none", md: "flex" } }}>
+                  <Box sx={{ flexGrow: 1 }} />
+                  <Box sx={{ display: { xs: "none", md: "flex" } }}>
+                    <IconButton size="large" color="inherit">
+                      <Link href="/" color="inherit">
+                        {" "}
+                        <Home />
+                      </Link>
+                    </IconButton>
 
-                <IconButton size="large" color="inherit">
-                  <Link href="/" color="inherit">
-                    {" "}
-                    <Home />
-                  </Link>
-                </IconButton>
-
-                <Link href="/login" sx={{color: "inherit", padding: "20px"}}>
-                  Login
-                </Link>
-              </Box>
-              </>
+                    <Link
+                      href="/login"
+                      sx={{ color: "inherit", padding: "20px" }}
+                    >
+                      Login
+                    </Link>
+                  </Box>
+                </>
               )}
-
             </Toolbar>
           </AppBar>
           {renderMobileMenu}
           {renderMenuPost}
           {renderMenu}
         </Box>
-        <Posts postType={PostType} open={open} setOpen={setOpen}/>
-        </>
+        <Posts postType={PostType} open={open} setOpen={setOpen} />
+      </>
       {/* // ) : (
       //   <div className="header">
       //     <nav className="navbar">
