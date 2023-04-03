@@ -48,6 +48,33 @@ class TestCase(TestCase):
         self.assertEqual(post.body, self.post_data['body'])
         self.assertEqual(post.author_id, self.post_data['author_id'])
 
+    def test_post_model_update(self):
+        '''
+        Test for post edit
+        '''
+        author = Author.objects.createAuthor(**self.author_data)
+        author.save()
+        self.post_data["author_id"] = author
+        post = Post.objects.create(**self.post_data)
+        post.title = "Test Post Edit"
+        post.body = "Test post edit body"
+        post.description = "Test post edit description"
+        post.save()
+        self.assertEqual(post.title, "Test Post Edit")
+        self.assertEqual(post.body, "Test post edit body")
+        self.assertEqual(post.description, "Test post edit description")
+    
+    def test_post_mode_delete(self):
+        '''
+        Test for post delete
+        '''
+        author = Author.objects.createAuthor(**self.author_data)
+        author.save()
+        self.post_data["author_id"] = author
+        post = Post.objects.create(**self.post_data)
+        post.delete()
+        self.assertEqual(Post.objects.all().count(), 0)
+
     def test_comment_model_create(self):
         '''
         Test for comment creation
