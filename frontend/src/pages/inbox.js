@@ -26,10 +26,9 @@ export default function Inbox() {
   const [comments, setComments] = useState([]);
   const [likes, setLikes] = useState([]);
   const [myPosts, setMyPosts] = useState([]);
-
+  let listOfPosts = [];
   useEffect(() => {
     const fetchData = () => {
-      let listOfPosts = [];
       Promise.all([
         fetch(BasePath + "/requests_received/" + user.user_id + "/", {
           method: "GET",
@@ -91,17 +90,27 @@ export default function Inbox() {
               console.log("Following post list: ", followingPostList);
 
               console.log("Posts: ", followingPostList);
-              listOfPosts = [];
+
               for (let i = 0; i < followingPostList.length; i++) {
                 for (let j = 0; j < followingPostList[i].length; j++) {
-                  listOfPosts.push(followingPostList[i][j]);
+                  let found = false;
+                  for (let k = 0; k < listOfPosts.length; k++) {
+                    if (listOfPosts[k].id === followingPostList[i][j].id) {
+                      found = true;
+                    }
+                  }
+                  if (!found) {
+                    listOfPosts.push(followingPostList[i][j]);
+                  }
                 }
               }
               listOfPosts.sort((a, b) => {
                 return new Date(b.datePublished) - new Date(a.datePublished);
               });
               console.log("List of posts: ", listOfPosts);
-              setPosts(listOfPosts);
+              if (listOfPosts.length > posts.length) {
+                setPosts(listOfPosts);
+              }
             });
           }
 
@@ -122,29 +131,40 @@ export default function Inbox() {
               if (!myPostComments[i].detail) {
                 try {
                   for (let j = 0; j < myPostComments[i].length; j++) {
-                    listOfPosts.push({
-                      id: myPostComments[i][j].post,
-                      author_image_url:
-                        myPostComments[i][j].author.profile_image_url,
-                      author_name: myPostComments[i][j].author.username,
-                      author_id: myPostComments[i][j].author.id,
-                      title:
-                        myPostComments[i][j].author.username +
-                        " commented on your post ",
-                      body: myPostComments[i][j].comment,
-                    });
+                    let found = false;
+                    for (let k = 0; k < listOfPosts.length; k++) {
+                      if (listOfPosts[k].id === myPostComments[i][j].post) {
+                        found = true;
+                      }
+                    }
+                    if (!found) {
+                      listOfPosts.push({
+                        id: myPostComments[i][j].post,
+                        author_image_url:
+                          myPostComments[i][j].author.profile_image_url,
+                        author_name: myPostComments[i][j].author.username,
+                        author_id: myPostComments[i][j].author.id,
+                        title:
+                          myPostComments[i][j].author.username +
+                          " commented on your post ",
+                        body: myPostComments[i][j].comment,
+                      });
+                    }
                   }
                 } catch {
                   console.log("Error in adding comment to list of posts");
                 }
 
                 console.log("Just update posts");
-                setPosts(listOfPosts);
+
                 // console.log("new post list  : ", listOfPosts);
               }
             }
 
-            setPosts(listOfPosts);
+            // if (listOfPosts.length > posts.length) {
+            //   setPosts(listOfPosts);
+            // }
+
             // console.log("List of posts after setting comments : ", listOfPosts);
           });
           const myPostLikesPromises = myPostsData.map((myPosts) =>
@@ -164,34 +184,45 @@ export default function Inbox() {
               if (!myPostLikes[i].detail) {
                 try {
                   for (let j = 0; j < myPostLikes[i].length; j++) {
-                    listOfPosts.push({
-                      id: myPostLikes[i][j].post,
-                      author_image_url:
-                        myPostLikes[i][j].author.profile_image_url,
-                      author_name: myPostLikes[i][j].author.username,
-                      author_id: myPostLikes[i][j].author.id,
-                      title:
-                        myPostLikes[i][j].author.username + " liked your post ",
-                      body: myPostLikes[i][j].comment,
-                    });
+                    let found = false;
+                    for (let k = 0; k < listOfPosts.length; k++) {
+                      if (listOfPosts[k].id === myPostLikes[i][j].post) {
+                        found = true;
+                      }
+                    }
+                    if (!found) {
+                      listOfPosts.push({
+                        id: myPostLikes[i][j].post,
+                        author_image_url:
+                          myPostLikes[i][j].author.profile_image_url,
+                        author_name: myPostLikes[i][j].author.username,
+                        author_id: myPostLikes[i][j].author.id,
+                        title:
+                          myPostLikes[i][j].author.username +
+                          " liked your post ",
+                        body: myPostLikes[i][j].comment,
+                      });
+                    }
                   }
                 } catch {
                   console.log("Error in adding like to list of posts");
                 }
 
-                console.log("Just update posts");
-                setPosts(listOfPosts);
                 // console.log("new post list  : ", listOfPosts);
               }
             }
           });
-          setMyPosts(myPostsData);
+
+          if (listOfPosts.length > posts.length) {
+            setPosts(listOfPosts);
+          }
         })
         .catch((error) => console.log(error));
     };
 
     // fetch data and update state initially
     fetchData();
+
     // fetch data and update state every 10 seconds
     const interval = setInterval(() => {
       fetchData();
