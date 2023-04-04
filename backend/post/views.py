@@ -151,19 +151,19 @@ class PostList(APIView):
                             post = Post.objects.get(remote_id=remote_post['id'])
                         
                         except :
+                            if remote_post['contentType'] != "image/jpeg":
+                            
+                                post_author_id = remote_author.id
+                                post_author_name = remote_author.username
+                                post_description = remote_post['description']
+                                post_title = remote_post['title']
+                                post_body = remote_post['content']
+                                post_content_type = remote_post['contentType']
+                                post_remote_id = remote_post['id']
 
-                    
-                            post_author_id = remote_author.id
-                            post_author_name = remote_author.username
-                            post_description = remote_post['description']
-                            post_title = remote_post['title']
-                            post_body = remote_post['content']
-                            post_content_type = remote_post['contentType']
-                            post_remote_id = remote_post['id']
-
-                            serializer_post = PostSerializer(data={'author_id': post_author_id, 'author_name': post_author_name, 'description': post_description, 'title': post_title,'body': post_body, 'contentType': post_content_type, 'remote_id': post_remote_id })
-                            serializer_post.is_valid(raise_exception=True)
-                            serializer_post.save()
+                                serializer_post = PostSerializer(data={'author_id': post_author_id, 'author_name': post_author_name, 'description': post_description, 'title': post_title,'body': post_body, 'contentType': post_content_type, 'remote_id': post_remote_id })
+                                serializer_post.is_valid(raise_exception=True)
+                                serializer_post.save()
 
                     
 
