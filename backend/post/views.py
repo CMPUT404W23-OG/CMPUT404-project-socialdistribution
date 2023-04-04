@@ -77,11 +77,12 @@ class PostView(APIView):
         post = Post.objects.get(pk=pk)
         updated = request.data.copy()
         updated['author_id'] = post.author_id
-        
-        if updated['contentType'][:5] == "image" and 'image_file' in updated and updated['image_file'] != None:
+
+        print(updated)
+        if 'image_file' in updated and updated['image_file'] != None:
             ext = updated['contentType'][6:]
-            
-            format, imageDecoded = (updated['image_file']).split(';base64,') 
+
+            format, imageDecoded = (updated['image_file']).split(';base64,')
             data = ContentFile(base64.b64decode(imageDecoded), name="postImage." + ext)
             updated['image_file'] = data
 
