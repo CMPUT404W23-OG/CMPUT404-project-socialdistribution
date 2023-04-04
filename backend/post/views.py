@@ -76,7 +76,7 @@ class PostView(APIView):
     def patch(self, request, pk, format=None):
         post = Post.objects.get(pk=pk)
         updated = request.data.copy()
-        updated['author_id'] = post.author_id
+        # updated['author_id'] = post.author_id
 
         print(updated)
         if 'image_file' in updated and updated['image_file'] != None:
