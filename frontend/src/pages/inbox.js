@@ -133,7 +133,11 @@ export default function Inbox() {
                   for (let j = 0; j < myPostComments[i].length; j++) {
                     let found = false;
                     for (let k = 0; k < listOfPosts.length; k++) {
-                      if (listOfPosts[k].id === myPostComments[i][j].post) {
+                      if (
+                        listOfPosts[k].id === myPostComments[i][j].post &&
+                        listOfPosts[k].author_id ===
+                          myPostComments[i][j].author.id
+                      ) {
                         found = true;
                       }
                     }
@@ -186,7 +190,10 @@ export default function Inbox() {
                   for (let j = 0; j < myPostLikes[i].length; j++) {
                     let found = false;
                     for (let k = 0; k < listOfPosts.length; k++) {
-                      if (listOfPosts[k].id === myPostLikes[i][j].post) {
+                      if (
+                        listOfPosts[k].id === myPostLikes[i][j].post &&
+                        listOfPosts[k].author_id === myPostLikes[i][j].author.id
+                      ) {
                         found = true;
                       }
                     }
