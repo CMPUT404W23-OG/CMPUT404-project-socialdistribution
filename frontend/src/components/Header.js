@@ -230,7 +230,7 @@ export default function Header() {
                   component="div"
                   sx={{ display: { xs: "none", sm: "block" } }}
                 >
-                  Social Distrubution
+                  Social Distribution
                 </Typography>
               </Link>
               {user ? (
