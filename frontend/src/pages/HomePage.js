@@ -363,7 +363,7 @@ function RenderMenuPost({ post }) {
           </React.Fragment>
         )}
       </PopupState>
-      <Posts postType={type} open={open} setOpen={setOpen} post={post} />
+      <Posts postType={type} open={open} setOpen={setOpen} edit={true} post={post} />
     </>
   );
 }

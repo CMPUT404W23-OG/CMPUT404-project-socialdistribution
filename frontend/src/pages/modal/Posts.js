@@ -18,7 +18,7 @@ import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 
-export default function PostsDialog({ postType, open, setOpen }) {
+export default function PostsDialog({ postType, open, setOpen, edit, post }) {
   const navigate = useNavigate();
   var { user } = useContext(AuthContext);
   const [postTitle, setTitle] = useState("");
@@ -63,6 +63,13 @@ export default function PostsDialog({ postType, open, setOpen }) {
     image_file: fileSelected,
   };
 
+  var editPayload = {
+    author_id: userId,
+    visibility: "PUBLIC",
+    public: true,
+    contentType: cont_type,
+  };
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -70,16 +77,42 @@ export default function PostsDialog({ postType, open, setOpen }) {
   const handleChange = (event) => {
     if (event.target.checked) {
       payload.visibility = "FRIENDS";
+      editPayload.visibility = "FRIENDS";
     } else {
       payload.visibility = "PUBLIC";
+      editPayload.visibility = "PUBLIC";
     }
   };
 
   const SubmitContent = async () => {
     // setSubmitted(true);
-    await axios.post(BasePath + `/posts/create/` + userId, payload, headers);
-    navigate("/");
-    window.location.reload();
+    if (edit) {
+      if (postTitle !== "") {
+        editPayload.title = postTitle;
+      }
+      if (postText !== "") {
+        editPayload.body = postText;
+      }
+      if (imageUrl !== "") {
+        editPayload.image_url = imageUrl;
+      } else if (fileSelected !== null) {
+        editPayload.image_file = fileSelected;
+        editPayload.image_url = "";
+      }
+
+      console.log(editPayload);
+      await axios.patch(
+        BasePath + `/posts/` + post.id + `/`,
+        editPayload,
+        headers
+      );
+      //   navigate("/");
+      //   window.location.reload();
+    } else {
+      await axios.post(BasePath + `/posts/create/` + userId, payload, headers);
+      navigate("/");
+      window.location.reload();
+    }
     handleClose();
   };
 
@@ -139,6 +172,7 @@ export default function PostsDialog({ postType, open, setOpen }) {
               fullWidth
               variant="outlined"
               sx={{ width: "100%" }}
+              defaultValue={post ? post.title : ""}
               onChange={(e) => setTitle(e.target.value)}
             />
             {postType === "text/plain" ||
@@ -148,11 +182,12 @@ export default function PostsDialog({ postType, open, setOpen }) {
                 // error={submitted}
                 autoFocus
                 margin="dense"
-                id="email"
+                id="text"
                 label="What's on your mind?"
-                type="email"
+                type="text"
                 fullWidth
                 variant="outlined"
+                defaultValue={post ? post.body : ""}
                 sx={{ width: "100%" }}
                 multiline
                 rows={5}
@@ -172,6 +207,7 @@ export default function PostsDialog({ postType, open, setOpen }) {
                   type="email"
                   fullWidth
                   variant="outlined"
+                  defaultValue={post ? post.image_url : ""}
                   sx={{ width: "100%" }}
                   onChange={(e) => setUrl(e.target.value)}
                 />
@@ -192,6 +228,22 @@ export default function PostsDialog({ postType, open, setOpen }) {
                   onChange={uploadImage}
                   ref={fileInput}
                 />
+                {edit ? (
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "grey",
+                      marginTop: "10px",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    Exisitng file:-{" "}
+                    {post ? post.image_file : "No Uploaded File"}
+                  </Typography>
+                ) : (
+                  ""
+                )}
+
                 {/* <Button variant="contained" sx={{width: "100%"}} onClick={handleClick}>Upload Image</Button> */}
               </>
             ) : (
@@ -199,7 +251,18 @@ export default function PostsDialog({ postType, open, setOpen }) {
             )}
             <FormGroup>
               <FormControlLabel
-                control={<Checkbox onChange={handleChange} />}
+                control={
+                  <Checkbox
+                    onChange={handleChange}
+                    defaultChecked={
+                      post
+                        ? post.visibility === "FRIENDS"
+                          ? true
+                          : false
+                        : false
+                    }
+                  />
+                }
                 label="Private"
               />
             </FormGroup>

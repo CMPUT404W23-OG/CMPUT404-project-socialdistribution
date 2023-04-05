@@ -338,7 +338,7 @@ export default function Header() {
           {renderMenuPost}
           {renderMenu}
         </Box>
-        <Posts postType={PostType} open={open} setOpen={setOpen} />
+        <Posts postType={PostType} open={open} setOpen={setOpen} edit={false}/>
       </>
     </>
   );
