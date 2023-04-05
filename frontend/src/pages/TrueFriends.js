@@ -37,8 +37,6 @@ const TrueFriends = () => {
       <h3
         style={{
           textAlign: "center",
-          fontStyle: "italic",
-          fontFamily: "serif",
           marginTop: "4em",
         }}
       >
@@ -63,21 +61,23 @@ const TrueFriends = () => {
                 bgcolor: "grey.200",
               },
               border: "1px solid grey",
-              borderRadius: "2px",
-              marginBottom: "0.2em",
+              borderRadius: "1em",
+              marginBottom: "0.5em",
               bgcolor: "background.paper",
+              height: "5em",
             }}
           >
             <Avatar
+              src={trueFriends.follower.profile_image_url}
               sx={{
                 bgcolor: "blue",
                 marginLeft: "0.5em",
                 marginRight: "0.5em",
+                height: "3em",
+                width: "3em",
               }}
               alt={trueFriends.follower.username}
-            >
-              {trueFriends.follower.username.charAt(0).toUpperCase()}
-            </Avatar>
+            ></Avatar>
             <ListItemText primary={trueFriends.follower.username} />
           </ListItem>
         ))}

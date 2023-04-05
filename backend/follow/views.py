@@ -1,4 +1,5 @@
 import datetime
+from requests.auth import HTTPBasicAuth
 import pytz
 from django.http import Http404
 from rest_framework.views import APIView
@@ -16,6 +17,7 @@ from .models import Follow, Request
 from drf_spectacular.utils import extend_schema
 import threading
 import requests
+from api.models import Incoming_Node, Outgoing_Node
 User = get_user_model()
 
 class FollowingList(APIView):
@@ -399,6 +401,8 @@ class FollowPost(APIView):
                 # change follow.object
                 follow_post = Follow.objects.send_follow_request(follower=follower, following=following)
                 serializer = FollowPostSerializer(follow_post)
+                thread = threading.Thread(target=self.sendFollowRequestRemote, args=(follower, following))
+                thread.start()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             except AlreadyExistError:
                 return Response({'detail': 'Follow request already exist.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -406,3 +410,78 @@ class FollowPost(APIView):
         else:
             return Response({'detail': 'Follower and Following not found.'}, status=status.HTTP_404_NOT_FOUND)
         
+
+    def sendFollowRequestRemote(self, follower, following):
+        """
+        Send a follow request to a remote user.
+        """
+        # check the following has a remote id
+        if following.remote_id:
+            url = following.remote_id + "/inbox/"
+
+            post_body = {
+                "type": "Follow",
+                "summary": follower.username + " wants to follow " + following.remote_name,
+                "actor":{
+                    "type" : "author",
+                    "id" : follower.id,
+                    "host":"http://31552.yeg.rac.sh",
+                    "displayName": follower.username,
+                    "url" : "http://31552.yeg.rac.sh/author/" + str(follower.id),
+                    "github": "https://www.github.com/" + follower.githubId,
+                    "profileImage" :follower.profile_image_url,
+                },
+                "object":{
+                    "type" : "author",
+                    "id" : following.remote_id,
+                    "host":following.host,
+                    "displayName": following.username,
+                    "url" : following.url,
+                    "github": following.githubId,
+                    "profileImage" :following.profile_image_url,
+                }
+            }
+
+            remote_nodes = Outgoing_Node.objects.all()
+            node_url = None
+            node_username = None
+            node_password = None
+            referer = None
+
+            for node in remote_nodes:
+                if following.host == node.url:
+                    node_url = node.url
+                    node_username = node.Username
+                    node_password = node.Password
+                    referer = node.url + "/"
+                    break
+                elif following.host + "/api" == node.url:
+                    node_url = node.url
+                    node_username = node.Username
+                    node_password = node.Password
+                    referer = node.url
+                    break
+            
+            # send post request with basic auth header
+            if node_url:
+                get_cookies = requests.get(node_url + "/authors/", auth=HTTPBasicAuth(node_username, node_password))
+                cookies = get_cookies.cookies
+                
+                # parse X-CSRFToken from cookies
+                csrf_token = None
+                for cookie in cookies:
+                    if cookie.name == "csrftoken":
+                        csrf_token = cookie.value
+                        break
+
+
+                headers = {"Referer": referer, "Content-Type": "application/json", "X-CSRFToken": csrf_token} 
+                response = requests.post(url, json=post_body, auth=HTTPBasicAuth(node_username, node_password), headers=headers)
+                if response.status_code == 200 or response.status_code == 201:
+                    return True
+                else:
+                    # delete the follow request
+                    sent_follow_request = Request.objects.get(follower=follower, following=following)
+                    # sent_follow_request.delete()
+                    return False
+

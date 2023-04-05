@@ -23,6 +23,8 @@ class remoteAuthorsSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
         data['github'] =  f"https://github.com/{data['github']}"
+        data["host"] = "http://31552.yeg.rac.sh"
+        data["url"] = f"http://31552.yeg.rac.sh/author/{data['id']}"
         return data
     
 
@@ -42,6 +44,8 @@ class remoteAuthorSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
         data['github'] =  f"https://github.com/{data['github']}"
+        data["host"] = "http://31552.yeg.rac.sh"
+        data["url"] = f"http://31552.yeg.rac.sh/author/{data['id']}"
         type_data = {'type': 'author'}
         return {**type_data, **data}
  

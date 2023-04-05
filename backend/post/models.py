@@ -20,7 +20,7 @@ class Post(models.Model):
     visibility = models.CharField(max_length=200, default='PUBLIC')
     author_id = models.ForeignKey('author.Author', default=None, on_delete=models.CASCADE)
     public = models.BooleanField(default=True)
-    description = models.CharField(max_length=200)
+    description = models.CharField(max_length=200, blank=True)
     contentType = models.CharField(max_length=200, default='text/plain', blank=True)
     image_url = models.URLField(max_length=200, blank=True, null=True)
     image_file = models.FileField(upload_to='post_images', blank=True, null=True)

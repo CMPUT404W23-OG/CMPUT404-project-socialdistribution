@@ -23,7 +23,10 @@ export default function Inbox() {
   const postRef = useRef(null);
   const [posts, setPosts] = useState([]);
   const [following, setFollowing] = useState([]);
-
+  const [comments, setComments] = useState([]);
+  const [likes, setLikes] = useState([]);
+  const [myPosts, setMyPosts] = useState([]);
+  let listOfPosts = [];
   useEffect(() => {
     const fetchData = () => {
       Promise.all([
@@ -41,16 +44,33 @@ export default function Inbox() {
             Accept: "application/json",
           },
         }),
+        fetch(
+          BasePath + "/posts/author/" + user.user_id + "?page=1&size=1000",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+          }
+        ),
       ])
-        .then(([requestsResponse, followingResponse]) =>
-          Promise.all([requestsResponse.json(), followingResponse.json()])
+        .then(([requestsResponse, followingResponse, myPostsResponse]) =>
+          Promise.all([
+            requestsResponse.json(),
+            followingResponse.json(),
+            myPostsResponse.json(),
+          ])
         )
-        .then(([requestsData, followingData]) => {
+        .then(([requestsData, followingData, myPostsData]) => {
           console.log("populateRequests: ", requestsData);
           setRequests(requestsData);
           console.log(followingData);
           setFollowing(followingData);
           console.log("Testing following ", followingData);
+
+          console.log("My posts are : ", myPostsData);
+
           if (followingData) {
             const followingPostListPromises = followingData.map((following) =>
               fetch(
@@ -70,18 +90,142 @@ export default function Inbox() {
               console.log("Following post list: ", followingPostList);
 
               console.log("Posts: ", followingPostList);
-              let listOfPosts = [];
+
               for (let i = 0; i < followingPostList.length; i++) {
                 for (let j = 0; j < followingPostList[i].length; j++) {
-                  listOfPosts.push(followingPostList[i][j]);
+                  let found = false;
+                  for (let k = 0; k < listOfPosts.length; k++) {
+                    if (listOfPosts[k].id === followingPostList[i][j].id) {
+                      found = true;
+                    }
+                  }
+                  if (!found) {
+                    listOfPosts.push(followingPostList[i][j]);
+                  }
                 }
               }
               listOfPosts.sort((a, b) => {
                 return new Date(b.datePublished) - new Date(a.datePublished);
               });
               console.log("List of posts: ", listOfPosts);
-              setPosts(listOfPosts);
+              if (listOfPosts.length > posts.length) {
+                setPosts(listOfPosts);
+              }
             });
+          }
+
+          const myPostCommentsPromises = myPostsData.map((myPosts) =>
+            fetch(BasePath + "/posts/" + myPosts.id + "/comments", {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+              },
+            }).then((res) => res.json())
+          );
+          Promise.all(myPostCommentsPromises).then((myPostComments) => {
+            console.log("My post comments: ", myPostComments);
+            setComments(myPostComments);
+            for (let i = 0; i < myPostComments.length; i++) {
+              console.log("My post comments: ", myPostComments[i]);
+              if (!myPostComments[i].detail) {
+                try {
+                  for (let j = 0; j < myPostComments[i].length; j++) {
+                    let found = false;
+                    for (let k = 0; k < listOfPosts.length; k++) {
+                      if (
+                        listOfPosts[k].id === myPostComments[i][j].post &&
+                        listOfPosts[k].author_id ===
+                          myPostComments[i][j].author.id
+                      ) {
+                        found = true;
+                      }
+                    }
+                    if (!found) {
+                      if (myPostComments[i][j].author.id !== user.user_id) {
+                        listOfPosts.push({
+                          id: myPostComments[i][j].post,
+                          author_image_url:
+                            myPostComments[i][j].author.profile_image_url,
+                          author_name: myPostComments[i][j].author.username,
+                          author_id: myPostComments[i][j].author.id,
+                          title:
+                            myPostComments[i][j].author.username +
+                            " commented on your post ",
+                          body: myPostComments[i][j].comment,
+                        });
+                      }
+                    }
+                  }
+                } catch {
+                  console.log("Error in adding comment to list of posts");
+                }
+
+                console.log("Just update posts");
+
+                // console.log("new post list  : ", listOfPosts);
+              }
+            }
+
+            // if (listOfPosts.length > posts.length) {
+            //   setPosts(listOfPosts);
+            // }
+
+            // console.log("List of posts after setting comments : ", listOfPosts);
+          });
+          const myPostLikesPromises = myPostsData.map((myPosts) =>
+            fetch(BasePath + "/posts/" + myPosts.id + "/likes", {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+              },
+            }).then((res) => res.json())
+          );
+          Promise.all(myPostLikesPromises).then((myPostLikes) => {
+            // console.log("My post likes: ", myPostLikes);
+            setLikes(myPostLikes);
+            for (let i = 0; i < myPostLikes.length; i++) {
+              // console.log("My post likes: ", myPostLikes[i]);
+              if (!myPostLikes[i].detail) {
+                try {
+                  for (let j = 0; j < myPostLikes[i].length; j++) {
+                    let found = false;
+                    for (let k = 0; k < listOfPosts.length; k++) {
+                      if (
+                        listOfPosts[k].id === myPostLikes[i][j].post &&
+                        listOfPosts[k].author_id === myPostLikes[i][j].author.id
+                      ) {
+                        found = true;
+                      }
+                    }
+                    if (!found) {
+                      if (myPostLikes[i][j].author.id !== user.user_id) {
+                        listOfPosts.push({
+                          id: myPostLikes[i][j].post,
+                          author_image_url:
+                            myPostLikes[i][j].author.profile_image_url,
+                          author_name: myPostLikes[i][j].author.username,
+                          author_id: myPostLikes[i][j].author.id,
+                          title:
+                            myPostLikes[i][j].author.username +
+                            " liked your post ",
+                          body: myPostLikes[i][j].comment,
+                        });
+                      }
+                    }
+                  }
+                } catch {
+                  console.log("Error in adding like to list of posts");
+                }
+
+                // console.log("new post list  : ", listOfPosts);
+              }
+            }
+          });
+
+          if (listOfPosts.length > posts.length) {
+            setPosts(listOfPosts);
           }
         })
         .catch((error) => console.log(error));
@@ -89,6 +233,7 @@ export default function Inbox() {
 
     // fetch data and update state initially
     fetchData();
+
     // fetch data and update state every 10 seconds
     const interval = setInterval(() => {
       fetchData();
@@ -166,11 +311,11 @@ export default function Inbox() {
               }}
             >
               <ListItemAvatar>
-                <Avatar alt="Profile Picture" sx={{ marginLeft: "0.5em" }}>
-                  {request.follower.username.charAt(0).toUpperCase()
-                    ? request.follower.username.charAt(0).toUpperCase()
-                    : "Unkonwn"}
-                </Avatar>
+                <Avatar
+                  src={request.follower.profile_image_url}
+                  alt="Profile Picture"
+                  sx={{ marginLeft: "0.5em" }}
+                ></Avatar>
               </ListItemAvatar>
               <ListItemText
                 secondary={
@@ -222,11 +367,10 @@ export default function Inbox() {
                 }}
               >
                 <ListItemAvatar>
-                  <Avatar alt="Profile Picture">
-                    {post.author_name
-                      ? post.author_name.charAt(0).toUpperCase()
-                      : "Unkonwn"}
-                  </Avatar>
+                  <Avatar
+                    src={post.author_image_url}
+                    alt="Profile Picture"
+                  ></Avatar>
                   <ListItemText primary={post.author_name} />
                 </ListItemAvatar>
 
@@ -246,7 +390,8 @@ export default function Inbox() {
                   <Card>
                     <CardMedia
                       component="img"
-                      height="150"
+                      height="150px"
+                      width="100px"
                       image={
                         post.image_url
                           ? post.image_url

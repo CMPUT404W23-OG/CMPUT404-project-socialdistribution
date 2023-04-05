@@ -20,6 +20,7 @@ import { useNavigate } from "react-router-dom";
 import Home from "@mui/icons-material/Home";
 import People from "@mui/icons-material/PeopleAlt";
 import Posts from "../pages/modal/Posts";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -116,13 +117,19 @@ export default function Header() {
       open={isPostOpen}
       onClose={handlePostMenuClose}
     >
-      <MenuItem onClick={() => handlePost("text")}> Post thoughts</MenuItem>
-      <MenuItem onClick={() => handlePost("markdown")}> Markdown Post</MenuItem>
+      <MenuItem onClick={() => handlePost("text/plain")}>
+        {" "}
+        Post thoughts
+      </MenuItem>
+      <MenuItem onClick={() => handlePost("text/markdown")}>
+        {" "}
+        Markdown Post
+      </MenuItem>
       {/* <MenuItem onClick={() => handlePost("image")}>
         {" "}
         Post an image
       </MenuItem> */}
-      <MenuItem onClick={() => handlePost("textImage")}>
+      <MenuItem onClick={() => handlePost("image/png;base64")}>
         {" "}
         Post Image with caption
       </MenuItem>
@@ -147,28 +154,60 @@ export default function Header() {
       onClose={handleMobileMenuClose}
     >
       <MenuItem>
-        <IconButton size="large" color="inherit">
-          <Badge badgeContent={4} color="error">
-            <Add />
-          </Badge>
+        <IconButton
+          size="large"
+          color="inherit"
+          aria-controls={menuIdPost}
+          aria-haspopup="true"
+          onClick={handlePostMenuOpen}
+        >
+          <Add />
+          <Typography
+            style={{
+              color: "black",
+              fontSize: "16px",
+              textDecoration: "none",
+              fontWeight: "bold",
+            }}
+          >
+            Add Post
+          </Typography>
         </IconButton>
-        <Link href="/">Add Post</Link>
       </MenuItem>
       <MenuItem>
         <IconButton size="large" color="inherit">
-          <Badge badgeContent={4} color="error">
+          <Link href="/" color="inherit">
+            {" "}
             <Home />
-          </Badge>
+          </Link>
+          <Link
+            href="/"
+            style={{
+              color: "black",
+              fontSize: "16px",
+              textDecoration: "none",
+              fontWeight: "bold",
+            }}
+          >
+            Home
+          </Link>
         </IconButton>
-        <Link href="/">Home</Link>
       </MenuItem>
       <MenuItem>
         <IconButton size="large" color="inherit">
-          <Badge badgeContent={4} color="error">
-            <People />
-          </Badge>
+          <People />
+          <Link
+            style={{
+              color: "black",
+              fontSize: "16px",
+              textDecoration: "none",
+              fontWeight: "bold",
+            }}
+            href="/search"
+          >
+            Search
+          </Link>
         </IconButton>
-        <Link href="/search">Search</Link>
       </MenuItem>
       {/* <MenuItem>
         <IconButton size="large" aria-label="show 4 new mails" color="inherit">
@@ -186,23 +225,55 @@ export default function Header() {
         >
           {/* <Badge badgeContent={17} color="error"> */}
           <NotificationsIcon />
+          <Link
+            href="/inbox"
+            style={{
+              color: "black",
+              fontSize: "16px",
+              textDecoration: "none",
+              fontWeight: "bold",
+            }}
+          >
+            Notifications
+          </Link>
           {/* </Badge> */}
         </IconButton>
-        <Link href="/inbox" color="inherit">
-          Notifications
-        </Link>
       </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
+      <MenuItem>
+        <IconButton size="large" color="inherit">
+          <AccountCircle />
+          <Link
+            style={{
+              color: "black",
+              fontSize: "16px",
+              textDecoration: "none",
+              fontWeight: "bold",
+            }}
+            href="/profile"
+          >
+            Profile
+          </Link>
+        </IconButton>
+      </MenuItem>
+      <MenuItem onClick={handleLogout}>
         <IconButton
           size="large"
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
+          // aria-label="show 17 new notifications"
           color="inherit"
         >
-          <AccountCircle />
+          {/* <Badge badgeContent={17} color="error"> */}
+          <LogoutIcon />
+          <Typography
+            style={{
+              color: "black",
+              fontSize: "16px",
+              textDecoration: "none",
+              fontWeight: "bold",
+            }}
+          >
+            Logout
+          </Typography>
         </IconButton>
-        <Link href="/profile">Profile</Link>
       </MenuItem>
     </Menu>
   );
@@ -332,27 +403,8 @@ export default function Header() {
           {renderMenuPost}
           {renderMenu}
         </Box>
-        <Posts postType={PostType} open={open} setOpen={setOpen} />
+        <Posts postType={PostType} open={open} setOpen={setOpen} edit={false} />
       </>
-      {/* // ) : (
-      //   <div className="header">
-      //     <nav className="navbar">
-      //       <ul>
-      //         <li>
-      //           <Link href="/">
-      //             <button>Home</button>
-      //           </Link>
-      //         </li>
-      //         <li>
-      //           <Link href="/login">
-      //             <Button>Login</Button>
-      //           </Link>
-      //         </li>
-      //         {user && <p>Hello {user.username}</p>}
-      //       </ul>
-      //     </nav>
-      //   </div>
-      // )} */}
     </>
   );
 }

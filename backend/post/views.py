@@ -14,6 +14,7 @@ import requests
 from requests.auth import HTTPBasicAuth
 from .models import Post, Comment, Like, Author
 import logging
+import threading
 
 
 # Create your views here.
@@ -71,6 +72,26 @@ class PostView(APIView):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
+    @extend_schema(request=PostSerializer, responses=PostSerializer)
+    def patch(self, request, pk, format=None):
+        post = Post.objects.get(pk=pk)
+        updated = request.data.copy()
+        # updated['author_id'] = post.author_id
+
+        print(updated)
+        if 'image_file' in updated and updated['image_file'] != None:
+            ext = updated['contentType'][6:]
+
+            format, imageDecoded = (updated['image_file']).split(';base64,')
+            data = ContentFile(base64.b64decode(imageDecoded), name="postImage." + ext)
+            updated['image_file'] = data
+
+        serializer = PostSerializer(post, data=updated, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    
 class AuthorPostList(APIView):
 
     @extend_schema(request=PostSerializer, responses=PostSerializer)
@@ -102,59 +123,67 @@ class PostList(APIView):
         http://localhost:8000/posts/all?page=2&size=3 
         
         """
-        posts = Post.objects.all().filter(visibility="PUBLIC").order_by('-datePublished')
+        # posts = Post.objects.all().filter(visibility="PUBLIC").order_by('-datePublished')
         
-        outgoing = Outgoing_Node.objects.all()
-        for node in outgoing:
-            url = node.url + "/authors/"
-            username = node.Username
-            password = node.Password
-            auth = HTTPBasicAuth(username, password)
+        def getRemotePosts():
 
-            response = requests.get(url, auth=auth)
+            outgoing = Outgoing_Node.objects.all()
+            for node in outgoing:
+                url = node.url + "/authors/?page=1&size=1000"
+                username = node.Username
+                password = node.Password
+                connection_name = node.Connection_Name
+                auth = HTTPBasicAuth(username, password)
 
-            
-            author_json = response.json()
-            for author in author_json['items']:
-               
-                remote_post_url = node.url + "/authors/" + str(author['id']) + "/posts/"
-                posts_response = requests.get(remote_post_url, auth=auth)
+                response = requests.get(url, auth=auth)
 
-                remote_posts = posts_response.json()
-                for remote_post in remote_posts['items']:
                 
-                    try:
-                        remote_author = Author.objects.get(remote_id=remote_post['author']['id'])
-                    except:
-                        remote_author = Author.objects.createAuthor(
-                                                        username=remote_post["author"]["displayName"] + " - Remote User",
-                                                        password=None,
-                                                        host=remote_post["author"]["host"],
-                                                        url=remote_post["author"]["url"],
-                                                        githubId=remote_post["author"]["github"],
-                                                        profile_image_url=remote_post["author"]["profileImage"],
-                                                        api_user=True,
-                                                        remote_id = remote_post["author"]["id"],
-                                                        remote_name = remote_post["author"]["displayName"],
-                                                )
-                    # check if the post already exists
-                    post = Post.objects.get(remote_id=remote_post['id'])
-                  
-                    if post :
-                        continue
-
+                author_json = response.json()
+                for author in author_json['items']:
+                    
+                    if connection_name == "gurvir":
+                        gurvir_team_author_id = author['id']
+                        gurvir_team_author_id = gurvir_team_author_id.split("/")[-1]
+                        remote_post_url = node.url + "/authors/" + str(gurvir_team_author_id) + "/posts/?page=1&size=1000"
                     else:
-                        post_author_id = remote_author.id
-                        post_author_name = remote_author.username
-                        post_description = remote_post['description']
-                        post_title = remote_post['title']
-                        post_body = remote_post['content']
-                        post_content_type = remote_post['contentType']
-                        post_remote_id = remote_post['id']
+                        remote_post_url = node.url + "/authors/" + str(author['id']) + "/posts/"
+                    posts_response = requests.get(remote_post_url, auth=auth)
 
-                        serializer_post = PostSerializer(data={'author_id': post_author_id, 'author_name': post_author_name, 'description': post_description, 'title': post_title,'body': post_body, 'contentType': post_content_type, 'remote_id': post_remote_id })
-                        serializer_post.is_valid(raise_exception=True)
-                        serializer_post.save()
+                    remote_posts = posts_response.json()
+                    for remote_post in remote_posts['items']:
+                    
+                        try:
+                            remote_author = Author.objects.get(remote_id=remote_post['author']['id'])
+                        except:
+                            remote_author = Author.objects.createAuthor(
+                                                            username=remote_post["author"]["displayName"] + " - Remote User",
+                                                            password=None,
+                                                            host=remote_post["author"]["host"],
+                                                            url=remote_post["author"]["url"],
+                                                            githubId=remote_post["author"]["github"],
+                                                            profile_image_url=remote_post["author"]["profileImage"],
+                                                            api_user=True,
+                                                            remote_id = remote_post["author"]["id"],
+                                                            remote_name = remote_post["author"]["displayName"],
+                                                    )
+                        # check if the post already exists
+                        try:
+                            post = Post.objects.get(remote_id=remote_post['id'])
+                        
+                        except :
+                            if remote_post['contentType'] != "image/jpeg":
+                            
+                                post_author_id = remote_author.id
+                                post_author_name = remote_author.username
+                                post_description = remote_post['description']
+                                post_title = remote_post['title']
+                                post_body = remote_post['content']
+                                post_content_type = remote_post['contentType']
+                                post_remote_id = remote_post['id']
+
+                                serializer_post = PostSerializer(data={'author_id': post_author_id, 'author_name': post_author_name, 'description': post_description, 'title': post_title,'body': post_body, 'contentType': post_content_type, 'remote_id': post_remote_id })
+                                serializer_post.is_valid(raise_exception=True)
+                                serializer_post.save()
 
                     
 
@@ -163,6 +192,9 @@ class PostList(APIView):
             number = self.request.query_params.get('page', 1)
             size = self.request.query_params.get('size', 5)
             paginator = Paginator(posts, size)
+            thread = threading.Thread(target=getRemotePosts)
+            thread.start()
+
             if ((paginator.num_pages + 1) > int(number)):
                 serializer = PostSerializer(paginator.page(number), many=True)
             else:
@@ -219,8 +251,12 @@ class CommentView(APIView):
             serializer = CommentPostSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            serializer2 = CommentSerializer(serializer.instance)
+
+            
+            return Response(serializer2.data, status=status.HTTP_201_CREATED)
         return Response({'detail': 'POST ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
+    
     
     @extend_schema(request=CommentSerializer, responses=CommentSerializer)
     def patch(self, request, post_id, comment_id, format=None):
@@ -311,13 +347,22 @@ class LikeView(APIView):
         Request body: {"summary" : "Author 1 likes your comment.",
                         "author" : "1"}
         """
+
         if post_id and not comment_id:
+            logging.debug("I am here 1 ******************")
             request.data['post'] = post_id
+            logging.debug(post_id)
             like_author = request.data.get('author')
+            logging.debug(like_author)
             if like_author:
+                thread = threading.Thread(target=self.sendRemoteLike, args=(post_id, like_author))
+                thread.start()
                 if Like.objects.filter(author=like_author, post=post_id, comment__isnull=True).exists():
+
+              
                     return Response({'detail': 'You have already liked this post.'}, status=status.HTTP_400_BAD_REQUEST)
         elif comment_id and not post_id:
+ 
             request.data['comment'] = comment_id
             like_author = request.data.get('author')
             if like_author:
@@ -330,6 +375,93 @@ class LikeView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    def sendRemoteLike(self, post_id, author_id):
+
+        logging.debug("sending remote like")
+        # get the post
+        post = Post.objects.get(id=post_id)
+
+        logging.debug("post id: " + str(post.id))
+        
+
+        liked_by_author = Author.objects.get(id=author_id)
+
+        logging.debug("liked by author id: " + str(liked_by_author.id))
+
+        # check if it is a remote post
+        if post.remote_id:
+            # get the post author
+            post_author = post.author_id
+
+            # check if the post author is a remote author
+            if post_author.remote_id:
+                url = post_author.remote_id + "/inbox/"
+
+                post_body = {
+                    "type": "liked",
+                    "items": [
+                        {
+                            "@context": "https://www.w3.org/ns/activitystreams",
+                            "summary" : liked_by_author.username + " likes your post.",
+                            "type": "Like",
+                            "author" :{
+                                "type" : "author",
+                                "id" : liked_by_author.id,
+                                "host" : "http://31552.yeg.rac.sh",
+                                "displayName" : liked_by_author.username,
+                                "url" : "http://31552.yeg.rac.sh/service/author/" + str(liked_by_author.id),
+                                "github" : "https://www.github.com/" + liked_by_author.username,
+                                "profileImage" : liked_by_author.profile_image_url,
+                            },
+                            "object" : post.remote_id
+
+                        }
+                    ]
+                }
+
+                remote_nodes = Outgoing_Node.objects.all()
+                node_url = None
+                node_username = None
+                node_password = None
+                for node in remote_nodes:
+                    if post_author.host == node.url:
+                        node_url = node.url
+                        node_username = node.Username
+                        node_password = node.Password
+                        referer = node.url + "/"
+                        break
+                        
+                    elif post_author.host + "/api" == node.url:
+                        node_url = node.url
+                        node_username = node.Username
+                        node_password = node.Password
+                        referer = node.url 
+                        break
+                
+                if node_url:
+                    get_cookies = requests.get(node_url + "/authors/", auth=HTTPBasicAuth(node_username, node_password))
+                    cookies = get_cookies.cookies
+
+                    csrf_token = None
+                    for cookie in cookies:
+                        if cookie.name == "csrftoken":
+                            csrf_token = cookie.value
+                            break
+                    headers = {
+                        "Referer" : referer,
+                        "Content-Type" : "application/json",
+                        "X-CSRFToken" : csrf_token
+                    }
+
+                    response = requests.post(url, json=post_body, headers=headers, auth=HTTPBasicAuth(node_username, node_password))
+
+                    if response.status_code == 200 or response.status_code == 201:
+                        return True
+                    else:
+                        return False
+
+
     
     @extend_schema(request=LikeSerializer, responses=LikeSerializer)
     def delete(self, request, like_id, format= None):
@@ -365,3 +497,4 @@ class AuthorLikesView(APIView):
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response({'detail': 'No likes found.'}, status=status.HTTP_404_NOT_FOUND)
         return Response({'detail': 'Author not found.'}, status=status.HTTP_404_NOT_FOUND)
+    
