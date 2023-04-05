@@ -391,6 +391,7 @@ export default function Inbox() {
                     <CardMedia
                       component="img"
                       height="150"
+                      width="150"
                       image={
                         post.image_url
                           ? post.image_url
