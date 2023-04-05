@@ -547,37 +547,97 @@ class remoteInboxView(APIView):
                 except:
                     return Response({"error" : "invalid follow"},  status=400)
                 
-            # elif data["type"] == "comment":
-            #     try:
-              
-            #         author = data["author"]
-            #         comment = data["comment"]
-            #         contentType = data["contentType"]
-            #         published = data["published"]
-            #         id = data["id"]
 
-            #     except:
-            #         return Response({"error" : "invalid comment"},  status=400)
-                
-            # elif data["type"] == "Like":
-            #     try:
-            #         summary = data["summary"]
-            #         author = data["author"]
-            #         object = data["object"]
+            elif data["type"] == "comment":
+                logging.debug("comment received")
+                try:
+                    logging.debug("trying to get comment data")
 
-            #         logging.debug("data is " + str(data))
-            #         return Response({"success" : "like received"},  status=200)
-            #     except:
-            #         return Response({"error" : "invalid like"},  status=400)
-            
-            # return Response({"Invalid data"},  status=400)
+                    comment = data["comment"]
+                    try:
+                        post = data["id"].split("/")[-3]
+                    except:
+                        logging.debug("invalid post id")
+                    author = data["author"]
+                    logging.debug("got comment data ******")
+
+                    # create a comment from the remote author
+                    local_author = Author.objects.get(id = AUTHOR_ID)
+                    print(local_author)
+                    try:
+                        remote_author = Author.objects.get(remote_id = author["id"])
+                        print(remote_author)
+                    except:
+                        remote_author = []
+                    
+                    if remote_author == []:
+                        logging.debug("creating remote author")
+                        remote_author = Author.objects.createAuthor(
+                                                        username=author["displayName"] + " - Remote User",
+                                                        password=None,
+                                                        host=author["host"],
+                                                        url=author["url"],
+                                                        githubId=author["github"],
+                                                        profile_image_url=author["profileImage"],
+                                                        api_user=True,
+                                                        remote_id = author["id"],
+                                                        remote_name = author["displayName"]
+                                                )
+                    comment = Comment.objects.create(
+                        author = remote_author,
+                        comment=comment,
+                        post = Post.objects.get(id = post),
+                    )
+
+                    comment.save()
+                    return Response({"success" : "comment received"},  status=200)
+
+                except:
+                    return Response({"error" : "invalid comment"},  status=400)
+        
+            elif data["type"] == "like":
+                logging.debug("like received")
+                try:
+                    logging.debug("trying to get like data")
+
+                    author = data["author"]
+
+                    try:
+                        post = data["object"].split("/")[-1]
+                    except:
+                        logging.debug("invalid post id")
+                    logging.debug("got like data ******")
+
+                    # create a like from the remote author
+                    local_author = Author.objects.get(id = AUTHOR_ID)
+                    try:
+                        remote_author = Author.objects.get(remote_id = actor["id"])
+                    except:
+                        remote_author = []
+                    
+                    if remote_author == []:
+                        logging.debug("creating remote author")
+                        remote_author = Author.objects.createAuthor(
+                                                        username=actor["displayName"] + " - Remote User",
+                                                        password=None,
+                                                        host=actor["host"],
+                                                        url=actor["url"],
+                                                        githubId=actor["github"],
+                                                        profile_image_url=actor["profileImage"],
+                                                        api_user=True,
+                                                        remote_id = actor["id"],
+                                                        remote_name = actor["displayName"]
+                                                )
+                    like = Like.objects.create(
+                        author = remote_author,
+                        post = Post.objects.get(id = post),
+                    )
+
+                    like.save()
+                    return Response({"success" : "like received"},  status=200)
+
+                except:
+                    return Response({"error" : "invalid like"},  status=400)
+        
         else:
             return Response({"error" : "Unauthorized"},  status=401)
-    
-        
-
-   
-#     def get(self, request,  format=None):
-#         '''Get all posts from remote server'''
-      
-#         pass
