@@ -160,7 +160,9 @@ export default function PostsDialog({ postType, open, setOpen, edit, post }) {
         }}
       >
         <Container maxWidth="lg">
-          <DialogTitle color={"black"}>Create Post</DialogTitle>
+          <DialogTitle color={"black"}>
+            {edit ? "Edit Post" : "Create Post"}
+          </DialogTitle>
           <DialogContent>
             {/* {errorMessage && <Alert severity="error">{errorMessage}</Alert>} */}
             <TextField
