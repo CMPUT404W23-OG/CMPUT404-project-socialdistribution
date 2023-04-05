@@ -142,17 +142,19 @@ export default function Inbox() {
                       }
                     }
                     if (!found) {
-                      listOfPosts.push({
-                        id: myPostComments[i][j].post,
-                        author_image_url:
-                          myPostComments[i][j].author.profile_image_url,
-                        author_name: myPostComments[i][j].author.username,
-                        author_id: myPostComments[i][j].author.id,
-                        title:
-                          myPostComments[i][j].author.username +
-                          " commented on your post ",
-                        body: myPostComments[i][j].comment,
-                      });
+                      if (myPostComments[i][j].author.id !== user.user_id) {
+                        listOfPosts.push({
+                          id: myPostComments[i][j].post,
+                          author_image_url:
+                            myPostComments[i][j].author.profile_image_url,
+                          author_name: myPostComments[i][j].author.username,
+                          author_id: myPostComments[i][j].author.id,
+                          title:
+                            myPostComments[i][j].author.username +
+                            " commented on your post ",
+                          body: myPostComments[i][j].comment,
+                        });
+                      }
                     }
                   }
                 } catch {
@@ -198,17 +200,19 @@ export default function Inbox() {
                       }
                     }
                     if (!found) {
-                      listOfPosts.push({
-                        id: myPostLikes[i][j].post,
-                        author_image_url:
-                          myPostLikes[i][j].author.profile_image_url,
-                        author_name: myPostLikes[i][j].author.username,
-                        author_id: myPostLikes[i][j].author.id,
-                        title:
-                          myPostLikes[i][j].author.username +
-                          " liked your post ",
-                        body: myPostLikes[i][j].comment,
-                      });
+                      if (myPostLikes[i][j].author.id !== user.user_id) {
+                        listOfPosts.push({
+                          id: myPostLikes[i][j].post,
+                          author_image_url:
+                            myPostLikes[i][j].author.profile_image_url,
+                          author_name: myPostLikes[i][j].author.username,
+                          author_id: myPostLikes[i][j].author.id,
+                          title:
+                            myPostLikes[i][j].author.username +
+                            " liked your post ",
+                          body: myPostLikes[i][j].comment,
+                        });
+                      }
                     }
                   }
                 } catch {
@@ -387,6 +391,7 @@ export default function Inbox() {
                     <CardMedia
                       component="img"
                       height="150"
+                      width="150"
                       image={
                         post.image_url
                           ? post.image_url

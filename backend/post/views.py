@@ -72,6 +72,26 @@ class PostView(APIView):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
+    @extend_schema(request=PostSerializer, responses=PostSerializer)
+    def patch(self, request, pk, format=None):
+        post = Post.objects.get(pk=pk)
+        updated = request.data.copy()
+        # updated['author_id'] = post.author_id
+
+        print(updated)
+        if 'image_file' in updated and updated['image_file'] != None:
+            ext = updated['contentType'][6:]
+
+            format, imageDecoded = (updated['image_file']).split(';base64,')
+            data = ContentFile(base64.b64decode(imageDecoded), name="postImage." + ext)
+            updated['image_file'] = data
+
+        serializer = PostSerializer(post, data=updated, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    
 class AuthorPostList(APIView):
 
     @extend_schema(request=PostSerializer, responses=PostSerializer)
