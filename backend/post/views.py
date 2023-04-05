@@ -72,6 +72,26 @@ class PostView(APIView):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
+    @extend_schema(request=PostSerializer, responses=PostSerializer)
+    def patch(self, request, pk, format=None):
+        post = Post.objects.get(pk=pk)
+        updated = request.data.copy()
+        # updated['author_id'] = post.author_id
+
+        print(updated)
+        if 'image_file' in updated and updated['image_file'] != None:
+            ext = updated['contentType'][6:]
+
+            format, imageDecoded = (updated['image_file']).split(';base64,')
+            data = ContentFile(base64.b64decode(imageDecoded), name="postImage." + ext)
+            updated['image_file'] = data
+
+        serializer = PostSerializer(post, data=updated, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    
 class AuthorPostList(APIView):
 
     @extend_schema(request=PostSerializer, responses=PostSerializer)
@@ -151,19 +171,19 @@ class PostList(APIView):
                             post = Post.objects.get(remote_id=remote_post['id'])
                         
                         except :
+                            if remote_post['contentType'] != "image/jpeg":
+                            
+                                post_author_id = remote_author.id
+                                post_author_name = remote_author.username
+                                post_description = remote_post['description']
+                                post_title = remote_post['title']
+                                post_body = remote_post['content']
+                                post_content_type = remote_post['contentType']
+                                post_remote_id = remote_post['id']
 
-                    
-                            post_author_id = remote_author.id
-                            post_author_name = remote_author.username
-                            post_description = remote_post['description']
-                            post_title = remote_post['title']
-                            post_body = remote_post['content']
-                            post_content_type = remote_post['contentType']
-                            post_remote_id = remote_post['id']
-
-                            serializer_post = PostSerializer(data={'author_id': post_author_id, 'author_name': post_author_name, 'description': post_description, 'title': post_title,'body': post_body, 'contentType': post_content_type, 'remote_id': post_remote_id })
-                            serializer_post.is_valid(raise_exception=True)
-                            serializer_post.save()
+                                serializer_post = PostSerializer(data={'author_id': post_author_id, 'author_name': post_author_name, 'description': post_description, 'title': post_title,'body': post_body, 'contentType': post_content_type, 'remote_id': post_remote_id })
+                                serializer_post.is_valid(raise_exception=True)
+                                serializer_post.save()
 
                     
 

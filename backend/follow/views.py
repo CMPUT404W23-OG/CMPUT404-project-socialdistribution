@@ -482,6 +482,6 @@ class FollowPost(APIView):
                 else:
                     # delete the follow request
                     sent_follow_request = Request.objects.get(follower=follower, following=following)
-                    sent_follow_request.delete()
+                    # sent_follow_request.delete()
                     return False
 
