@@ -37,6 +37,7 @@ import PopupState, { bindTrigger, bindMenu } from "material-ui-popup-state";
 import { fontSize } from "@mui/system";
 import Posts from "../pages/modal/Posts";
 import EditComment from "../pages/modal/EditComment";
+import EditProfile from "../pages/modal/EditProfile";
 
 async function addComment(userId, postId, comment) {
   console.log(postId);
@@ -905,6 +906,11 @@ function CreateArray() {
 const ProfilePage = () => {
   let { user } = useContext(AuthContext);
   let [url, setUrl] = useState();
+  const [open, setOpen] = useState(false);
+
+  function openUploadProfile() {
+    setOpen(true);
+  }
 
   // https://stackoverflow.com/questions/69078642/how-use-get-method-in-react-js
   let profile_image_url = async () => {
@@ -1044,7 +1050,12 @@ const ProfilePage = () => {
             </Box>
             <Divider />
             <CardActions>
-              <Button color="primary" fullWidth variant="text">
+              <Button
+                color="primary"
+                fullWidth
+                variant="text"
+                onClick={() => openUploadProfile()}
+              >
                 Upload picture
               </Button>
             </CardActions>
@@ -1063,6 +1074,7 @@ const ProfilePage = () => {
       >
         <CreateArray />
       </Box>
+      <EditProfile open={open} setOpen={setOpen} />
     </div>
   );
 };
