@@ -107,12 +107,13 @@ export default function PostsDialog({ postType, open, setOpen, edit, post }) {
         headers
       );
       //   navigate("/");
-      //   window.location.reload();
+      window.location.reload();
     } else {
       await axios.post(BasePath + `/posts/create/` + userId, payload, headers);
       navigate("/");
       window.location.reload();
     }
+
     handleClose();
   };
 
