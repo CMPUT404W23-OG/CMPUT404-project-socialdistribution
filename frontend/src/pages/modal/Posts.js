@@ -46,9 +46,9 @@ export default function PostsDialog({ postType, open, setOpen, edit, post }) {
     cont_type = "image/png;base64";
   }
 
-  const headers = {
-    "Content-Type": "application/json",
-  };
+  // const headers = {
+  //   "Content-Type": "application/json",
+  // };
   const payload = {
     title: postTitle,
     description: "private description here",
@@ -85,6 +85,14 @@ export default function PostsDialog({ postType, open, setOpen, edit, post }) {
   };
 
   const SubmitContent = async () => {
+    const authTokens = JSON.parse(localStorage.getItem("authTokens"));
+    const options = {
+      headers: {
+        // "Access-Control-Allow-Origin": "*",
+        // "Access-Control-Expose-Headers": "X-PAGINATION-SIZE",
+        Authorization: `Bearer ${authTokens.access}`,
+      },
+    };
     // setSubmitted(true);
     if (edit) {
       if (postTitle !== "") {
@@ -104,12 +112,12 @@ export default function PostsDialog({ postType, open, setOpen, edit, post }) {
       await axios.patch(
         BasePath + `/posts/` + post.id + `/`,
         editPayload,
-        headers
+        options
       );
       //   navigate("/");
       window.location.reload();
     } else {
-      await axios.post(BasePath + `/posts/create/` + userId, payload, headers);
+      await axios.post(BasePath + `/posts/create/` + userId, payload, options);
       navigate("/");
       window.location.reload();
     }
