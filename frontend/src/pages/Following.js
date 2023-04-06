@@ -15,14 +15,18 @@ import { fontStyle, style } from "@mui/system";
 const Following = () => {
   const { user } = useContext(AuthContext);
   const [following, setFollowing] = useState([]);
+  const authTokens = JSON.parse(localStorage.getItem("authTokens"));
+
+  const headers = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    Authorization: `Bearer ${authTokens.access}`,
+  };
 
   useEffect(() => {
     fetch(BasePath + "/following/" + user.user_id + "/", {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
+      headers: headers,
     })
       .then((res) => res.json())
       .then((data) => {
@@ -43,10 +47,7 @@ const Following = () => {
     try {
       const response = fetch(BasePath + "/follow/" + id + "/", {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
+        headers: headers,
       });
       if ((await response).status === 204) {
         console.log("Deleted!");
