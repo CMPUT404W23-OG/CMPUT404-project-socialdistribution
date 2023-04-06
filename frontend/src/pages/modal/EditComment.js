@@ -9,14 +9,7 @@ import {
   Typography,
   Container,
 } from "@mui/material";
-import { useState, useContext, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import AuthContext from "../../context/AuthContext";
-import BasePath from "../../config/BasePath";
-import axios from "axios";
-import FormGroup from "@mui/material/FormGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
+import { useState } from "react";
 import { editComment } from "../HomePage";
 
 export default function EditComment({
@@ -26,9 +19,6 @@ export default function EditComment({
   commentID,
   comment,
 }) {
-  //   const navigate = useNavigate();
-
-  var { user } = useContext(AuthContext);
   const [CommentText, setText] = useState("");
 
   const handleClose = () => {
@@ -37,8 +27,6 @@ export default function EditComment({
 
   function SubmitContent(postID, commentID) {
     editComment(postID, commentID, CommentText);
-    // navigate("/");
-    // window.location.reload();
     handleClose();
   }
 
@@ -58,9 +46,7 @@ export default function EditComment({
         <Container maxWidth="lg">
           <DialogTitle color={"black"}>Edit Comment</DialogTitle>
           <DialogContent>
-            {/* {errorMessage && <Alert severity="error">{errorMessage}</Alert>} */}
             <TextField
-              // error={submitted}
               autoFocus
               margin="dense"
               id="EditComment"
