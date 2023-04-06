@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import status
 from .models import Author
 from django.core.paginator import Paginator
+from rest_framework.permissions import IsAuthenticated
 
 User = get_user_model()
 
@@ -66,7 +67,7 @@ class SignUpView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 class AuthorList(APIView):
-
+    permission_classes = (IsAuthenticated,)
 
     @extend_schema(request=AuthorSerializer, responses=AuthorSerializer)
     def get(self, request):
