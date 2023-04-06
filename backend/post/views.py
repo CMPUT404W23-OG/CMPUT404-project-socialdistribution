@@ -95,6 +95,7 @@ class PostView(APIView):
     
     
 class AuthorPostList(APIView):
+    permission_classes = (IsAuthenticated,)
 
     @extend_schema(request=PostSerializer, responses=PostSerializer)
     def get(self, request, author_id):
@@ -113,8 +114,10 @@ class AuthorPostList(APIView):
 
         serializer = PostSerializer(paginator.page(number), many=True)
         return Response(serializer.data)
-    
+
+
 class PostList(APIView):
+    permission_classes = (IsAuthenticated,)
 
     @extend_schema(request=PostSerializer, responses=PostSerializer)
     def get(self, request):
@@ -205,14 +208,20 @@ class PostList(APIView):
 
             serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)    
-    
+
+
 class PostCount(APIView):
+    permission_classes = (IsAuthenticated,)
+
     @extend_schema(request=PostSerializer, responses=PostSerializer)
     def get(self, request):
         count = Post.objects.all().filter(visibility="PUBLIC").order_by('-datePublished').count()
         return Response(count)
 
+
 class CommentView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get_object(self, pk):
         try:
             return Comment.objects.get(id=pk)
@@ -296,7 +305,10 @@ class CommentView(APIView):
             return Response({'detail': 'Comment not found.'}, status=status.HTTP_404_NOT_FOUND)
         return Response({'detail': 'POST ID and COMMENT ID are required.'}, status=status.HTTP_400_BAD_REQUEST)
 
+
 class LikeView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get_object(self, pk):
         try:
             Comment.objects.get(id=pk)
@@ -477,8 +489,11 @@ class LikeView(APIView):
             like.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response({'detail': 'Like not found.'}, status=status.HTTP_404_NOT_FOUND)
-    
+
+
 class AuthorLikesView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get_object(self, pk):
         try:
             Author.objects.get(id=pk)
