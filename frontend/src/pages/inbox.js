@@ -27,31 +27,30 @@ export default function Inbox() {
   const [likes, setLikes] = useState([]);
   const [myPosts, setMyPosts] = useState([]);
   let listOfPosts = [];
+  const authTokens = JSON.parse(localStorage.getItem("authTokens"));
+
+  const headers = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    Authorization: `Bearer ${authTokens.access}`,
+  };
+
   useEffect(() => {
     const fetchData = () => {
       Promise.all([
         fetch(BasePath + "/requests_received/" + user.user_id + "/", {
           method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
+          headers: headers,
         }),
         fetch(BasePath + "/following/" + user.user_id + "/", {
           method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
+          headers: headers,
         }),
         fetch(
           BasePath + "/posts/author/" + user.user_id + "?page=1&size=1000",
           {
             method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
+            headers: headers,
           }
         ),
       ])
@@ -79,10 +78,7 @@ export default function Inbox() {
                   JSON.stringify(following.following.id),
                 {
                   method: "GET",
-                  headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                  },
+                  headers: headers,
                 }
               ).then((res) => res.json())
             );
@@ -117,10 +113,7 @@ export default function Inbox() {
           const myPostCommentsPromises = myPostsData.map((myPosts) =>
             fetch(BasePath + "/posts/" + myPosts.id + "/comments", {
               method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-              },
+              headers: headers,
             }).then((res) => res.json())
           );
           Promise.all(myPostCommentsPromises).then((myPostComments) => {
@@ -176,10 +169,7 @@ export default function Inbox() {
           const myPostLikesPromises = myPostsData.map((myPosts) =>
             fetch(BasePath + "/posts/" + myPosts.id + "/likes", {
               method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-              },
+              headers: headers,
             }).then((res) => res.json())
           );
           Promise.all(myPostLikesPromises).then((myPostLikes) => {
@@ -250,10 +240,7 @@ export default function Inbox() {
     try {
       const response = fetch(BasePath + "/request/" + id + "/", {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
+        headers: headers,
       });
       if ((await response.status) === 204) {
         console.log("Deleted");
@@ -272,10 +259,7 @@ export default function Inbox() {
     try {
       const response = fetch(BasePath + "/request/" + id + "/", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
+        headers: headers,
         body: JSON.stringify({
           Approve: true,
           Cancel: false,
