@@ -45,12 +45,16 @@ function CreateArray() {
   // };
 
   async function getData() {
+    const authTokens = JSON.parse(localStorage.getItem("authTokens"));
+
+    const headers = {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${authTokens.access}`,
+    };
     fetch(BasePath + "/author/all/", {
       method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+      headers: headers,
     })
       .then((res) => res.json())
       .then((result) => {
@@ -67,12 +71,16 @@ function CreateArray() {
   }
 
   async function getFollowing() {
+    const authTokens = JSON.parse(localStorage.getItem("authTokens"));
+
+    const headers = {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${authTokens.access}`,
+    };
     fetch(BasePath + "/following/" + user.user_id + "/", {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
+      headers: headers,
     })
       .then((res) => res.json())
       .then((data) => {
@@ -90,12 +98,16 @@ function CreateArray() {
   }
 
   async function getSentRequests() {
+    const authTokens = JSON.parse(localStorage.getItem("authTokens"));
+
+    const headers = {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${authTokens.access}`,
+    };
     fetch(BasePath + "/requests_sent/" + user.user_id + "/", {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
+      headers: headers,
     })
       .then((res) => res.json())
       .then((data) => {
@@ -112,12 +124,16 @@ function CreateArray() {
   }
 
   async function sendFollowRequest(id) {
+    const authTokens = JSON.parse(localStorage.getItem("authTokens"));
+
+    const headers = {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${authTokens.access}`,
+    };
     fetch(BasePath + "/follow/", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
+      headers: headers,
       body: JSON.stringify({
         follower: user.user_id,
         following: id,
@@ -133,6 +149,13 @@ function CreateArray() {
   }
 
   async function cancelFollowRequest(id) {
+    const authTokens = JSON.parse(localStorage.getItem("authTokens"));
+
+    const headers = {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${authTokens.access}`,
+    };
     let follow_id = 0;
 
     for (let i = 0; i < sentRequests.length; i++) {
@@ -145,9 +168,7 @@ function CreateArray() {
 
     response = fetch(BasePath + "/request/" + follow_id + "/", {
       method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: headers,
       body: JSON.stringify({
         follower: user.user_id,
         following: id,
