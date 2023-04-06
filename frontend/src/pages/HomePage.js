@@ -3,6 +3,7 @@ import { Card, Box, Container, Menu, MenuItem, TextField } from "@mui/material";
 import { useEffect, useState, useRef } from "react";
 import BasePath from "../config/BasePath";
 import * as React from "react";
+import { styled } from "@mui/material/styles";
 import CardHeader from "@mui/material/CardHeader";
 import CardMedia from "@mui/material/CardMedia";
 import CardContent from "@mui/material/CardContent";
@@ -23,24 +24,16 @@ import { useContext } from "react";
 import { useLocation } from "react-router-dom";
 import { Divider, Grid, Paper, Button } from "@mui/material";
 import ReactMarkdown from "react-markdown";
-
-const authTokens = JSON.parse(localStorage.getItem("authTokens"));
-console.log(authTokens.access);
-
-const headers = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Expose-Headers": "X-PAGINATION-SIZE",
-  "Authorization": `Bearer ${authTokens.access}`,
-};
+import PopupState, { bindTrigger, bindMenu } from "material-ui-popup-state";
+import Posts from "../pages/modal/Posts";
+import EditComment from "../pages/modal/EditComment";
 
 async function addComment(userId, postId, comment) {
-  console.log(postId);
   const authTokens = JSON.parse(localStorage.getItem("authTokens"));
-  console.log(authTokens.access);
 
   const headers = {
     "Content-Type": "application/json",
-    // Authorization: "Bearer " + authTokens.access,
+    Authorization: `Bearer ${authTokens.access}`,
   };
 
   const data = JSON.stringify({
@@ -99,9 +92,23 @@ function CommentBox({ userId, pid, onAddComment }) {
 }
 
 export async function editComment(postID, commentID, updatedComment) {
-  await axios.patch(`${BasePath}/posts/${postID}/comments/${commentID}`, {
-    comment: updatedComment,
-  });
+  let authTokens = JSON.parse(localStorage.getItem("authTokens"));
+  // console.log(authTokens.access);
+
+  const options = {
+    headers: {
+      // "Access-Control-Allow-Origin": "*",
+      // "Access-Control-Expose-Headers": "X-PAGINATION-SIZE",
+      Authorization: `Bearer ${authTokens.access}`,
+    },
+  };
+  await axios.patch(
+    `${BasePath}/posts/${postID}/comments/${commentID}`,
+    {
+      comment: updatedComment,
+    },
+    options
+  );
   document.getElementById("written-comment-" + commentID).innerHTML =
     updatedComment;
 
@@ -193,13 +200,36 @@ function Comment({ post, comment, userId, userName }) {
 
   // edit/delete comment
   async function deleteComment(postID, commentID) {
-    await axios.delete(`${BasePath}/posts/${postID}/comments/${commentID}`);
+    let authTokens = JSON.parse(localStorage.getItem("authTokens"));
+    // console.log(authTokens.access);
+
+    const options = {
+      headers: {
+        // "Access-Control-Allow-Origin": "*",
+        // "Access-Control-Expose-Headers": "X-PAGINATION-SIZE",
+        Authorization: `Bearer ${authTokens.access}`,
+      },
+    };
+    await axios.delete(
+      `${BasePath}/posts/${postID}/comments/${commentID}`,
+      options
+    );
     console.log("comment", commentID);
     var elem = document.getElementById(commentID);
 
     elem.remove();
     handleCommentsMenuClose();
   }
+
+  let { authTokens } = useContext(AuthContext);
+
+  const options = {
+    headers: {
+      // "Access-Control-Allow-Origin": "*",
+      // "Access-Control-Expose-Headers": "X-PAGINATION-SIZE",
+      Authorization: `Bearer ${authTokens.access}`,
+    },
+  };
 
   return (
     <div key={comment.id} id={comment.id}>
@@ -230,18 +260,22 @@ function Comment({ post, comment, userId, userName }) {
             aria-label="add to favorites"
             onClick={async () => {
               //checks current color (liked or not)
-              console.log("in")
+              console.log("in");
               var buttonColor = document.getElementById(
                 comment.id + "-like-comment"
               ).style.color;
               if (buttonColor === "red") {
                 // if liked, get the likes for the post, find the users, and delete it
                 const res = await axios.get(
-                  BasePath + `/posts/comments/${comment.id}/likes`
+                  BasePath + `/posts/comments/${comment.id}/likes`,
+                  options
                 );
                 const likeId = res.data.filter((x) => x.author.id === userId)[0]
                   .id;
-                await axios.delete(BasePath + `/posts/likes/${likeId}`);
+                await axios.delete(
+                  BasePath + `/posts/likes/${likeId}`,
+                  options
+                );
 
                 // get current likes and decrement (faster then pinging backend, no need for refresh), change icon to grey
 
@@ -273,9 +307,7 @@ function Comment({ post, comment, userId, userName }) {
                     summary: userName + " liked your comment.",
                     author: userId,
                   },
-                  {
-                    "Content-Type": "application/json",
-                  }
+                  options
                 );
 
                 // get current likes and increment (faster then pinging backend, no need for refresh), change icon to red
@@ -362,14 +394,29 @@ function RenderMenuPost({ post }) {
           </React.Fragment>
         )}
       </PopupState>
-      <Posts postType={type} open={open} setOpen={setOpen} edit={true} post={post} />
+      <Posts
+        postType={type}
+        open={open}
+        setOpen={setOpen}
+        edit={true}
+        post={post}
+      />
     </>
   );
 }
 
 // deleting post
 async function deletePost(postID) {
-  await axios.delete(`${BasePath}/posts/${postID}/`);
+  let authTokens = JSON.parse(localStorage.getItem("authTokens"));
+  const options = {
+    headers: {
+      // "Access-Control-Allow-Origin": "*",
+      // "Access-Control-Expose-Headers": "X-PAGINATION-SIZE",
+      Authorization: `Bearer ${authTokens.access}`,
+    },
+  };
+
+  await axios.delete(`${BasePath}/posts/${postID}/`, options);
   var elem = document.getElementById(postID);
 
   elem.remove();
@@ -377,6 +424,16 @@ async function deletePost(postID) {
 }
 
 function CreateArray() {
+  let { authTokens } = useContext(AuthContext);
+  // console.log(authTokens.access);
+
+  const options = {
+    headers: {
+      // "Access-Control-Allow-Origin": "*",
+      // "Access-Control-Expose-Headers": "X-PAGINATION-SIZE",
+      Authorization: `Bearer ${authTokens.access}`,
+    },
+  };
   var { user } = useContext(AuthContext);
   const userId = user.user_id;
   const userName = user.username;
@@ -462,8 +519,8 @@ function CreateArray() {
       for (let i = postList.length - 5; i < postList.length; i++) {
         try {
           const res = await axios.get(
-            `${BasePath}/posts/${postList[i].id}/comments?page=1&size=1000`,
-            headers
+            `${BasePath}/posts/${postList[i].id}/comments?page=1&size=1000`
+            , options
           );
           setComments((prevComments) => {
             const newComments = res.data.filter(
@@ -491,8 +548,8 @@ function CreateArray() {
       console.log("location.state is", location.state);
       const getData = async () => {
         const res = await axios.get(
-          BasePath + "/posts/" + location.state + "/",
-          headers
+          BasePath + "/posts/" + location.state + "/"
+          , options
         );
 
         if (!res.data.length) {
@@ -502,7 +559,8 @@ function CreateArray() {
         setPostList([res.data]);
         try {
           const commentsRes = await axios.get(
-            `${BasePath}/posts/${location.state}/comments?page=1&size=1000`
+            `${BasePath}/posts/${location.state}/comments?page=1&size=1000`,
+            options
           );
           setComments((prevComments) => {
             const newComments = commentsRes.data.filter(
@@ -510,8 +568,6 @@ function CreateArray() {
             );
             return [...prevComments, ...newComments];
           });
-          
-
         } catch (e) {
           if (e.response.status === 404) {
             console.log(`Post ${location.state} has no comments`);
@@ -522,27 +578,30 @@ function CreateArray() {
 
         const likesRes = await axios.get(
           `${BasePath}/posts/${location.state}/likes`
+          , options
         );
-        
+
         for (let each in likesRes.data) {
           if (likesRes.data[each].author.id === userId) {
-            document.getElementById(location.state + "-like").style.color = "red";
+            document.getElementById(location.state + "-like").style.color =
+              "red";
           }
         }
-        document.getElementById(location.state + "-like-count").innerText = likesRes.data.length;
-        
+        document.getElementById(location.state + "-like-count").innerText =
+          likesRes.data.length;
+
         location.state = null;
       };
-      
+
       async function commLikes() {
         if (comments.length > 0) {
           for (let i = 0; i < comments.length; i++) {
             try {
-              
               const likesRes = await axios.get(
-                BasePath + `/posts/comments/${comments[i].id}/likes`
+                BasePath + `/posts/comments/${comments[i].id}/likes`,
+                options
               );
-  
+
               for (let each in likesRes.data) {
                 if (likesRes.data[each].author.id === userId) {
                   document.getElementById(
@@ -565,14 +624,14 @@ function CreateArray() {
       }
 
       getData();
-      commLikes()
+      commLikes();
 
       window.history.replaceState({}, document.title);
     } else {
       const getData = async () => {
         const res = await axios.get(
           BasePath + `/posts/all/?page=${currPage}&size=5`,
-          headers
+          options
         );
 
         if (!res.data.length) {
@@ -678,8 +737,8 @@ function CreateArray() {
         for (let i = postList.length - 5; i < postList.length; i++) {
           try {
             const res = await axios.get(
-              BasePath + `/posts/${postList[i].id}/likes`,
-              headers
+              BasePath + `/posts/${postList[i].id}/likes`
+              , options
             );
 
             for (let each in res.data) {
@@ -704,8 +763,8 @@ function CreateArray() {
         for (let i = 0; i < comments.length; i++) {
           try {
             const res = await axios.get(
-              BasePath + `/posts/comments/${comments[i].id}/likes`,
-              headers
+              BasePath + `/posts/comments/${comments[i].id}/likes`
+              , options
             );
 
             for (let each in res.data) {
@@ -731,7 +790,6 @@ function CreateArray() {
     if (!location.state) {
       checkLike();
     }
-    
   }, [currPage, prevPage, wasLast, postList, userId, comments]);
 
   const onAddComment = (newComment) => {
@@ -789,11 +847,15 @@ function CreateArray() {
                     // if liked, get the likes for the post, find the users, and delete it
                     const res = await axios.get(
                       BasePath + `/posts/${post.id}/likes`
+                      , options
                     );
                     const likeId = res.data.filter(
                       (x) => x.author.id === userId
                     )[0].id;
-                    await axios.delete(BasePath + `/posts/likes/${likeId}`);
+                    await axios.delete(
+                      BasePath + `/posts/likes/${likeId}`
+                     , options
+                    );
 
                     // get current likes and decrement (no need for refresh or re-ping backend), change icon to grey
 
@@ -823,10 +885,8 @@ function CreateArray() {
                       {
                         summary: userName + " liked your post.",
                         author: userId,
-                      },
-                      {
-                        "Content-Type": "application/json",
                       }
+                      , options
                     );
 
                     // get current likes and increment (no need for refresh or re-ping backend), change icon to red
