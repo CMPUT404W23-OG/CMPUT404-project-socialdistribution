@@ -23,9 +23,19 @@ export default function EditProfile({ open, setOpen }) {
   };
 
   async function SubmitContent() {
-    await axios.patch(BasePath + "/author/" + user.user_id + "/", {
-      profile_image_url: imageUrl,
-    });
+    const authTokens = JSON.parse(localStorage.getItem("authTokens"));
+    const options = {
+      headers: {
+        Authorization: `Bearer ${authTokens.access}`,
+      },
+    };
+    await axios.patch(
+      BasePath + "/author/" + user.user_id + "/",
+      {
+        profile_image_url: imageUrl,
+      },
+      options
+    );
     window.location.reload();
     handleClose();
   }
