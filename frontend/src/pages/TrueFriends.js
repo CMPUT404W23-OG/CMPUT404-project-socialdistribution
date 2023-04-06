@@ -15,14 +15,18 @@ import { fontStyle, style } from "@mui/system";
 const TrueFriends = () => {
   const { user } = useContext(AuthContext);
   const [trueFriends, setTrueFriends] = useState([]);
+  const authTokens = JSON.parse(localStorage.getItem("authTokens"));
+
+  const headers = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    Authorization: `Bearer ${authTokens.access}`,
+  };
 
   useEffect(() => {
     fetch(BasePath + "/friends/" + user.user_id + "/", {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
+      headers: headers,
     })
       .then((res) => res.json())
       .then((data) => {
