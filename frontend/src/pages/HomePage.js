@@ -3,7 +3,6 @@ import { Card, Box, Container, Menu, MenuItem, TextField } from "@mui/material";
 import { useEffect, useState, useRef } from "react";
 import BasePath from "../config/BasePath";
 import * as React from "react";
-import { styled } from "@mui/material/styles";
 import CardHeader from "@mui/material/CardHeader";
 import CardMedia from "@mui/material/CardMedia";
 import CardContent from "@mui/material/CardContent";
@@ -24,9 +23,15 @@ import { useContext } from "react";
 import { useLocation } from "react-router-dom";
 import { Divider, Grid, Paper, Button } from "@mui/material";
 import ReactMarkdown from "react-markdown";
-import PopupState, { bindTrigger, bindMenu } from "material-ui-popup-state";
-import Posts from "../pages/modal/Posts";
-import EditComment from "../pages/modal/EditComment";
+
+const authTokens = JSON.parse(localStorage.getItem("authTokens"));
+console.log(authTokens.access);
+
+const headers = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Expose-Headers": "X-PAGINATION-SIZE",
+  "Authorization": `Bearer ${authTokens.access}`,
+};
 
 async function addComment(userId, postId, comment) {
   console.log(postId);
@@ -452,16 +457,13 @@ function CreateArray() {
   // await axios.delete(`${BasePath}/posts/${post.id}/comments/${comment.id}`);
   // await axios.patch(`${BasePath}/posts/${post.id}/comments/${comment.id}`, {"comment":${editedComment}});
 
-  const headers = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Expose-Headers": "X-PAGINATION-SIZE",
-  };
   useEffect(() => {
     const fetchComments = async () => {
       for (let i = postList.length - 5; i < postList.length; i++) {
         try {
           const res = await axios.get(
-            `${BasePath}/posts/${postList[i].id}/comments?page=1&size=1000`
+            `${BasePath}/posts/${postList[i].id}/comments?page=1&size=1000`,
+            headers
           );
           setComments((prevComments) => {
             const newComments = res.data.filter(
@@ -676,7 +678,8 @@ function CreateArray() {
         for (let i = postList.length - 5; i < postList.length; i++) {
           try {
             const res = await axios.get(
-              BasePath + `/posts/${postList[i].id}/likes`
+              BasePath + `/posts/${postList[i].id}/likes`,
+              headers
             );
 
             for (let each in res.data) {
@@ -701,7 +704,8 @@ function CreateArray() {
         for (let i = 0; i < comments.length; i++) {
           try {
             const res = await axios.get(
-              BasePath + `/posts/comments/${comments[i].id}/likes`
+              BasePath + `/posts/comments/${comments[i].id}/likes`,
+              headers
             );
 
             for (let each in res.data) {

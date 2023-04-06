@@ -13,6 +13,7 @@ from api.models import Incoming_Node, Outgoing_Node
 import requests
 from requests.auth import HTTPBasicAuth
 from .models import Post, Comment, Like, Author
+from rest_framework.permissions import IsAuthenticated
 import logging
 import threading
 
@@ -21,6 +22,7 @@ import threading
 # TODO NEED TO CONNECT TO FRONT END
 
 class PostView(APIView):
+    permission_classes = (IsAuthenticated,)
     def get_object(self, pk):
         try:
             Post.objects.get(id=pk)
