@@ -18,12 +18,16 @@ from drf_spectacular.utils import extend_schema
 import threading
 import requests
 from api.models import Incoming_Node, Outgoing_Node
+from rest_framework.permissions import IsAuthenticated
 User = get_user_model()
+
 
 class FollowingList(APIView):
     """
     Get a list of users that this user is following.
     """
+    permission_classes = (IsAuthenticated,)
+
     @extend_schema(responses=FollowSerializer)
     def get(self, request,pk, format=None):
     
@@ -42,6 +46,8 @@ class FollowersList(APIView):
     """
     Get a list of users that are following this user.
     """
+    permission_classes = (IsAuthenticated,)
+
     @extend_schema(responses=FollowSerializer)
     def get(self, request, pk,format=None):
     
@@ -58,8 +64,8 @@ class FollowersList(APIView):
 
 
 class FollowDetail(APIView):
-    
-    
+    permission_classes = (IsAuthenticated,)
+
     def get_object(self, pk):
  
         try:
@@ -255,6 +261,8 @@ class RequestListReceived(APIView):
     """
     Get All follow requests sent to a user
     """
+    permission_classes = (IsAuthenticated,)
+
     @extend_schema(responses=RequestSerializer)
     def get(self, request,pk, format=None):
 
@@ -281,6 +289,8 @@ class RequestListSent(APIView):
     """
     Get All follow requests sent by a user
     """
+    permission_classes = (IsAuthenticated,)
+
     @extend_schema(responses=RequestSerializer)
     def get(self,request, pk ,format=None):
 
@@ -301,7 +311,7 @@ class RequestListSent(APIView):
 
     
 class RequestDetail(APIView):
-
+    permission_classes = (IsAuthenticated,)
 
     def get_object(self, pk):
         try:
@@ -360,6 +370,7 @@ class FriendList(APIView):
     """
     List all true friends for a given user.
     """
+    permission_classes = (IsAuthenticated,)
 
     @extend_schema(request=FriendSerializer ,responses=FriendSerializer)
     def get(self, request,pk, format=None):
@@ -382,6 +393,7 @@ class FollowPost(APIView):
     Post a new follow request.
     input takes the ids of follower and following.
     """
+
     @extend_schema(request=FollowPostSerializer,responses=FollowPostSerializer)
     def post(self, request,  format=None):
         follower = request.data.get('follower')
